@@ -1,5 +1,6 @@
 package com.breaktime.breaksecretary.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -9,6 +10,8 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.breaktime.breaksecretary.R;
+import com.breaktime.breaksecretary.activity.ShowingMapActivity;
+import com.breaktime.breaksecretary.app.BreakScretApp;
 
 
 // In this case, the fragment displays simple text based on the page
@@ -41,7 +44,8 @@ public class ReserveAndCheckFragment extends Fragment {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Intent intent = new Intent(BreakScretApp.getInstance(), ShowingMapActivity.class);
+                startActivity(intent);
             }
         });
         return view;
