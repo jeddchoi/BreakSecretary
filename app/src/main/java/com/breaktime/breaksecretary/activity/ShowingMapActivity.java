@@ -12,11 +12,17 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 
+import com.breaktime.breaksecretary.CustomDialog;
 import com.breaktime.breaksecretary.R;
+
+import java.util.HashMap;
 
 import pl.polidea.view.ZoomView;
 
-public class ShowingMapActivity extends AppCompatActivity {
+public class ShowingMapActivity extends AppCompatActivity implements View.OnClickListener {
+    private CustomDialog mCustomDialog;
+    private Button[] btnList = new Button[200];
+    private String selectedSeatNum;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,17 +33,12 @@ public class ShowingMapActivity extends AppCompatActivity {
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(3000, 3000);
         ZoomViewLoad(v, layoutParams);
 
-        Button btn01 = (Button)v.findViewById(R.id.a00);
-        btn01.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(ShowingMapActivity.this, "A00 selected", Toast.LENGTH_SHORT).show();
-            }
-        });
-
+        LoadButton(v);
+        for(int i = 0;i<7;i++){
+            btnList[i].setOnClickListener(this);
+        }
 
     }
-
 
 
     public void ZoomViewLoad(View v, LinearLayout.LayoutParams layoutParams){
@@ -54,4 +55,69 @@ public class ShowingMapActivity extends AppCompatActivity {
         LinearLayout container = (LinearLayout) findViewById(R.id.container);
         container.addView(zoomView);
     }
+
+    public void LoadButton(View v){
+        btnList[0] = (Button)v.findViewById(R.id.a00);
+        btnList[0].setTag("a00");
+        btnList[1] = (Button)v.findViewById(R.id.a01);
+        btnList[1].setTag("a01");
+        btnList[2] = (Button)v.findViewById(R.id.a02);
+        btnList[2].setTag("a02");
+        btnList[3] = (Button)v.findViewById(R.id.a03);
+        btnList[3].setTag("a03");
+        btnList[4] = (Button)v.findViewById(R.id.a04);
+        btnList[4].setTag("a04");
+        btnList[5] = (Button)v.findViewById(R.id.a05);
+        btnList[5].setTag("a05");
+        btnList[6] = (Button)v.findViewById(R.id.a06);
+        btnList[6].setTag("a06");
+        // TODO: for문으로 더 간결하게 how?
+    }
+
+    @Override
+    public void onClick(View v)
+    {
+        // 클릭된 뷰를 버튼으로 받아옴
+        Button newButton = (Button) v;
+
+        // 향상된 for문을 사용, 클릭된 버튼을 찾아냄
+        for(Button tempButton : btnList)
+        {
+            // 클릭된 버튼을 찾았으면
+            if(tempButton == newButton)
+            {
+                // 위에서 저장한 버튼의 포지션을 태그로 가져옴
+                selectedSeatNum = (String)v.getTag();
+                // 태그로 가져온 포지션을 이용해 리스트에서 출력할 데이터를 꺼내서 토스트 메시지 출력
+                mCustomDialog = new CustomDialog(ShowingMapActivity.this,
+                        "예약 확인", // 제목
+                        "[ "+selectedSeatNum+" ] 자리를 예약하시겠습니까?", // 내용
+                        leftListener, // 왼쪽 버튼 이벤트
+                        rightListener); // 오른쪽 버튼 이벤트
+                mCustomDialog.show();
+            }
+        }
+    }
+
+    private View.OnClickListener leftListener = new View.OnClickListener() {
+        public void onClick(View v) {
+            Toast.makeText(getApplicationContext(), selectedSeatNum,
+                    Toast.LENGTH_SHORT).show();
+            // FLAG_ACTIVITY_CLEAR_TOP !
+            Intent intent = new Intent();
+            //intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            setResult(RESULT_OK, intent);
+            finish();
+        }
+    };
+
+    private View.OnClickListener rightListener = new View.OnClickListener() {
+        public void onClick(View v) {
+            Toast.makeText(getApplicationContext(), "취소",
+                    Toast.LENGTH_SHORT).show();
+            mCustomDialog.dismiss();
+        }
+    };
+
+
 }

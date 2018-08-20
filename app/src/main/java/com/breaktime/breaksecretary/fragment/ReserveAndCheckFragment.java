@@ -44,8 +44,8 @@ public class ReserveAndCheckFragment extends Fragment {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(BreakScretApp.getInstance(), ShowingMapActivity.class);
-                startActivity(intent);
+                Intent intent = new Intent(getContext(), ShowingMapActivity.class);
+                startActivityForResult(intent, 1001);
             }
         });
         return view;

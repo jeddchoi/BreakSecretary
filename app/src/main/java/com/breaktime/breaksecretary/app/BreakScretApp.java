@@ -23,12 +23,12 @@ public class BreakScretApp extends Application {
     }
 
     // 이것도 예제
-    public void TestToast(String message){
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    public static void TestToast(String message){
+        Toast.makeText(instance, message, Toast.LENGTH_SHORT).show();
     }
 
     // For debugging 
-    public void Log(String message){
+    public static void Log(String message){
         Log.d(TAG, message);
     }
 
