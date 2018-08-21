@@ -1,20 +1,28 @@
 package com.breaktime.breaksecretary.fragment;
 
+import android.app.ActivityOptions;
 import android.content.Intent;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.breaktime.breaksecretary.R;
+import com.breaktime.breaksecretary.RevealTransition;
 import com.breaktime.breaksecretary.activity.ShowingMapActivity;
 import com.breaktime.breaksecretary.app.BreakScretApp;
 
 import org.w3c.dom.Text;
+
+import static com.breaktime.breaksecretary.activity.ShowingMapActivity.EXTRA_EPICENTER;
 
 
 // In this case, the fragment displays simple text based on the page
@@ -43,13 +51,27 @@ public class ReserveAndCheckFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_reserveandcheck, container, false);
         TextView tvTitle = (TextView) view.findViewById(R.id.tvTitle);
-        Button btn = (Button)view.findViewById(R.id.reserv_btn);
+        final ImageView btn = (ImageView)view.findViewById(R.id.imgAlbum);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getContext(), ShowingMapActivity.class);
+                //Intent intent = new Intent(getContext(), ShowingMapActivity.class);
                 //TODO : 남은 좌석 수 넘기기
-                startActivityForResult(intent, 1001);
+                //startActivityForResult(intent, 1001);
+                Intent intent = new Intent(getContext(), ShowingMapActivity.class);
+                intent.putExtra("Sample", R.drawable.ic_test);
+                int[] location = new int[2];
+                view.findViewById(R.id.imgAlbum).getLocationInWindow(location);
+                Point epicenter = new Point(location[0] + btn.getMeasuredWidth() / 2,
+                        location[1] + btn.getMeasuredHeight() / 2);
+                intent.putExtra(EXTRA_EPICENTER, epicenter);
+
+
+
+                ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(getActivity(),
+                        btn, btn.getTransitionName());
+                startActivity(intent, options.toBundle());
+
             }
         });
 
@@ -96,5 +118,7 @@ public class ReserveAndCheckFragment extends Fragment {
 
 
     }
+
+
 
 }

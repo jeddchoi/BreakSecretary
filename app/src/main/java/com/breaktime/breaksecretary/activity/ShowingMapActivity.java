@@ -2,18 +2,24 @@ package com.breaktime.breaksecretary.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Point;
+import android.media.Image;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
 
 import com.breaktime.breaksecretary.CustomDialog;
 import com.breaktime.breaksecretary.R;
+import com.breaktime.breaksecretary.RevealTransition;
 
 import java.util.HashMap;
 
@@ -23,15 +29,24 @@ public class ShowingMapActivity extends AppCompatActivity implements View.OnClic
     private CustomDialog mCustomDialog;
     private Button[] btnList = new Button[200];
     private String selectedSeatNum;
+    public static String EXTRA_EPICENTER = "EXTRA_EPICENTER";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_showing_map);
 
+
+
         View v = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.showing_map_item, null, false);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(3000, 3000);
         ZoomViewLoad(v, layoutParams);
+
+        Intent intent = getIntent();
+        int img = intent.getIntExtra("sample",0);
+        ImageView imgV = (ImageView)findViewById(R.id.imgAlbumArt);
+        imgV.setImageResource(img);
+        initTransitions();
 
         LoadButton(v);
         for(int i = 0;i<7;i++){
@@ -118,6 +133,30 @@ public class ShowingMapActivity extends AppCompatActivity implements View.OnClic
             mCustomDialog.dismiss();
         }
     };
+
+    /**
+     * 화면 전환 애니메이션 초기화
+     */
+    private void initTransitions() {
+
+        Window window = getWindow();
+        RevealTransition reveal = createRevealTransition();
+        window.setEnterTransition(reveal);
+
+    }
+
+    /**
+     * 원형 만드는 기능
+     * @return
+     */
+    private RevealTransition createRevealTransition() {
+        Point epicenter = getIntent().getParcelableExtra(EXTRA_EPICENTER);
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        int bigRadius = Math.max(displayMetrics.widthPixels, displayMetrics.heightPixels);
+        RevealTransition reveal = new RevealTransition(epicenter, 0, bigRadius, 1500);
+        return reveal;
+    }
+
 
 
 }

@@ -15,11 +15,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center" />
-        <Button
-            android:id="@+id/reserv_btn"
+
+        <ImageView
+            android:src="@drawable/ic_test"
+            android:id="@+id/imgAlbum"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="Go_To_Map"/>
+            android:background="#00f0f0"
+            android:transitionName="imgAlbumArt" />
     </LinearLayout>
 
     <GridLayout
