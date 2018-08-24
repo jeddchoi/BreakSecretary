@@ -30,4 +30,6 @@ dependencies {
     implementation 'com.astuetz:pagerslidingtabstrip:1.0.1'
     implementation files('libs/android-zoom-view.jar')
     implementation 'me.immortalz:transitionhelper:2.3.4'
+
+
 }
