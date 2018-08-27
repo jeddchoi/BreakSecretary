@@ -1,19 +1,28 @@
 package com.breaktime.breaksecretary.activity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Point;
+import android.media.Image;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
 
 import com.breaktime.breaksecretary.CustomDialog;
 import com.breaktime.breaksecretary.R;
+import com.breaktime.breaksecretary.RevealTransition;
+import com.breaktime.breaksecretary.app.BreakScretApp;
+import com.breaktime.breaksecretary.model.TestUser;
 
 import java.util.HashMap;
 
@@ -23,15 +32,29 @@ public class ShowingMapActivity extends AppCompatActivity implements View.OnClic
     private CustomDialog mCustomDialog;
     private Button[] btnList = new Button[200];
     private String selectedSeatNum;
-
+    public static String EXTRA_EPICENTER = "EXTRA_EPICENTER";
+    public static String SECTOR_POSITION = "SECTOR_POSITION";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_showing_map);
+        Intent intent = getIntent();
+
+
 
         View v = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.showing_map_item, null, false);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(3000, 3000);
-        ZoomViewLoad(v, layoutParams);
+
+
+        String SeatSector = intent.getStringExtra(SECTOR_POSITION);
+        ZoomViewLoad(v, layoutParams, SeatSector);
+
+        int img = intent.getIntExtra("sample",0);
+        ImageView imgV = (ImageView)findViewById(R.id.imgAlbumArt);
+        imgV.setImageResource(img);
+
+        // Activity Transition
+        initTransitions();
 
         LoadButton(v);
         for(int i = 0;i<7;i++){
@@ -41,7 +64,7 @@ public class ShowingMapActivity extends AppCompatActivity implements View.OnClic
     }
 
 
-    public void ZoomViewLoad(View v, LinearLayout.LayoutParams layoutParams){
+    public void ZoomViewLoad(View v, LinearLayout.LayoutParams layoutParams, String SectorPosition){
         ZoomView zoomView = new ZoomView(this);
         zoomView.addView(v);
         zoomView.setLayoutParams(layoutParams);
@@ -51,7 +74,25 @@ public class ShowingMapActivity extends AppCompatActivity implements View.OnClic
         zoomView.setMiniMapCaptionSize(20); // 미니 맵 내용 글씨 크기 설정
         zoomView.setMiniMapHeight(400);
 
-        zoomView.zoomTo(3f,500f,500f);
+        switch (SectorPosition){
+            case "A":
+                zoomView.zoomTo(3f,650f,500f);
+                break;
+            case "B":
+                zoomView.zoomTo(3f,1350f,500f);
+                break;
+            case "C":
+                zoomView.zoomTo(3f,650f,1200f);
+                break;
+            case "D":
+                zoomView.zoomTo(3f,1350f,1200f);
+                break;
+
+                default:
+                    //zoomView.zoomTo(1f,500f,500f);
+                    break;
+        }
+
         LinearLayout container = (LinearLayout) findViewById(R.id.container);
         container.addView(zoomView);
     }
@@ -104,11 +145,16 @@ public class ShowingMapActivity extends AppCompatActivity implements View.OnClic
             Toast.makeText(getApplicationContext(), selectedSeatNum,
                     Toast.LENGTH_SHORT).show();
             // FLAG_ACTIVITY_CLEAR_TOP !
-            Intent intent = new Intent();
+            mCustomDialog.dismiss();
+            Intent ReturnIntent = new Intent();
             //intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            setResult(RESULT_OK, intent);
+            ReturnIntent.putExtra("result", selectedSeatNum);
+
+            // for test
+            TestUser.setStatus(2);
+            setResult(Activity.RESULT_OK, ReturnIntent);
             finish();
-        }
+            }
     };
 
     private View.OnClickListener rightListener = new View.OnClickListener() {
@@ -118,6 +164,31 @@ public class ShowingMapActivity extends AppCompatActivity implements View.OnClic
             mCustomDialog.dismiss();
         }
     };
+
+    /**
+     * 화면 전환 애니메이션 초기화
+     */
+    private void initTransitions() {
+
+        Window window = getWindow();
+        RevealTransition reveal = createRevealTransition();
+        window.setEnterTransition(reveal);
+
+    }
+
+    /**
+     * 원형 만드는 기능
+     * @return
+     */
+
+    private RevealTransition createRevealTransition() {
+        Point epicenter = getIntent().getParcelableExtra(EXTRA_EPICENTER);
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        int bigRadius = Math.max(displayMetrics.widthPixels, displayMetrics.heightPixels);
+        RevealTransition reveal = new RevealTransition(epicenter, 0, bigRadius, 1500);
+        return reveal;
+    }
+
 
 
 }

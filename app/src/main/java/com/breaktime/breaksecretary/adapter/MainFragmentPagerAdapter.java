@@ -4,6 +4,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
+import com.breaktime.breaksecretary.app.BreakScretApp;
+
 import java.util.ArrayList;
 
 // 아이콘 추가시 확장 : implements PagerSlidingTabStrip.IconTabProvider
@@ -28,6 +30,20 @@ public class MainFragmentPagerAdapter extends FragmentPagerAdapter  {
     }
 
     @Override
+    public int getItemPosition(Object object) {
+        // POSITION_NONE makes it possible to reload the PagerAdapter
+        BreakScretApp.Log("GetItemPosition Called");
+        return POSITION_NONE;
+//        if () {
+//            return POSITION_NONE;
+//        } else {
+//            return super.getItemPosition(object);
+//        }
+
+
+    }
+
+    @Override
     public Fragment getItem(int position) {
         //return PageFragment.newInstance(position + 1);
         // case 1.
@@ -37,6 +53,10 @@ public class MainFragmentPagerAdapter extends FragmentPagerAdapter  {
 //            return PageFragment.newInstance()
 //        }
 
+    }
+
+    public void setItem(Fragment item, int index){
+        items.set(index, item);
     }
 
     @Override

@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">BreakSecretary</string>
+    <string name="empty_state">Empty State...</string>
 </resources>
