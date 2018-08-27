@@ -1,5 +1,6 @@
 package com.breaktime.breaksecretary.activity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Point;
@@ -20,6 +21,8 @@ import android.widget.Toast;
 import com.breaktime.breaksecretary.CustomDialog;
 import com.breaktime.breaksecretary.R;
 import com.breaktime.breaksecretary.RevealTransition;
+import com.breaktime.breaksecretary.app.BreakScretApp;
+import com.breaktime.breaksecretary.model.TestUser;
 
 import java.util.HashMap;
 
@@ -142,11 +145,16 @@ public class ShowingMapActivity extends AppCompatActivity implements View.OnClic
             Toast.makeText(getApplicationContext(), selectedSeatNum,
                     Toast.LENGTH_SHORT).show();
             // FLAG_ACTIVITY_CLEAR_TOP !
-            Intent intent = new Intent();
+            mCustomDialog.dismiss();
+            Intent ReturnIntent = new Intent();
             //intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            setResult(RESULT_OK, intent);
+            ReturnIntent.putExtra("result", selectedSeatNum);
+
+            // for test
+            TestUser.setStatus(2);
+            setResult(Activity.RESULT_OK, ReturnIntent);
             finish();
-        }
+            }
     };
 
     private View.OnClickListener rightListener = new View.OnClickListener() {

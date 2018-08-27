@@ -125,7 +125,7 @@ public class ReserveAndCheckFragment extends Fragment {
 
                 ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(getActivity(),
                         sectorA, sectorA.getTransitionName());
-                startActivity(intent, options.toBundle());
+                startActivityForResult(intent, 1001,options.toBundle());
 
             }
         });
@@ -144,8 +144,8 @@ public class ReserveAndCheckFragment extends Fragment {
 
 
                 ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(getActivity(),
-                        sectorA, sectorA.getTransitionName());
-                startActivity(intent, options.toBundle());
+                        sectorB, sectorB.getTransitionName());
+                startActivityForResult(intent, 1001,options.toBundle());
 
             }
         });
@@ -165,7 +165,7 @@ public class ReserveAndCheckFragment extends Fragment {
 
                 ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(getActivity(),
                         sectorA, sectorA.getTransitionName());
-                startActivity(intent, options.toBundle());
+                startActivityForResult(intent, 1001,options.toBundle());
 
             }
         });
@@ -184,7 +184,7 @@ public class ReserveAndCheckFragment extends Fragment {
 
                 ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(getActivity(),
                         sectorD, sectorD.getTransitionName());
-                startActivity(intent, options.toBundle());
+                startActivityForResult(intent, 1001,options.toBundle());
 
             }
         });
