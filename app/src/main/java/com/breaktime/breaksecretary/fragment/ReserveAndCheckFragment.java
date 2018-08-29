@@ -5,24 +5,16 @@ import android.content.Intent;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.breaktime.breaksecretary.R;
-import com.breaktime.breaksecretary.RevealTransition;
 import com.breaktime.breaksecretary.activity.ShowingMapActivity;
-import com.breaktime.breaksecretary.app.BreakScretApp;
-
-import org.w3c.dom.Text;
 
 import static com.breaktime.breaksecretary.activity.ShowingMapActivity.EXTRA_EPICENTER;
 import static com.breaktime.breaksecretary.activity.ShowingMapActivity.SECTOR_POSITION;

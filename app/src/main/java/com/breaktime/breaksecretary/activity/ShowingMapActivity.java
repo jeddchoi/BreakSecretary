@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Point;
-import android.media.Image;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -12,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -21,10 +19,7 @@ import android.widget.Toast;
 import com.breaktime.breaksecretary.CustomDialog;
 import com.breaktime.breaksecretary.R;
 import com.breaktime.breaksecretary.RevealTransition;
-import com.breaktime.breaksecretary.app.BreakScretApp;
 import com.breaktime.breaksecretary.model.TestUser;
-
-import java.util.HashMap;
 
 import pl.polidea.view.ZoomView;
 

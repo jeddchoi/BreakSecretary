@@ -4,13 +4,13 @@ import android.app.Application;
 import android.util.Log;
 import android.widget.Toast;
 
-public class BreakScretApp extends Application {
+public class BreakSecretary extends Application {
 
     // user_email 은 예시임...
     public static String user_email;
 
     private static String TAG = "BeanBeanTag";
-    private static BreakScretApp instance;
+    private static BreakSecretary instance;
 
     @Override
     public void onCreate() {
@@ -18,7 +18,8 @@ public class BreakScretApp extends Application {
         instance = this;
     }
 
-    public static BreakScretApp getInstance(){
+
+    public static BreakSecretary getInstance(){
         return instance;
     }
 

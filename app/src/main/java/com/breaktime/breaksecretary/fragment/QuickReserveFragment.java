@@ -6,14 +6,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.breaktime.breaksecretary.R;
-import com.breaktime.breaksecretary.app.BreakScretApp;
-
-import immortalz.me.library.TransitionsHeleper;
+import com.breaktime.breaksecretary.app.BreakSecretary;
 
 
 // In this case, the fragment displays simple text based on the page
@@ -48,7 +45,7 @@ public class QuickReserveFragment extends Fragment {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(BreakScretApp.getInstance(), "Helloo~", Toast.LENGTH_SHORT).show();
+                Toast.makeText(BreakSecretary.getInstance(), "Helloo~", Toast.LENGTH_SHORT).show();
 
 
             }

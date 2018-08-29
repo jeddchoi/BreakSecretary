@@ -4,7 +4,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.breaktime.breaksecretary.app.BreakScretApp;
+import com.breaktime.breaksecretary.app.BreakSecretary;
 
 import java.util.ArrayList;
 
@@ -32,7 +32,7 @@ public class MainFragmentPagerAdapter extends FragmentPagerAdapter  {
     @Override
     public int getItemPosition(Object object) {
         // POSITION_NONE makes it possible to reload the PagerAdapter
-        BreakScretApp.Log("GetItemPosition Called");
+        BreakSecretary.Log("GetItemPosition Called");
         return POSITION_NONE;
 //        if () {
 //            return POSITION_NONE;

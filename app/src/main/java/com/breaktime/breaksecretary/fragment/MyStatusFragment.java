@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 import com.breaktime.breaksecretary.R;
 import com.breaktime.breaksecretary.activity.MainActivity;
-import com.breaktime.breaksecretary.app.BreakScretApp;
+import com.breaktime.breaksecretary.app.BreakSecretary;
 import com.breaktime.breaksecretary.model.TestUser;
 
 
@@ -54,7 +54,7 @@ public class MyStatusFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // 1) empty 2) 예약  3) 이용중  by User status ---
-        BreakScretApp.Log("MyStatusFrag Called");
+        BreakSecretary.Log("MyStatusFrag Called");
 
 
         return LoadMatchingView(inflater, container);

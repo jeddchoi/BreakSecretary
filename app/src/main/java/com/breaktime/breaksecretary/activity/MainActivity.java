@@ -2,6 +2,7 @@ package com.breaktime.breaksecretary.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -9,26 +10,28 @@ import android.util.Log;
 import com.astuetz.PagerSlidingTabStrip;
 import com.breaktime.breaksecretary.R;
 import com.breaktime.breaksecretary.adapter.MainFragmentPagerAdapter;
-import com.breaktime.breaksecretary.app.BreakScretApp;
-import com.breaktime.breaksecretary.fragment.MyStatusFragment_Using;
+import com.breaktime.breaksecretary.app.BreakSecretary;
 import com.breaktime.breaksecretary.fragment.MyStatusFragment;
-import com.breaktime.breaksecretary.fragment.MyStatusFragment_Reserving;
 import com.breaktime.breaksecretary.fragment.QuickReserveFragment;
 import com.breaktime.breaksecretary.fragment.ReserveAndCheckFragment;
 import com.breaktime.breaksecretary.fragment.SettingFragment;
 import com.breaktime.breaksecretary.fragment.TimeLineFragment;
 import com.breaktime.breaksecretary.model.TestUser;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 
 public class MainActivity extends AppCompatActivity {
     ViewPager viewPager;
     MainFragmentPagerAdapter adapter;
+    private FirebaseAuth mAuth;
+    private FirebaseUser currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        BreakScretApp.Log("MainActivity onCreate Called");
+        BreakSecretary.Log("MainActivity onCreate Called");
 
         // Get the ViewPager and set it's PagerAdapter so that it can display items
         viewPager = (ViewPager) findViewById(R.id.viewPager);
@@ -44,6 +47,9 @@ public class MainActivity extends AppCompatActivity {
         // for test
         TestUser.TestUserInit();
 
+        mAuth = FirebaseAuth.getInstance();
+        currentUser = mAuth.getCurrentUser();
+        Snackbar.make(findViewById(R.id.container), "Sign in with " + currentUser.getEmail(), Snackbar.LENGTH_SHORT).show();
     }
 
 
@@ -60,14 +66,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        BreakScretApp.Log("onActivityResult Called");
-        BreakScretApp.Log(String.valueOf(requestCode));
+        BreakSecretary.Log("onActivityResult Called");
+        BreakSecretary.Log(String.valueOf(requestCode));
         Log.d("TESSS","heellllo");
 
 
         if(resultCode == RESULT_OK) {
-                BreakScretApp.Log("ok called");
-                BreakScretApp.Log(String.valueOf(TestUser.getStatus()));
+                BreakSecretary.Log("ok called");
+                BreakSecretary.Log(String.valueOf(TestUser.getStatus()));
 
 
                 //TODO : 뷰페이저 프래그먼트 갱신방법
@@ -91,6 +97,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        BreakScretApp.Log("MA onStart Called");
+        BreakSecretary.Log("MA onStart Called");
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
     }
 }
