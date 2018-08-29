@@ -5,8 +5,11 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 
 import com.astuetz.PagerSlidingTabStrip;
+import com.breaktime.breaksecretary.FirstActivity;
 import com.breaktime.breaksecretary.R;
 import com.breaktime.breaksecretary.adapter.MainFragmentPagerAdapter;
 import com.breaktime.breaksecretary.app.BreakScretApp;
@@ -23,7 +26,7 @@ import com.breaktime.breaksecretary.model.TestUser;
 public class MainActivity extends AppCompatActivity {
     ViewPager viewPager;
     MainFragmentPagerAdapter adapter;
-
+    Button logoutButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +46,18 @@ public class MainActivity extends AppCompatActivity {
 
         // for test
         TestUser.TestUserInit();
+
+        logoutButton = findViewById(R.id.logoutButton);
+        logoutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                signOut();
+                Intent intent = new Intent(mContext, FirstActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                startActivity(intent);
+                finish();
+            }
+        });
 
     }
 
