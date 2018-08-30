@@ -12,7 +12,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:id="@+id/container"
     android:background="@drawable/animation_list_bg"
-    tools:context=".SignUpActivity">
+    tools:context=".activity.SignUpActivity">
 
 
     <!-- Login progress -->

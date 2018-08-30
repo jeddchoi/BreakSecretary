@@ -1,4 +1,4 @@
-package com.breaktime.breaksecretary;
+package com.breaktime.breaksecretary.activity;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -34,12 +34,11 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.breaktime.breaksecretary.activity.MainActivity;
+import com.breaktime.breaksecretary.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;

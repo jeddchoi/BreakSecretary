@@ -49,37 +49,6 @@
           "status": 2
         }
       }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:30519294348:android:840530b56c306fe3",
-        "android_client_info": {
-          "package_name": "com.google.firebase.auth.kakao"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "30519294348-9h5uuvvfffka3i6n3pgonn51hs2pfnjp.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyDApQ3VFOIDxYuJqMbdwbLoIRfQ8CVo9Q0"
-        }
-      ],
-      "services": {
-        "analytics_service": {
-          "status": 1
-        },
-        "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
-        },
-        "ads_service": {
-          "status": 2
-        }
-      }
     }
   ],
   "configuration_version": "1"
