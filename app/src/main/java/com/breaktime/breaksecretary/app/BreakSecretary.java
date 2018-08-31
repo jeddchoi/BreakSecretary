@@ -4,6 +4,8 @@ import android.app.Application;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.firebase.FirebaseApp;
+
 public class BreakSecretary extends Application {
 
     // user_email 은 예시임...
@@ -16,6 +18,18 @@ public class BreakSecretary extends Application {
     public void onCreate() {
         super.onCreate();
         instance = this;
+        FirebaseApp.initializeApp(this);
+//        KakaoSDK.init(new KakaoAdapter() {
+//            @Override
+//            public IApplicationConfig getApplicationConfig() {
+//                return new IApplicationConfig() {
+//                    @Override
+//                    public Context getApplicationContext() {
+//                        return instance;
+//                    }
+//                };
+//            }
+//        });
     }
 
 

@@ -2,7 +2,9 @@ package com.breaktime.breaksecretary.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +14,12 @@ import android.widget.TextView;
 import com.breaktime.breaksecretary.activity.FirstActivity;
 import com.breaktime.breaksecretary.R;
 import com.breaktime.breaksecretary.app.BreakSecretary;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -78,7 +86,13 @@ public class SettingFragment extends Fragment {
     }
     private void signOut() {
         mAuth.signOut();
+
+        // Google sign out
+        GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(getActivity(), GoogleSignInOptions.DEFAULT_SIGN_IN);
+        mGoogleSignInClient.signOut();
     }
+
+
 
 
 }

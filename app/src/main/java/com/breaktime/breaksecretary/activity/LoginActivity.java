@@ -95,6 +95,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
 
         mContext = this;
+        // [START initialize_auth]
+        mAuth = FirebaseAuth.getInstance();
+        // [END initialize_auth]
+
 
         // Set up the login form.
         mEmailView = findViewById(R.id.email);
@@ -148,11 +152,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         anim.setEnterFadeDuration(2000);
         anim.setExitFadeDuration(4000);
 
-        // [START initialize_auth]
-        mAuth = FirebaseAuth.getInstance();
-        // [END initialize_auth]
-
-        Log.d(TAG, "LoginActivity onCreate");
     }
 
 
@@ -244,7 +243,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         } else {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
-            showProgress(true);
+//            showProgress(true);
             signIn(email, password);
         }
     }
@@ -260,34 +259,34 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         return m.matches();
     }
-    /**
-     * Shows the progress UI and hides the login form.
-     */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-    private void showProgress(final boolean show) {
-        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
-        // for very easy animations. If available, use these APIs to fade-in
-        // the progress spinner.
-        int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
-
-        mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-        mLoginFormView.animate().setDuration(shortAnimTime).alpha(
-                show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-            }
-        });
-
-        mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-        mProgressView.animate().setDuration(shortAnimTime).alpha(
-                show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            }
-        });
-    }
+//    /**
+//     * Shows the progress UI and hides the login form.
+//     */
+//    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
+//    private void showProgress(final boolean show) {
+//        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
+//        // for very easy animations. If available, use these APIs to fade-in
+//        // the progress spinner.
+//        int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+//
+//        mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+//        mLoginFormView.animate().setDuration(shortAnimTime).alpha(
+//                show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
+//            @Override
+//            public void onAnimationEnd(Animator animation) {
+//                mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+//            }
+//        });
+//
+//        mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+//        mProgressView.animate().setDuration(shortAnimTime).alpha(
+//                show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+//            @Override
+//            public void onAnimationEnd(Animator animation) {
+//                mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+//            }
+//        });
+//    }
 
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
@@ -358,25 +357,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     }
 
-    // [START on_start_check_user]
-    @Override
-    public void onStart() {
-        super.onStart();
-        // Check if user is signed in (non-null) and update UI accordingly.
-        currentUser = mAuth.getCurrentUser();
-        if ( currentUser != null ) {
-            Intent intent = new Intent(mContext, MainActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            startActivity(intent);
-            finish();
-        }
-
-    }
-    // [END on_start_check_user]
-
     private void signIn(final String mEmail, final String mPassword) {
         Log.d(TAG, "signIn try with :" + mEmail);
-        showProgress(true);
+//        showProgress(true);
 
         // [START sign_in_with_email]
         mAuth.signInWithEmailAndPassword(mEmail, mPassword)
@@ -410,14 +393,17 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                             notifyUser(e.getLocalizedMessage(), mEmail);
                         }
                     }
-                    showProgress(false);
+//                    showProgress(false);
                 }
             });
         // [END sign_in_with_email]
     }
 
     public void notifyUser(String message, String mEmail) {
-        Snackbar.make(findViewById(R.id.container), message + " with " + mEmail, Snackbar.LENGTH_LONG).show();
+        if ( mEmail != null ) {
+            message = message + "with " + mEmail;
+        }
+        Snackbar.make(findViewById(R.id.container), message, Snackbar.LENGTH_LONG).show();
     }
 
     private void sendResetPasswordEmail() {
@@ -438,7 +424,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String emailAddress = mResetEmail.getText().toString();
-                notifyUser("Do nothing", emailAddress);
+                notifyUser("Cancel to reset password", null);
             }
         });
 
