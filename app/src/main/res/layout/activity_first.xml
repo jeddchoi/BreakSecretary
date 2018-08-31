@@ -60,17 +60,55 @@
         app:layout_constraintRight_toLeftOf="@+id/v_guideline2"
         app:layout_constraintTop_toTopOf="@+id/h_guideline1" />
 
-    <Button
-        android:id="@+id/kakaoLoginButton"
-        android:layout_width="0dp"
+    <!--<Button-->
+        <!--android:id="@+id/kakaoLoginButton"-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginTop="8dp"-->
+        <!--android:background="@drawable/kakao_button_bg"-->
+        <!--android:text="CONTINUE WITH KAKAOTALK"-->
+        <!--android:textColor="@android:color/black"-->
+        <!--app:layout_constraintLeft_toLeftOf="@+id/v_guideline1"-->
+        <!--app:layout_constraintRight_toLeftOf="@+id/v_guideline2"-->
+        <!--app:layout_constraintTop_toBottomOf="@+id/signupButton" />-->
+
+    <com.google.android.gms.common.SignInButton
+        android:id="@+id/googleSigninButton"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/kakao_button_bg"
-        android:text="CONTINUE WITH KAKAOTALK"
-        android:textColor="@android:color/black"
         app:layout_constraintLeft_toLeftOf="@+id/v_guideline1"
         app:layout_constraintRight_toLeftOf="@+id/v_guideline2"
-        app:layout_constraintTop_toBottomOf="@+id/signupButton" />
+        app:layout_constraintTop_toBottomOf="@+id/signupButton"/>
+
+    <!--<Button-->
+        <!--android:id="@+id/googleSigninButton"-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginTop="8dp"-->
+        <!--android:paddingEnd="20dp"-->
+        <!--android:paddingStart="20dp"-->
+        <!--android:text="SIGN IN WITH GOOGLE"-->
+        <!--android:textAllCaps="true"-->
+        <!--android:textColor="#444444"-->
+        <!--android:textSize="14sp"-->
+        <!--android:background="@drawable/google_button_bg"-->
+        <!--app:layout_constraintLeft_toLeftOf="@+id/v_guideline1"-->
+        <!--app:layout_constraintRight_toLeftOf="@+id/v_guideline2"-->
+        <!--app:layout_constraintTop_toBottomOf="@+id/signupButton"/>-->
+
+    <!--<Button-->
+        <!--android:id="@+id/google_login"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:background="@drawable/google_button_bg"-->
+        <!--android:drawableStart="@drawable/google_logo"-->
+        <!--android:paddingEnd="20dp"-->
+        <!--android:paddingStart="20dp"-->
+        <!--android:text="SIGN IN WITH GOOGLE"-->
+        <!--android:textAllCaps="false"-->
+        <!--android:textColor="#FFFFFF"-->
+        <!--android:textSize="14sp"-->
+        <!--android:textStyle="bold" />-->
 
     <Button
         android:id="@+id/loginButton"
@@ -93,7 +131,7 @@
         android:textColor="@android:color/white"
         app:layout_constraintLeft_toLeftOf="@+id/v_guideline1"
         app:layout_constraintRight_toLeftOf="@+id/v_guideline2"
-        app:layout_constraintTop_toBottomOf="@+id/kakaoLoginButton" />
+        app:layout_constraintTop_toBottomOf="@+id/googleSigninButton" />
 
 
 </android.support.constraint.ConstraintLayout>

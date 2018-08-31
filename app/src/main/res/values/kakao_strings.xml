@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="kakao_app_key">1463eadc190f1e30648a9625850b9b41</string>
+    <!--<string name="kakao_app_key">1463eadc190f1e30648a9625850b9b41</string>-->
+    <!--<string name="validation_server_domain">https://breaksecretary-66633.appspot.com</string>-->
+
+    <!--<string name="logout">Logout</string>-->
+    <!--<string name="profile_picture">Profile Picture:</string>-->
+    <!--<string name="display_name">Display Name:</string>-->
+    <!--<string name="login_failed">Login failed.</string>-->
+    <!--<string name="email_text">Email:</string>-->
 </resources>
