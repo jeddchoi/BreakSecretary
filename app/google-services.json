@@ -23,6 +23,14 @@
           }
         },
         {
+          "client_id": "30519294348-r3kbdtcnqsskr5h7o4sdq3v92ralb6di.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.breaktime.breaksecretary",
+            "certificate_hash": "21d406b5468df0576d96a631558dd719a7bfbd1a"
+          }
+        },
+        {
           "client_id": "30519294348-9h5uuvvfffka3i6n3pgonn51hs2pfnjp.apps.googleusercontent.com",
           "client_type": 3
         }

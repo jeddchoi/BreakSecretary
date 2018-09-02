@@ -13,7 +13,9 @@
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_constraintBottom_toTopOf="@+id/tabs"></android.support.v4.view.ViewPager>
+        app:layout_constraintBottom_toTopOf="@+id/tabs">
+
+    </android.support.v4.view.ViewPager>
 
     <com.astuetz.PagerSlidingTabStrip
         android:id="@+id/tabs"

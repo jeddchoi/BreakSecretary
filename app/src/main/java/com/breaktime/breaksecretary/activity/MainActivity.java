@@ -9,6 +9,7 @@ import android.util.Log;
 
 import com.astuetz.PagerSlidingTabStrip;
 import com.breaktime.breaksecretary.R;
+import com.breaktime.breaksecretary.Util.FirebaseUtil;
 import com.breaktime.breaksecretary.adapter.MainFragmentPagerAdapter;
 import com.breaktime.breaksecretary.app.BreakSecretary;
 import com.breaktime.breaksecretary.fragment.MyStatusFragment;
@@ -50,6 +51,12 @@ public class MainActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
         Snackbar.make(findViewById(R.id.container), "Sign in with " + currentUser.getEmail(), Snackbar.LENGTH_SHORT).show();
+
+
+        // INIT
+        FirebaseUtil.init();
+
+
     }
 
 
@@ -60,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         adapter.addItem(MyStatusFragment.newInstance(3));
         adapter.addItem(SettingFragment.newInstance(4));
         adapter.addItem(TimeLineFragment.newInstance(5));
-        //adapter.addItem(MyStatusFragment_Reserving.newInstance(6));
+
     }
 
     @Override
@@ -81,10 +88,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //type 0: 비어있음
-    //type 1: 이용중
-    //type 2: 예약중
-    //type 3: 자리비움
     public void onMyStatusFragmentChange(){
 
 

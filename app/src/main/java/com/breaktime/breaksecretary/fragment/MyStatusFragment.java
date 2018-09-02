@@ -47,6 +47,7 @@ public class MyStatusFragment extends Fragment {
         super.onCreate(savedInstanceState);
         mPage = getArguments().getInt(ARG_PAGE);
 
+
     }
 
     // Inflate the fragment layout we defined above for this fragment
@@ -56,10 +57,7 @@ public class MyStatusFragment extends Fragment {
         // 1) empty 2) 예약  3) 이용중  by User status ---
         BreakSecretary.Log("MyStatusFrag Called");
 
-
         return LoadMatchingView(inflater, container);
-
-
     }
 
 
@@ -67,6 +65,7 @@ public class MyStatusFragment extends Fragment {
     private View LoadMatchingView(LayoutInflater inflater, ViewGroup container){
         int state = TestUser.getStatus();
         View view;
+
         switch(state){
 
             case EMPTY :

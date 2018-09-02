@@ -27,6 +27,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.breaktime.breaksecretary.R;
+import com.breaktime.breaksecretary.Util.FirebaseUtil;
+import com.breaktime.breaksecretary.model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
@@ -259,6 +261,14 @@ public class SignUpActivity extends AppCompatActivity {
                             Log.d(TAG, "createUserWithEmail:success");
                             sendEmailVerification(mEmail);
                             signIn(mEmail, mPassword);
+
+
+                            FirebaseUtil.RegisterNewOne(mAuth.getUid(), new User(mEmail));
+
+
+
+
+
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "createUserWithEmail:failure", task.getException());
