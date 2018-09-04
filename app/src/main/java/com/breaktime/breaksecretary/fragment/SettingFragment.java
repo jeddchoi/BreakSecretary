@@ -1,56 +1,51 @@
 package com.breaktime.breaksecretary.fragment;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
+import com.breaktime.breaksecretary.R;
 import com.breaktime.breaksecretary.Util.FirebaseUtil;
 import com.breaktime.breaksecretary.activity.FirstActivity;
-import com.breaktime.breaksecretary.R;
-import com.breaktime.breaksecretary.app.BreakSecretary;
+import com.breaktime.breaksecretary.activity.MainActivity;
+import com.breaktime.breaksecretary.model.User;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 
 // In this case, the fragment displays simple text based on the page
-public class SettingFragment extends Fragment {
-    private FirebaseAuth mAuth;
-    private FirebaseUser currentUser;
-
-    public static final String ARG_PAGE = "ARG_PAGE";
-    private Button logoutButton;
-    View view;
-
-
-    private int mPage;
-
-    public static SettingFragment newInstance(int page) {
-        Bundle args = new Bundle();
-        args.putInt(ARG_PAGE, page);
-        SettingFragment fragment = new SettingFragment();
-        fragment.setArguments(args);
-        return fragment;
-    }
+public class SettingFragment extends Fragment implements View.OnClickListener{
+    private static final String TAG = "SettingFragment";
+    private View view;
+    private FirebaseUtil myFireBase;
+    private User mUser;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mPage = getArguments().getInt(ARG_PAGE);
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (getActivity() != null && getActivity() instanceof  MainActivity) {
+            myFireBase = ((MainActivity)getActivity()).myFireBase;
+            mUser = ((MainActivity)getActivity()).mUser;
+        }
     }
 
     // Inflate the fragment layout we defined above for this fragment
@@ -58,51 +53,66 @@ public class SettingFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_setting, container, false);
-        TextView tvTitle = (TextView) view.findViewById(R.id.tvTitle);
+        view.findViewById(R.id.logoutButton).setOnClickListener(this);
 
-        // Test Field
-        Button bnt = (Button)view.findViewById(R.id.btn_test);
-        bnt.setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.btn_test).setOnClickListener(this);
+        final TextView tv = view.findViewById(R.id.status);
+
+        Long timeStamp = mUser.getLastLoginTimeStampForSingleEvent();
+        SimpleDateFormat dayTime = new SimpleDateFormat("MM dd,yyyy HH:mm");
+        String todayDate = dayTime.format(timeStamp);
+        tv.setText(todayDate);
+        mUser.getLoginRef().addChildEventListener(new ChildEventListener() {
             @Override
-            public void onClick(View view) {
-                BreakSecretary.getInstance().TestToast("Hello"); // 임시객체 생성 후 행 전환시 소멸
-                BreakSecretary.getInstance().Log("버튼 클릭됨");
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
 
-//                FirebaseDatabase database = FirebaseDatabase.getInstance();
-//                DatabaseReference myRef = database.getReference("message");
-
-//                myRef.setValue("Hello, World!");
-
-                FirebaseUtil.getLoginUserRootRef().child("aa").setValue(1241124);
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                Long timeStamp = dataSnapshot.getValue(Long.class);
+                SimpleDateFormat dayTime = new SimpleDateFormat("MM dd,yyyy HH:mm", java.util.Locale.getDefault());
+                String todayDate = dayTime.format(timeStamp);
+                tv.setText(todayDate);
             }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) { }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) { }
         });
 
-        mAuth = FirebaseAuth.getInstance();
-        currentUser = mAuth.getCurrentUser();
-        logoutButton = view.findViewById(R.id.logoutButton);
-        logoutButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        return view;
+
+    }
+
+
+    private void signOut() {
+        myFireBase.getAuth().signOut();
+
+        // Google sign out
+        GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(getActivity(), GoogleSignInOptions.DEFAULT_SIGN_IN);
+        mGoogleSignInClient.signOut();
+
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch( v.getId() ) {
+            case R.id.logoutButton :
                 signOut();
                 Intent intent = new Intent(getContext(), FirstActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 startActivity(intent);
                 getActivity().finish();
-            }
-        });
-
-
-        return view;
+                break;
+            case R.id.btn_test :
+                mUser.login();
+                break;
+            default:
+                break;
+        }
     }
-    private void signOut() {
-        mAuth.signOut();
-
-        // Google sign out
-        GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(getActivity(), GoogleSignInOptions.DEFAULT_SIGN_IN);
-        mGoogleSignInClient.signOut();
-    }
-
-
-
-
 }

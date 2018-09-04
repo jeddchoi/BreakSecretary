@@ -22,4 +22,83 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="logout"/>
+
+    <TextView
+        android:id="@+id/email"
+        android:text="NOTHING"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center" />
+
+    <TextView
+        android:id="@+id/seatNum"
+        android:text="NOTHING"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center" />
+
+    <TextView
+        android:id="@+id/status"
+        android:text="NOTHING"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center" />
+
+    <TextView
+        android:id="@+id/isExtended"
+        android:text="NOTHING"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center" />
+
+    <TextView
+        android:id="@+id/favoriteSeats"
+        android:text="NOTHING"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center" />
+
+    <TextView
+        android:id="@+id/lastLoginTimeStamp"
+        android:text="NOTHING"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center" />
+
+    <TextView
+        android:id="@+id/lastStartSittingTimeStamp"
+        android:text="NOTHING"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center" />
+
+    <TextView
+        android:id="@+id/lastBeingAwayTimeStamp"
+        android:text="NOTHING"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center" />
+
+    <TextView
+        android:id="@+id/lastReservingTimeStamp"
+        android:text="NOTHING"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center" />
+
+    <TextView
+        android:id="@+id/lastBlockedTimeStamp"
+        android:text="NOTHING"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center" />
+
+    <TextView
+        android:id="@+id/lastSetNotifiedTimeStamp"
+        android:text="NOTHING"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center" />
+
+
 </LinearLayout>

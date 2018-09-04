@@ -2,118 +2,98 @@ package com.breaktime.breaksecretary.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TextView;
 
 import com.breaktime.breaksecretary.R;
+import com.breaktime.breaksecretary.Util.FirebaseUtil;
 import com.breaktime.breaksecretary.activity.MainActivity;
-import com.breaktime.breaksecretary.app.BreakSecretary;
-import com.breaktime.breaksecretary.model.TestUser;
+import com.breaktime.breaksecretary.model.User;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 
 
 // In this case, the fragment displays simple text based on the page
 public class MyStatusFragment extends Fragment {
-    public static final String ARG_PAGE = "ARG_PAGE";
-    MainActivity activity;
+    private static final String TAG = "SettingFragment";
+    private View view;
+    private FirebaseUtil myFireBase;
+    private User mUser;
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        activity = (MainActivity) getActivity();
-
-    }
-
-    private int mPage;
-    // TODO : state 정리
-    private static final int EMPTY = 0;
-    private static final int RESERVING = 2;
-    private static final int USING = 1;
-    public static MyStatusFragment newInstance(int page) {
-        Bundle args = new Bundle();
-        args.putInt(ARG_PAGE, page);
-        MyStatusFragment fragment = new MyStatusFragment();
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mPage = getArguments().getInt(ARG_PAGE);
-
-
+        if (getActivity() != null && getActivity() instanceof MainActivity) {
+            myFireBase = ((MainActivity)getActivity()).myFireBase;
+            mUser = ((MainActivity)getActivity()).mUser;
+        }
     }
 
     // Inflate the fragment layout we defined above for this fragment
     // Set the associated text for the title
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // 1) empty 2) 예약  3) 이용중  by User status ---
-        BreakSecretary.Log("MyStatusFrag Called");
-
-        return LoadMatchingView(inflater, container);
-    }
+        view = inflater.inflate(R.layout.fragment_mystatus, container, false);
 
 
-    // onSavedInstance 로부터 activity의 데이터를 저장할 수 있다.
-    private View LoadMatchingView(LayoutInflater inflater, ViewGroup container){
-        int state = TestUser.getStatus();
-        View view;
+        mUser.getLoginRef().child("status").addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-        switch(state){
+            }
 
-            case EMPTY :
-                view = inflater.inflate(R.layout.fragment_mystatus_empty, container, false);
-                break;
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                Integer status = dataSnapshot.getValue(Integer.class);
+                if (status == null)
+                    status = User.STATUS_NOTHING;
+                switch( status ) {
+                    case User.STATUS_NOTHING:
 
-            case RESERVING :
-                view = inflater.inflate(R.layout.fragment_mystatus_reserving, container, false);
-                TextView tvTitle2 = (TextView) view.findViewById(R.id.tvTitle2);
-                tvTitle2.setText("예약중.");
-                Button btn = (Button)view.findViewById(R.id.trigger);
-                btn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        TestUser.setStatus(1);
-                        activity.onMyStatusFragmentChange();
-                    }
-                });
-                break;
+                       break;
 
-            case USING :
-                view = inflater.inflate(R.layout.fragment_mystatus_using, container, false);
-                TextView tvTitle3 = (TextView) view.findViewById(R.id.tvTitle3);
-                tvTitle3.setText("사용중.");
+                    case User.STATUS_SITTING:
+                        break;
 
-                break;
+                    case User.STATUS_BEING_AWAY:
+                        break;
 
-                default:
-                    view = inflater.inflate(R.layout.fragment_mystatus_empty, container, false);
-                    break;
+                    case User.STATUS_RESERVING:
+                        break;
 
-        }
+                    case User.STATUS_PENALTY:
+                        break;
 
+                    case User.STATUS_BLOCKED:
+                        break;
+
+                    default:
+                        Log.d(TAG, "Invalid status");
+                        break;
+                }
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
         return view;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        Log.d("Tee", "EEE");
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        BreakSecretary.Log("awefawef");
-
-
     }
 }

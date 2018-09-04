@@ -1,28 +1,23 @@
 package com.breaktime.breaksecretary.activity;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.AnimationDrawable;
-import android.os.Build;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -33,57 +28,37 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthInvalidUserException;
-import com.google.firebase.auth.FirebaseUser;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class SignUpActivity extends AppCompatActivity {
-    public static Context mContext;
+public class SignUpActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = "SignUpActivity";
 
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
-    private FirebaseUser currentUser;
-
-    // [START declare_auth]
-    private FirebaseAuth mAuth;
-    // [END declare_auth]
+    private FirebaseUtil myFireBase = new FirebaseUtil();
 
     // UI references.
     private AutoCompleteTextView mEmailView;
     private TextInputEditText mPasswordView;
-    private View mProgressView;
-    private View mLoginFormView;
     private AnimationDrawable anim;
-    private Button mEmailSignUpButton;
-    private TextView termOfUseTextView;
-    private ImageView mBackButton;
     private InputMethodManager mIMM;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_signup);
 
-        mContext = this;
 
-        termOfUseTextView = findViewById(R.id.term_of_use_textview);
-        termOfUseTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        findViewById(R.id.email_sign_up_button).setOnClickListener(this);
+        findViewById(R.id.term_of_use_textview).setOnClickListener(this);
+        findViewById(R.id.back_button).setOnClickListener(this);
 
-                new AlertDialog.Builder(SignUpActivity.this)
-                        .setTitle(getString(R.string.main_dialog_simple_title))
-                        .setMessage(Html.fromHtml(getString(R.string.terms_of_use)))
-                        .setPositiveButton(getString(R.string.dialog_ok), null)
-                        .show();
-            }
-        });
 
         // Set up the login form.
         mEmailView = findViewById(R.id.email);
@@ -101,37 +76,41 @@ public class SignUpActivity extends AppCompatActivity {
             }
         });
 
-        mEmailSignUpButton = findViewById(R.id.email_sign_up_button);
-        mEmailSignUpButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                attemptRegister();
-            }
-        });
-        mBackButton = findViewById(R.id.back_button);
-        mBackButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), FirstActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                startActivity(intent);
-                finish();
-            }
-        });
-
-        mLoginFormView = findViewById(R.id.login_form);
-        mProgressView = findViewById(R.id.login_progress);
-
-
         // Animate Background like Instagram App
         LinearLayout container = findViewById(R.id.container);
         anim = (AnimationDrawable) container.getBackground();
         anim.setEnterFadeDuration(2000);
         anim.setExitFadeDuration(4000);
 
-        // [START initialize_auth]
-        mAuth = FirebaseAuth.getInstance();
-        // [END initialize_auth]
+    }
+
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.email_sign_up_button:
+                attemptRegister();
+                break;
+
+            case R.id.back_button :
+                Intent intent = new Intent(getApplicationContext(), FirstActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                startActivity(intent);
+                finish();
+                break;
+
+            case R.id.term_of_use_textview:
+                new AlertDialog.Builder(SignUpActivity.this)
+                        .setTitle(getString(R.string.main_dialog_simple_title))
+                        .setMessage(Html.fromHtml(getString(R.string.terms_of_use)))
+                        .setPositiveButton(getString(R.string.dialog_ok), null)
+                        .show();
+                break;
+
+            default:
+                Log.d(TAG, "invalid button");
+                break;
+        }
     }
 
     /**
@@ -140,7 +119,12 @@ public class SignUpActivity extends AppCompatActivity {
      * errors are presented and no actual login attempt is made.
      */
     private void attemptRegister() {
-        currentUser = null;
+
+        if ( myFireBase.getCurrenUser() != null ) {
+            Log.d(TAG, "Already LOGINED " + myFireBase.getCurrenUser().getEmail());
+            return;
+        }
+
 
         // Reset errors.
         mEmailView.setError(null);
@@ -178,7 +162,7 @@ public class SignUpActivity extends AppCompatActivity {
         } else {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
-            showProgress(true);
+//            showProgress(true);
             createAccount(email, password);
         }
     }
@@ -195,39 +179,9 @@ public class SignUpActivity extends AppCompatActivity {
         return m.matches();
     }
 
-    /**
-     * Shows the progress UI and hides the login form.
-     */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-    private void showProgress(final boolean show) {
-        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
-        // for very easy animations. If available, use these APIs to fade-in
-        // the progress spinner.
-        int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
-
-        mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-        mLoginFormView.animate().setDuration(shortAnimTime).alpha(
-                show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-            }
-        });
-
-        mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-        mProgressView.animate().setDuration(shortAnimTime).alpha(
-                show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            }
-        });
-    }
-
     @Override
     protected void onStart() {
         super.onStart();
-        currentUser = mAuth.getCurrentUser();
     }
 
     @Override
@@ -246,28 +200,19 @@ public class SignUpActivity extends AppCompatActivity {
 
 
     private void createAccount(final String mEmail, final String mPassword) {
-
         Log.d(TAG, "createAccount:" + mEmail);
 
-        showProgress(true);
-
         // [START create_user_with_email]
-        mAuth.createUserWithEmailAndPassword(mEmail, mPassword)
+        myFireBase.getAuth().createUserWithEmailAndPassword(mEmail, mPassword)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "createUserWithEmail:success");
+
                             sendEmailVerification(mEmail);
-                            signIn(mEmail, mPassword);
-
-
-                            FirebaseUtil.RegisterNewOne(mAuth.getUid(), new User(mEmail));
-
-
-
-
+                            signInAfterRegister(mEmail, mPassword);
 
                         } else {
                             // If sign in fails, display a message to the user.
@@ -275,9 +220,6 @@ public class SignUpActivity extends AppCompatActivity {
                             notifyUser("Failed to sign up", mEmail);
                         }
 
-                        // [START_EXCLUDE]
-                        showProgress(false);
-                        // [END_EXCLUDE]
                     }
                 });
         // [END create_user_with_email]
@@ -287,48 +229,39 @@ public class SignUpActivity extends AppCompatActivity {
 
         // Send verification email
         // [START send_email_verification]
-        currentUser = mAuth.getCurrentUser();
-        currentUser.sendEmailVerification()
+
+        myFireBase.getCurrenUser().sendEmailVerification()
             .addOnCompleteListener(this, new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     // [START_EXCLUDE]
-
                 if (task.isSuccessful()) {
                     Log.d(TAG, "createUserWithEmail:success");
                 } else {
                     Log.e(TAG, "sendEmailVerification", task.getException());
-
-//                    Snackbar.make(findViewById(R.id.container), "Failed to send verification email to " + mEmail, Snackbar.LENGTH_INDEFINITE)
-//                            .setAction("RESEND", new View.OnClickListener() {
-//                                @Override
-//                                public void onClick(View v) {
-//                                    sendEmailVerification(mEmail);
-//                                }
-//                            }).show();
                 }
                     // [END_EXCLUDE]
                 }
             });
         // [END send_email_verification]
-
     }
 
-    private void signIn(final String mEmail, final String mPassword) {
-
-        Log.d(TAG, "signIn try with :" + mEmail);
-        showProgress(true);
-
+    private void signInAfterRegister(final String mEmail, final String mPassword) {
         // [START sign_in_with_email]
-        mAuth.signInWithEmailAndPassword(mEmail, mPassword)
+        myFireBase.getAuth().signInWithEmailAndPassword(mEmail, mPassword)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithEmail:success");
-                            Intent intent = new Intent(mContext, MainActivity.class);
+                            User user = new User(myFireBase.getCurrenUser(), myFireBase.getRootRef());
+                            user.addToRegRef();
+
+                            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+                            startActivity(intent);
                             finish();
                         } else {
                             // If sign in fails, display a message to the user.
@@ -350,7 +283,6 @@ public class SignUpActivity extends AppCompatActivity {
                         notifyUser(e.getLocalizedMessage(), mEmail);
                     }
                 }
-                showProgress(false);
             }
         });
         // [END sign_in_with_email]

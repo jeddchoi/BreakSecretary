@@ -1,7 +1,5 @@
 package com.breaktime.breaksecretary.activity;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Context;
@@ -28,7 +26,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
+import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
@@ -39,14 +37,14 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.breaktime.breaksecretary.R;
+import com.breaktime.breaksecretary.Util.FirebaseUtil;
+import com.breaktime.breaksecretary.model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthInvalidUserException;
-import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,9 +56,7 @@ import static android.Manifest.permission.READ_CONTACTS;
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
-
-    public static Context mContext;
+public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor>, View.OnClickListener {
     private static final String TAG = "LoginActivity";
 
     /**
@@ -71,33 +67,20 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
-    private FirebaseUser currentUser;
+    private FirebaseUtil myFireBase = new FirebaseUtil();
 
-    // [START declare_auth]
-    private FirebaseAuth mAuth;
-    // [END declare_auth]
 
     // UI references.
     private AutoCompleteTextView mEmailView;
     private TextInputEditText mPasswordView;
-    private View mProgressView;
-    private View mLoginFormView;
     private AnimationDrawable anim;
-    private Button mEmailSignInButton;
-    private ImageView mBackButton;
     private InputMethodManager mIMM;
-    private TextView mGetHelpButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_login);
-
-
-        mContext = this;
-        // [START initialize_auth]
-        mAuth = FirebaseAuth.getInstance();
-        // [END initialize_auth]
 
 
         // Set up the login form.
@@ -117,34 +100,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             }
         });
 
-        mEmailSignInButton = findViewById(R.id.email_sign_in_button);
-        mEmailSignInButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                attemptLogin();
-            }
-        });
-        mBackButton = findViewById(R.id.back_button);
-        mBackButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(mContext, FirstActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                startActivity(intent);
-                finish();
-            }
-        });
-        mGetHelpButton = findViewById(R.id.having_trouble_loggin_in);
-        mGetHelpButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sendResetPasswordEmail();
-            }
-        });
-
-        mLoginFormView = findViewById(R.id.login_form);
-        mProgressView = findViewById(R.id.login_progress);
-
+        findViewById(R.id.email_sign_in_button).setOnClickListener(this);
+        findViewById(R.id.back_button).setOnClickListener(this);
+        findViewById(R.id.having_trouble_loggin_in).setOnClickListener(this);
 
         // Animate Background like Instagram App
         LinearLayout container = findViewById(R.id.container);
@@ -154,7 +112,29 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     }
 
+    @Override
+    public void onClick(View v) {
+        switch( v.getId() ) {
+            case R.id.email_sign_in_button :
+                attemptLogin();
+                break;
 
+            case R.id.back_button:
+                Intent intent = new Intent(getApplicationContext(), FirstActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                startActivity(intent);
+                finish();
+                break;
+
+            case R.id.having_trouble_loggin_in:
+                sendResetPasswordEmail();
+                break;
+
+            default:
+                Log.d(TAG, "invalid click");
+                break;
+        }
+    }
 
     private void populateAutoComplete() {
         if (!mayRequestContacts()) {
@@ -203,7 +183,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * errors are presented and no actual login attempt is made.
      */
     private void attemptLogin() {
-        if (currentUser != null) {
+        if (myFireBase.getCurrenUser() != null) {
+            Log.d(TAG, "Already login !");
             return;
         }
 
@@ -241,9 +222,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // form field with an error.
             focusView.requestFocus();
         } else {
-            // Show a progress spinner, and kick off a background task to
-            // perform the user login attempt.
-//            showProgress(true);
             signIn(email, password);
         }
     }
@@ -259,34 +237,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         return m.matches();
     }
-//    /**
-//     * Shows the progress UI and hides the login form.
-//     */
-//    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-//    private void showProgress(final boolean show) {
-//        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
-//        // for very easy animations. If available, use these APIs to fade-in
-//        // the progress spinner.
-//        int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
-//
-//        mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-//        mLoginFormView.animate().setDuration(shortAnimTime).alpha(
-//                show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
-//            @Override
-//            public void onAnimationEnd(Animator animation) {
-//                mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-//            }
-//        });
-//
-//        mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-//        mProgressView.animate().setDuration(shortAnimTime).alpha(
-//                show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
-//            @Override
-//            public void onAnimationEnd(Animator animation) {
-//                mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-//            }
-//        });
-//    }
 
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
@@ -359,43 +309,43 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     private void signIn(final String mEmail, final String mPassword) {
         Log.d(TAG, "signIn try with :" + mEmail);
-//        showProgress(true);
 
         // [START sign_in_with_email]
-        mAuth.signInWithEmailAndPassword(mEmail, mPassword)
-            .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                @Override
-                public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()) {
-                    // Sign in success, update UI with the signed-in user's information
-                    Log.d(TAG, "signInWithEmail:success");
-                    Intent intent = new Intent(mContext, MainActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                    startActivity(intent);
-                    finish();
-                } else {
-                    // If sign in fails, display a message to the user.
-                    Log.w(TAG, "signInWithEmail:failure", task.getException());
-                }}
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    if (e instanceof FirebaseAuthInvalidCredentialsException) {
-                        notifyUser("Invalid password", mEmail);
-                    } else if (e instanceof FirebaseAuthInvalidUserException) {
+        myFireBase.getAuth().signInWithEmailAndPassword(mEmail, mPassword)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d(TAG, "signInWithEmail:success");
 
-                        String errorCode = ((FirebaseAuthInvalidUserException) e).getErrorCode();
-                        if (errorCode.equals("ERROR_USER_NOT_FOUND")) {
-                            notifyUser("No matching account found", mEmail);
-                        } else if (errorCode.equals("ERROR_USER_DISABLED")) {
-                            notifyUser("User account has been disabled", mEmail);
+                            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                            startActivity(intent);
+
+                            finish();
                         } else {
-                            notifyUser(e.getLocalizedMessage(), mEmail);
-                        }
+                            // If sign in fails, display a message to the user.
+                            Log.w(TAG, "signInWithEmail:failure", task.getException());
+                        }}
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                if (e instanceof FirebaseAuthInvalidCredentialsException) {
+                    notifyUser("Invalid password", mEmail);
+                } else if (e instanceof FirebaseAuthInvalidUserException) {
+
+                    String errorCode = ((FirebaseAuthInvalidUserException) e).getErrorCode();
+                    if (errorCode.equals("ERROR_USER_NOT_FOUND")) {
+                        notifyUser("No matching account found", mEmail);
+                    } else if (errorCode.equals("ERROR_USER_DISABLED")) {
+                        notifyUser("User account has been disabled", mEmail);
+                    } else {
+                        notifyUser(e.getLocalizedMessage(), mEmail);
                     }
-//                    showProgress(false);
                 }
-            });
+            }
+        });
         // [END sign_in_with_email]
     }
 
@@ -460,8 +410,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                             Log.d(TAG, "requestFocus");
                         } else {
                             Log.d(TAG, "no error");
-                            mAuth.useAppLanguage();
-                            mAuth.sendPasswordResetEmail(emailAddress);
+
+                            myFireBase.getAuth().sendPasswordResetEmail(emailAddress);
                             notifyUser("Sent reset password mail", emailAddress);
                             alertDialog.dismiss();
                         }

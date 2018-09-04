@@ -9,9 +9,12 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 
 import com.breaktime.breaksecretary.R;
+import com.breaktime.breaksecretary.Util.FirebaseUtil;
+import com.breaktime.breaksecretary.model.User;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -32,7 +35,6 @@ import java.io.IOException;
 
 
 public class FirstActivity extends AppCompatActivity {
-    public static Context mContext;
     private String TAG = "FirstActivity";
     private static final int RC_SIGN_IN = 9001;
 
@@ -40,25 +42,23 @@ public class FirstActivity extends AppCompatActivity {
     private Button signupButton;
     private Button loginButton;
     private SignInButton googleSigninButton;
-    private FirebaseAuth mAuth;
+
+    private FirebaseUtil myFireBase = new FirebaseUtil();
 
     private GoogleSignInClient mGoogleSignInClient;
-//    private Button kakaoLoginButton;
-//    private String mCustomToken;
-//    private TokenBroadcastReceiver mTokenReceiver;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_first);
-        mContext = this;
 
-        mAuth = FirebaseAuth.getInstance();
-        if (mAuth.getCurrentUser() != null) {
+
+        if (myFireBase.getCurrenUser() != null) {
             // User is signed in (getCurrentUser() will be null if not signed in)
-            Intent intent = new Intent(mContext, MainActivity.class);
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
             startActivity(intent);
             finish();
         }
@@ -88,7 +88,7 @@ public class FirstActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "sign up button clicked");
-                Intent intent = new Intent(mContext, SignUpActivity.class);
+                Intent intent = new Intent(getApplicationContext(), SignUpActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 startActivity(intent);
             }
@@ -116,7 +116,7 @@ public class FirstActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "log in button clicked");
-                Intent intent = new Intent(mContext, LoginActivity.class);
+                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 startActivity(intent);
             }
@@ -179,15 +179,17 @@ public class FirstActivity extends AppCompatActivity {
         Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
 
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
-        mAuth.signInWithCredential(credential)
+        myFireBase.getAuth().signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            Intent intent = new Intent(mContext, MainActivity.class);
+
+                            User user = new User(myFireBase.getCurrenUser(), myFireBase.getRootRef());
+                            user.addToRegRef();
+                            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                             startActivity(intent);
                             finish();

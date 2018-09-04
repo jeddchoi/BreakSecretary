@@ -21,4 +21,10 @@
     <string name="dialog_cancel">CANCEL</string>
     <string name="reset_password">Send Email To Reset Password</string>
     <string name="empty_state">Empty State...</string>
+
+    <string name="tab_title_main_1">Quick</string>
+    <string name="tab_title_main_2">Reserve</string>
+    <string name="tab_title_main_3">MyHome</string>
+    <string name="tab_title_main_4">Timeline</string>
+    <string name="tab_title_main_5">Setting</string>
 </resources>

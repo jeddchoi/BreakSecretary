@@ -1,10 +1,11 @@
 package com.breaktime.breaksecretary.app;
 
 import android.app.Application;
+import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.google.firebase.FirebaseApp;
+import com.breaktime.breaksecretary.R;
 
 public class BreakSecretary extends Application {
 
@@ -18,7 +19,6 @@ public class BreakSecretary extends Application {
     public void onCreate() {
         super.onCreate();
         instance = this;
-        FirebaseApp.initializeApp(this);
 //        KakaoSDK.init(new KakaoAdapter() {
 //            @Override
 //            public IApplicationConfig getApplicationConfig() {
