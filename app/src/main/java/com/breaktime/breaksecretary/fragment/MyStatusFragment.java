@@ -42,7 +42,7 @@ public class MyStatusFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_mystatus, container, false);
 
 
-        mUser.getLoginRef().child("status").addChildEventListener(new ChildEventListener() {
+        mUser.getUserRef().child("status").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 

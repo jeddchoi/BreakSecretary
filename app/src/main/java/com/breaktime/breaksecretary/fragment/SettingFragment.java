@@ -16,6 +16,7 @@ import com.breaktime.breaksecretary.R;
 import com.breaktime.breaksecretary.Util.FirebaseUtil;
 import com.breaktime.breaksecretary.activity.FirstActivity;
 import com.breaktime.breaksecretary.activity.MainActivity;
+import com.breaktime.breaksecretary.model.MyCallback;
 import com.breaktime.breaksecretary.model.User;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -23,13 +24,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.ValueEventListener;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 
 // In this case, the fragment displays simple text based on the page
@@ -58,11 +54,17 @@ public class SettingFragment extends Fragment implements View.OnClickListener{
         view.findViewById(R.id.btn_test).setOnClickListener(this);
         final TextView tv = view.findViewById(R.id.status);
 
-        Long timeStamp = mUser.getLastLoginTimeStampForSingleEvent();
-        SimpleDateFormat dayTime = new SimpleDateFormat("MM dd,yyyy HH:mm");
-        String todayDate = dayTime.format(timeStamp);
-        tv.setText(todayDate);
-        mUser.getLoginRef().addChildEventListener(new ChildEventListener() {
+        Log.d(TAG, "onCreateView");
+        mUser.getLoginTSForSingleEvent(new MyCallback() {
+            @Override
+            public void onCallback(Long timeStamp) {
+                SimpleDateFormat dayTime = new SimpleDateFormat("MM dd,yyyy HH:mm");
+                String todayDate = dayTime.format(timeStamp);
+                tv.setText(todayDate);
+            }
+        });
+
+        mUser.getUserRef().addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
 
@@ -109,7 +111,7 @@ public class SettingFragment extends Fragment implements View.OnClickListener{
                 getActivity().finish();
                 break;
             case R.id.btn_test :
-                mUser.login();
+                mUser.userLogin();
                 break;
             default:
                 break;

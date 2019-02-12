@@ -1,8 +1,6 @@
 package com.breaktime.breaksecretary.model;
 
 import android.app.Activity;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -16,55 +14,52 @@ import com.google.firebase.database.Exclude;
 import com.google.firebase.database.IgnoreExtraProperties;
 import com.google.firebase.database.ValueEventListener;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.text.SimpleDateFormat;
 
-import static android.os.UserHandle.readFromParcel;
 
 @SuppressWarnings("serial")
 @IgnoreExtraProperties
 public class User {
+    public static final String TAG = "USER CLASS";
+
     /* status constant */
     public static final int STATUS_NOTHING = 0;
     public static final int STATUS_SITTING = 1;
-    public static final int STATUS_BEING_AWAY = 2;
-    public static final int STATUS_RESERVING = 3;
+    public static final int STATUS_RESERVING = 2;
+    public static final int STATUS_BEING_AWAY = 3;
     public static final int STATUS_PENALTY = 4;
     public static final int STATUS_BLOCKED = 5;
-    public static final String TAG = "USER CLASS";
 
     @Exclude
     private FirebaseUser currentUser;
     @Exclude
-    private DatabaseReference mLoginUserRef;
-    @Exclude
-    private DatabaseReference mRegisteredUserRef;
+    private DatabaseReference mUserRef;
 
     // User Information
-    private String email = null;
-    private String seatNum = null;
+    private String emailAddress = null;
     private Integer status = STATUS_NOTHING;
-    private Boolean isExtended = false;
-    private Map<String, Boolean> favoriteSeats = new HashMap<>();
+    private Integer mysectionNum = null;
+    private Integer myseatNum = null;
+
+    //private Boolean isExtended = false;
+    //private Map<String, Boolean> favoriteSeats = new HashMap<>();
 
     // TimeStamp
-    private Long lastLoginTimeStamp = null;
-    private Long lastStartSittingTimeStamp = null;
-    private Long lastBeingAwayTimeStamp = null;
-    private Long lastReservingTimeStamp = null;
-    private Long lastBlockedTimeStamp = null;
-    private Long lastSetNotifiedTimeStamp = null;
+    private Long notifyTS = null;
+    private Long loginTS = null;
+    private Long startTS = null;
+    private Long reserveTS = null;
+    private Long idleTS = null;
+    private Long penaltyTS = null;
+    private Long blockTS = null;
 
 
     public User(FirebaseUser currentUser, DatabaseReference rootRef) {
         this.currentUser = currentUser;
-        email = currentUser.getEmail();
+        emailAddress = currentUser.getEmail();
 
-        mRegisteredUserRef = rootRef.child("registeredUsers").child(currentUser.getUid());
-        mLoginUserRef = rootRef.child("loginUsers").child(currentUser.getUid());
-        lastLoginTimeStamp = System.currentTimeMillis();
+        mUserRef = rootRef.child("Users").child(currentUser.getUid());
+        mUserRef.setValue(this);
     }
 
     // Default Constructor
@@ -76,66 +71,77 @@ public class User {
     // [START]DON'T USE THESE FUNCTIONS. THEY'RE FOR FIREBASE REALTIME DATABASE
     // getters
 
-    public String getEmail() { return email; }
-
-    public String getSeatNum() { return seatNum; }
+    public String getEmailAddress() { return emailAddress; }
 
     public Integer getStatus() { return status; }
 
-    public Boolean getIsExtended() { return isExtended; }
+    public Integer getMysectionNum() { return mysectionNum; }
 
-    public Long getLastLoginTimeStamp() { return lastLoginTimeStamp; }
+    public Integer getMyseatNum() { return myseatNum; }
 
-    public Long getLastStartSittingTimeStamp() { return lastStartSittingTimeStamp; }
+    //public Boolean getIsExtended() { return isExtended; }
 
-    public Long getLastBeingAwayTimeStamp() { return lastBeingAwayTimeStamp; }
+    public Long getNotifyTS() { return notifyTS; }
 
-    public Long getLastReservingTimeStamp() { return lastReservingTimeStamp; }
+    public Long getLoginTS() { return loginTS; }
 
-    public Long getLastBlockedTimeStamp() { return lastBlockedTimeStamp; }
+    public Long getStartTS() { return startTS; }
 
-    public Long getLastSetNotifiedTimeStamp() { return lastSetNotifiedTimeStamp; }
+    public Long getReserveTS() { return reserveTS; }
+
+    public Long getIdleTS() { return idleTS; }
+
+    public Long getPenaltyTS() { return penaltyTS; }
+
+    public Long getBlockTS() { return blockTS; }
 
     // setters
 
-    public void setEmail(String email) { this.email = email; }
-
-    public void setSeatNum(String seatNum) { this.seatNum = seatNum; }
+    public void setEmailAddress(String emailAddress) { this.emailAddress = emailAddress; }
 
     public void setStatus(Integer status) { this.status = status; }
 
-    public void setIsExtended(Boolean isExtended) { this.isExtended = isExtended; }
+    public void setMysectionNum(Integer mysectionNum) { this.mysectionNum = mysectionNum; }
 
-    public void setLastLoginTimeStamp(Long time){
-        this.lastStartSittingTimeStamp = time;
+    public void setMyseatNum(Integer myseatNum) { this.myseatNum = myseatNum; }
+
+    //public void setIsExtended(Boolean isExtended) { this.isExtended = isExtended; }
+
+    public void setNotifyTS(Long time) {
+        this.notifyTS = time;
     }
 
-    public void setLastStartSittingTimeStamp(Long time) {
-        this.lastStartSittingTimeStamp = time;
+    public void setLoginTS(Long time){
+        this.startTS = time;
     }
 
-    public void setLastBeingAwayTimeStamp(Long time) {
-        this.lastBeingAwayTimeStamp = time;
+    public void setStartTS(Long time) {
+        this.startTS = time;
     }
 
-    public void setLastReservingTimeStamp(Long time) {
-        this.lastReservingTimeStamp = time;
+    public void setReserveTS(Long time) {
+        this.reserveTS = time;
     }
 
-    public void setLastBlockedTimeStamp(Long time) {
-        this.lastBlockedTimeStamp = time;
+    public void setIdleTS(Long time) {
+        this.idleTS = time;
     }
 
-    public void setLastSetNotifiedTimeStamp(Long time) {
-        this.lastSetNotifiedTimeStamp = time;
+    public void setPenaltyTS(Long penaltyTS) { this.penaltyTS = penaltyTS; }
+
+    public void setBlockTS(Long time) {
+        this.blockTS = time;
     }
 
+
+
+    /*
     public void setFavoriteSeats(Map<String, Boolean> mymap) {
         this.favoriteSeats = mymap;
     }
+    */
+
     // [END]DON'T USE THESE FUNCTIONS. THEY'RE FOR FIREBASE REALTIME DATABASE
-
-
 
 
 
@@ -143,47 +149,15 @@ public class User {
 
     // USER FUNCTIONS
 
-    @Exclude
-    public void addToRegRef() {
-        mRegisteredUserRef.setValue(this);
-    }
-
-    @Exclude
-    public void addToLogRef() {
-        mLoginUserRef.setValue(this);
-    }
-
 
     @Exclude
     public String getEmailForSingleEvent() {
-        email = currentUser.getEmail();
-
-        if ( email == null )
-            return "No email";
-        return email;
-    }
-
-    @Exclude
-    public String getSeatNumForSingleEvent() {
-        mLoginUserRef.child("seatNum").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                seatNum = dataSnapshot.getValue(String.class);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-        if ( seatNum == null )
-            return "None";
-        return seatNum;
+        return (emailAddress = currentUser.getEmail());
     }
 
     @Exclude
     public Integer getStatusForSingleEvent() {
-        mLoginUserRef.child("status").addListenerForSingleValueEvent(new ValueEventListener() {
+        mUserRef.child("status").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 status = dataSnapshot.getValue(Integer.class);
@@ -195,13 +169,52 @@ public class User {
             }
         });
         if ( status == null )
-            return STATUS_NOTHING;
+            status = STATUS_NOTHING;
         return status;
     }
 
     @Exclude
+    public Integer getSectionNumForSingleEvent() {
+
+        mUserRef.child("mysectionNum").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                mysectionNum = dataSnapshot.getValue(Integer.class);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        return mysectionNum;
+    }
+
+    @Exclude
+    public Integer getSeatNumForSingleEvent() {
+
+        mUserRef.child("myseatNum").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                myseatNum = dataSnapshot.getValue(Integer.class);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        return myseatNum;
+    }
+
+
+
+    /*
+    @Exclude
     public Boolean getIsExtendedForSingleEvent() {
-        mLoginUserRef.child("isExtended").addListenerForSingleValueEvent(new ValueEventListener() {
+        mUserRef.child("isExtended").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 isExtended = dataSnapshot.getValue(Boolean.class);
@@ -216,134 +229,103 @@ public class User {
             return false;
         return isExtended;
     }
-
+*/
     @Exclude
-    public Long getLastLoginTimeStampForSingleEvent() {
-        mLoginUserRef.child("lastLoginTimeStamp").addListenerForSingleValueEvent(new ValueEventListener() {
+    public void getLoginTSForSingleEvent(final MyCallback myCallback) {
+        mUserRef.child("loginTS").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                lastLoginTimeStamp = dataSnapshot.getValue(Long.class);
+                Long value = dataSnapshot.getValue(Long.class);
+                myCallback.onCallback(value);
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
+            public void onCancelled(@NonNull DatabaseError databaseError) {}
         });
-        if ( lastLoginTimeStamp == null )
-            return 0L;
-        return lastLoginTimeStamp;
     }
 
     @Exclude
-    public Long getLastStartSittingTimeStampForSingleEvent() {
-        mLoginUserRef.child("lastStartSittingTimeStamp").addListenerForSingleValueEvent(new ValueEventListener() {
+    public void getStartTSForSingleEvent(final MyCallback myCallback) {
+        mUserRef.child("startTS").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                lastStartSittingTimeStamp = dataSnapshot.getValue(Long.class);
+                Long value = dataSnapshot.getValue(Long.class);
+                myCallback.onCallback(value);
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
+            public void onCancelled(@NonNull DatabaseError databaseError) {}
         });
-        if ( lastStartSittingTimeStamp == null )
-            return 0L;
-        return lastStartSittingTimeStamp;
     }
 
     @Exclude
-    public Long getLastBeingAwayTimeStampForSingleEvent() {
-        mLoginUserRef.child("lastBeingAwayTimeStamp").addListenerForSingleValueEvent(new ValueEventListener() {
+    public void getIdleTSForSingleEvent(final MyCallback myCallback) {
+        mUserRef.child("idleTS").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                lastBeingAwayTimeStamp = dataSnapshot.getValue(Long.class);
+                Long value = dataSnapshot.getValue(Long.class);
+                myCallback.onCallback(value);
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
+            public void onCancelled(@NonNull DatabaseError databaseError) {}
         });
-        if ( lastBeingAwayTimeStamp == null )
-            return 0L;
-        return lastBeingAwayTimeStamp;
     }
 
     @Exclude
-    public Long getLastReservingTimeStampForSingleEvent() {
-        mLoginUserRef.child("lastReservingTimeStamp").addListenerForSingleValueEvent(new ValueEventListener() {
+    public void getReserveTSForSingleEvent(final MyCallback myCallback) {
+        mUserRef.child("reserveTS").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                lastReservingTimeStamp = dataSnapshot.getValue(Long.class);
+                Long value = dataSnapshot.getValue(Long.class);
+                myCallback.onCallback(value);
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
+            public void onCancelled(@NonNull DatabaseError databaseError) {}
         });
-        if ( lastReservingTimeStamp == null )
-            return 0L;
-        return lastReservingTimeStamp;
     }
 
     @Exclude
-    public Long getLastBlockedTimeStampForSingleEvent() {
-        mLoginUserRef.child("lastBlockedTimeStamp").addListenerForSingleValueEvent(new ValueEventListener() {
+    public void getPenaltyTSForSingleEvent(final MyCallback myCallback) {
+        mUserRef.child("penaltyTS").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                lastBlockedTimeStamp = dataSnapshot.getValue(Long.class);
+                Long value = dataSnapshot.getValue(Long.class);
+                myCallback.onCallback(value);
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
+            public void onCancelled(@NonNull DatabaseError databaseError) {}
         });
-        if ( lastBlockedTimeStamp == null )
-            return 0L;
-        return lastBlockedTimeStamp;
     }
 
     @Exclude
-    public Long getLastSetNotifiedTimeStampForSingleEvent() {
-        mLoginUserRef.child("lastSetNotifiedTimeStamp").addListenerForSingleValueEvent(new ValueEventListener() {
+    public void getBlockTSForSingleEvent(final MyCallback myCallback) {
+        mUserRef.child("blockTS").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                lastSetNotifiedTimeStamp = dataSnapshot.getValue(Long.class);
+                Long value = dataSnapshot.getValue(Long.class);
+                myCallback.onCallback(value);
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
+            public void onCancelled(@NonNull DatabaseError databaseError) {}
         });
-        if ( lastSetNotifiedTimeStamp == null )
-            return 0L;
-        return lastSetNotifiedTimeStamp;
     }
 
     @Exclude
-    public Boolean isNotified() {
-        mLoginUserRef.child("lastSetNotifiedTimeStamp").addListenerForSingleValueEvent(new ValueEventListener() {
+    public void getNotifyTSForSingleEvent(final MyCallback myCallback) {
+        mUserRef.child("notifyTS").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                lastSetNotifiedTimeStamp = dataSnapshot.getValue(Long.class);
+                Long value = dataSnapshot.getValue(Long.class);
+                myCallback.onCallback(value);
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
+            public void onCancelled(@NonNull DatabaseError databaseError) {}
         });
-
-        // 1시간 이내 일 경우
-        if ( lastSetNotifiedTimeStamp != null && (System.currentTimeMillis() - lastSetNotifiedTimeStamp)/60000 <= 60 )
-            return true;
-        else
-            return false;
     }
 
 
@@ -351,73 +333,89 @@ public class User {
     @Exclude
     public void setEmailForSingleEvent(String email) {
         currentUser.updateEmail(email);
-        this.email = email;
-        mLoginUserRef.child("email").setValue(email);
+        mUserRef.child("emailAddress").setValue(email);
     }
 
     @Exclude
-    public void setSeatNumForSingleEvent(String seatNum) {
-        mLoginUserRef.child("seatNum").setValue(seatNum);
+    public void setSectionNumForSingleEvent(Integer sectionNum) {
+        mUserRef.child("mysectionNum").setValue(sectionNum);
+    }
+
+    @Exclude
+    public void setSeatNumForSingleEvent(Integer seatNum) {
+        mUserRef.child("myseatNum").setValue(seatNum);
     }
 
     @Exclude
     public void setStatusForSingleEvent(Integer status) {
-        mLoginUserRef.child("status").setValue(status);
+        mUserRef.child("status").setValue(status);
     }
 
+    /*
     @Exclude
     public void setIsExtendedForSingleEvent(Boolean isExtended) {
-        mLoginUserRef.child("isExtended").setValue(isExtended);
+        mUserRef.child("isExtended").setValue(isExtended);
+    }
+*/
+
+    @Exclude
+    public void userLogin() {
+        mUserRef.child("loginTS").setValue(System.currentTimeMillis());
     }
 
     @Exclude
-    public void login() {
-        mLoginUserRef.child("lastLoginTimeStamp").setValue(System.currentTimeMillis());
-    }
-
-    @Exclude
-    public void startSitting(Boolean decision) {
+    public void userStart(Boolean decision) {
         if (decision) {
-            mLoginUserRef.child("lastStartSittingTimeStamp").setValue(System.currentTimeMillis());
+            mUserRef.child("startTS").setValue(System.currentTimeMillis());
             setStatusForSingleEvent(STATUS_SITTING);
         } else
-            mLoginUserRef.child("lastStartSittingTimeStamp").setValue(null);
+            mUserRef.child("startTS").setValue(null);
     }
 
     @Exclude
-    public void beAway(Boolean decision) {
+    public void userIdle(Boolean decision) {
         if (decision) {
-            mLoginUserRef.child("lastBeingAwayTimeStamp").setValue(System.currentTimeMillis());
+            mUserRef.child("idleTS").setValue(System.currentTimeMillis());
             setStatusForSingleEvent(STATUS_BEING_AWAY);
         } else
-            mLoginUserRef.child("lastBeingAwayTimeStamp").setValue(null);
+            mUserRef.child("idleTS").setValue(null);
     }
 
     @Exclude
-    public void reserve(Boolean decision) {
+    public void userReserve(Boolean decision) {
         if (decision) {
-            mLoginUserRef.child("lastReservingTimeStamp").setValue(System.currentTimeMillis());
+            mUserRef.child("reserveTS").setValue(System.currentTimeMillis());
             setStatusForSingleEvent(STATUS_RESERVING);
         } else
-            mLoginUserRef.child("lastReservingTimeStamp").setValue(null);
+            mUserRef.child("reserveTS").setValue(null);
     }
 
     @Exclude
-    public void blocked(Boolean decision) {
+    public void userPenalty(Boolean decision) {
         if (decision) {
-            mLoginUserRef.child("lastBlockedTimeStamp").setValue(System.currentTimeMillis());
+            mUserRef.child("penaltyTS").setValue(System.currentTimeMillis());
+            setStatusForSingleEvent(STATUS_PENALTY);
+        } else
+            mUserRef.child("penaltyTS").setValue(null);
+    }
+
+
+    @Exclude
+    public void userBlock(Boolean decision) {
+        if (decision) {
+            mUserRef.child("blockTS").setValue(System.currentTimeMillis());
             setStatusForSingleEvent(STATUS_BLOCKED);
         } else
-            mLoginUserRef.child("lastBlockedTimeStamp").setValue(null);
+            mUserRef.child("blockTS").setValue(null);
     }
 
 
     @Exclude
-    public void setNotified(Boolean decision) {
+    public void userNotify(Boolean decision) {
         if ( decision )
-            mLoginUserRef.child("lastSetNotifiedTimeStamp").setValue(System.currentTimeMillis());
+            mUserRef.child("notifyTS").setValue(System.currentTimeMillis());
         else
-            mLoginUserRef.child("lastSetNotifiedTimeStamp").setValue(null);
+            mUserRef.child("notifyTS").setValue(null);
     }
 
 
@@ -428,13 +426,8 @@ public class User {
     }
 
     @Exclude
-    public DatabaseReference getLoginRef() {
-        return mLoginUserRef;
-    }
-
-    @Exclude
-    public DatabaseReference getRegistedRef() {
-        return mRegisteredUserRef;
+    public DatabaseReference getUserRef() {
+        return mUserRef;
     }
 
     @Exclude
@@ -448,19 +441,19 @@ public class User {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
-                    Log.d(TAG, "sendEmailVerification : succeed to " + email);
+                    Log.d(TAG, "sendEmailVerification : succeed to " + emailAddress);
                 } else {
-                    Log.e(TAG, "sendEmailVerification : failed to " + email, task.getException());
+                    Log.e(TAG, "sendEmailVerification : failed to " + emailAddress, task.getException());
                 }
             }
         });
     }
 
 
-
+/*
     @Exclude
     public Map<String, Boolean> getFavoriteSeatsForSingleEvent() {
-        mLoginUserRef.child("favoriteSeats").addListenerForSingleValueEvent(new ValueEventListener() {
+        mUserRef.child("favoriteSeats").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 favoriteSeats = dataSnapshot.getValue(Map.class);
@@ -474,44 +467,41 @@ public class User {
         return favoriteSeats;
     }
 
-
     @Exclude
     public ArrayList<String> getFavoritesSeats() {
         return new ArrayList<String>(getFavoriteSeatsForSingleEvent().keySet());
     }
 
+
     @Exclude
     public void setFavoritesSeat(String seatNum, Boolean decision) {
-//        favoriteSeats.put(seatNum, decision);
+//        favoriteSeats.put(myseatNum, decision);
 
         Map<String, Object> childUpdates = new HashMap<>();
         childUpdates.put(seatNum, decision);
-        mLoginUserRef.child("favoriteSeats").updateChildren(childUpdates);
+        mUserRef.child("favoriteSeats").updateChildren(childUpdates);
     }
-
-
-
 
     @Exclude
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
-        result.put("email", email);
-        result.put("seatNum", seatNum);
+        result.put("emailAddress", emailAddress);
+        result.put("myseatNum", myseatNum);
         result.put("status", status);
 
         result.put("isExtended", isExtended);
 //        result.put("isVerified", isVerified);
         result.put("favoriteSeats", favoriteSeats);
-        result.put("lastLoginTimeStamp", lastLoginTimeStamp);
-        result.put("lastStartSittingTimeStamp", lastStartSittingTimeStamp);
-        result.put("lastBeingAwayTimeStamp", lastBeingAwayTimeStamp);
-        result.put("lastReservingTimeStamp", lastReservingTimeStamp);
-        result.put("lastBlockedTimeStamp", lastBlockedTimeStamp);
-        result.put("lastSetNotifiedTimeStamp", lastSetNotifiedTimeStamp);
+        result.put("loginTS", loginTS);
+        result.put("startTS", startTS);
+        result.put("idleTS", idleTS);
+        result.put("reserveTS", reserveTS);
+        result.put("blockTS", blockTS);
+        result.put("notifyTS", notifyTS);
 
         return result;
     }
-
+*/
 
 
 

@@ -1,6 +1,5 @@
 package com.breaktime.breaksecretary.activity;
 
-import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -10,7 +9,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.Button;
 
 import com.breaktime.breaksecretary.R;
 import com.breaktime.breaksecretary.Util.FirebaseUtil;
@@ -25,8 +23,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.yqritc.scalablevideoview.ScalableType;
 import com.yqritc.scalablevideoview.ScalableVideoView;
@@ -39,12 +35,7 @@ public class FirstActivity extends AppCompatActivity {
     private static final int RC_SIGN_IN = 9001;
 
     private ScalableVideoView mVideoView;
-    private Button signupButton;
-    private Button loginButton;
-    private SignInButton googleSigninButton;
-
     private FirebaseUtil myFireBase = new FirebaseUtil();
-
     private GoogleSignInClient mGoogleSignInClient;
 
     @Override
@@ -54,7 +45,7 @@ public class FirstActivity extends AppCompatActivity {
         setContentView(R.layout.activity_first);
 
 
-        if (myFireBase.getCurrenUser() != null) {
+        if (myFireBase.getAuth().getCurrentUser() != null) {
             // User is signed in (getCurrentUser() will be null if not signed in)
             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -64,7 +55,7 @@ public class FirstActivity extends AppCompatActivity {
         }
 
         Log.d(TAG, "FirstActivity onCreate");
-        mVideoView = (ScalableVideoView) findViewById(R.id.video_view);
+        mVideoView = findViewById(R.id.video_view);
         try {
             mVideoView.setRawData(R.raw.bg_video);
             mVideoView.setVolume(0, 0);
@@ -83,17 +74,6 @@ public class FirstActivity extends AppCompatActivity {
             Log.e(TAG, "mVideoView Error");
         }
 
-        signupButton = findViewById(R.id.signupButton);
-        signupButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d(TAG, "sign up button clicked");
-                Intent intent = new Intent(getApplicationContext(), SignUpActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                startActivity(intent);
-            }
-        });
-
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -102,7 +82,7 @@ public class FirstActivity extends AppCompatActivity {
                 .build();
         // Build a GoogleSignInClient with the options specified by gso.
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-        googleSigninButton = findViewById(R.id.googleSigninButton);
+        SignInButton googleSigninButton = findViewById(R.id.googleSigninButton);
         googleSigninButton.setSize(SignInButton.SIZE_WIDE);
         googleSigninButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -110,43 +90,6 @@ public class FirstActivity extends AppCompatActivity {
                 signIn();
             }
         });
-
-        loginButton = (Button) findViewById(R.id.loginButton);
-        loginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d(TAG, "log in button clicked");
-                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                startActivity(intent);
-            }
-        });
-
-
-
-
-
-        /* Kakao Login */
-
-//        kakaoLoginButton = findViewById(R.id.kakaoLoginButton);
-//        kakaoLoginButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Log.d(TAG, "kakao login button clicked");
-//                Intent intent = new Intent(mContext, KakaoLoginActivity.class);
-//                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-//                startActivity(intent);
-//            }
-//        });
-//
-//        // Create token receiver (for demo purposes only)
-//        mTokenReceiver = new TokenBroadcastReceiver() {
-//            @Override
-//            public void onNewToken(String token) {
-//                Log.d(TAG, "onNewToken:" + token);
-//                setCustomToken(token);
-//            }
-//        };
     }
 
 
@@ -164,6 +107,7 @@ public class FirstActivity extends AppCompatActivity {
             try {
                 // Google Sign In was successful, authenticate with Firebase
                 GoogleSignInAccount account = task.getResult(ApiException.class);
+                assert account != null;
                 Log.d(TAG, "firebaseAuthWithGoogle: onActivityResult" + account.getId());
                 firebaseAuthWithGoogle(account);
             } catch (ApiException e) {
@@ -187,8 +131,6 @@ public class FirstActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
 
-                            User user = new User(myFireBase.getCurrenUser(), myFireBase.getRootRef());
-                            user.addToRegRef();
                             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                             startActivity(intent);
@@ -210,66 +152,5 @@ public class FirstActivity extends AppCompatActivity {
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
     // [END signin]
-
-
-
-
-
-
-
-
-/* Kakao Login */
-
-//    @Override
-//    protected void onResume() {
-//        super.onResume();
-//        registerReceiver(mTokenReceiver, TokenBroadcastReceiver.getFilter());
-//    }
-//
-//
-//    @Override
-//    protected void onPause() {
-//        super.onPause();
-//        unregisterReceiver(mTokenReceiver);
-//    }
-//
-//    private void startSignIn() {
-//        // Initiate sign in with custom token
-//        // [START sign_in_custom]
-//        mAuth.signInWithCustomToken(mCustomToken)
-//                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<AuthResult> task) {
-//                        if (task.isSuccessful()) {
-//                            // Sign in success, update UI with the signed-in user's information
-//                            Log.d(TAG, "signInWithCustomToken:success");
-//                            FirebaseUser user = mAuth.getCurrentUser();
-//
-//                        } else {
-//                            // If sign in fails, display a message to the user.
-//                            Log.w(TAG, "signInWithCustomToken:failure", task.getException());
-//                            Toast.makeText(FirstActivity.this, "Authentication failed.",
-//                                    Toast.LENGTH_SHORT).show();
-//
-//                        }
-//                    }
-//                });
-//        // [END sign_in_custom]
-//    }
-
-//    private void setCustomToken(String token) {
-//        mCustomToken = token;
-//
-//        String status;
-//        if (mCustomToken != null) {
-//            status = "Token:" + mCustomToken;
-//        } else {
-//            status = "Token: null";
-//        }
-//
-//        // Enable/disable sign-in button and show the token
-//        findViewById(R.id.button_sign_in).setEnabled((mCustomToken != null));
-//        ((TextView) findViewById(R.id.text_token_status)).setText(status);
-//    }
 
 }

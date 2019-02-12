@@ -177,7 +177,7 @@
 //    }
 //
 //    /**
-//     * Session callback class for Kakao Login. OnSessionOpened() is called after successful login.
+//     * Session callback class for Kakao Login. OnSessionOpened() is called after successful userLogin.
 //     */
 //    private class KakaoSessionCallback implements ISessionCallback {
 //        @Override

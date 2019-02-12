@@ -24,14 +24,14 @@
         android:text="logout"/>
 
     <TextView
-        android:id="@+id/email"
+        android:id="@+id/emailAddress"
         android:text="NOTHING"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center" />
 
     <TextView
-        android:id="@+id/seatNum"
+        android:id="@+id/myseatNum"
         android:text="NOTHING"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

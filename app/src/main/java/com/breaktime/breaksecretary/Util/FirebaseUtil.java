@@ -42,21 +42,6 @@ public class FirebaseUtil {
         return mAuth;
     }
 
-    public DatabaseReference getLoginUsersRootRef(){
-        return mRootRef.child("loginUsers");
-    }
-
-    public DatabaseReference getRegisteredUsersRootRef(){
-        return mRootRef.child("registeredUsers");
-    }
-
-    public FirebaseUser getCurrenUser(){
-        return mAuth.getCurrentUser();
-    }
-
-    public void registerNewUser(String Uid, User user){
-        getRegisteredUsersRootRef().child(Uid).setValue(user);
-    }
 
 
 }
