@@ -21,6 +21,10 @@
     <string name="dialog_cancel">CANCEL</string>
     <string name="reset_password">Send Email To Reset Password</string>
     <string name="empty_state">Empty State...</string>
+    <string name="empty_time">No time...</string>
+    <string name="empty_section">No section...</string>
+    <string name="empty_seat">No seat...</string>
+    <string name="empty_notification">No notification...</string>
 
     <string name="tab_title_main_1">Quick</string>
     <string name="tab_title_main_2">Reserve</string>

@@ -3,102 +3,133 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/container"
-    >
-    <TextView
-        android:id="@+id/tvTitle"
-        android:text="Fragment #X"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center" />
-    <Button
-        android:id="@+id/btn_test"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Show Toast"/>
+    android:id="@+id/container">
+
 
     <Button
-        android:id="@+id/logoutButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="logout"/>
-
-    <TextView
-        android:id="@+id/emailAddress"
-        android:text="NOTHING"
+        android:id="@+id/logout_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center" />
+        android:text="Log out" />
 
-    <TextView
-        android:id="@+id/myseatNum"
-        android:text="NOTHING"
+    <Button
+        android:id="@+id/verify_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center" />
+        android:text="Send Email Verification" />
 
-    <TextView
-        android:id="@+id/status"
-        android:text="NOTHING"
+    <Button
+        android:id="@+id/delete_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center" />
+        android:text="Delete Account" />
 
-    <TextView
-        android:id="@+id/isExtended"
-        android:text="NOTHING"
+    <Button
+        android:id="@+id/donate_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center" />
+        android:text="Buy Me a Coffee" />
 
-    <TextView
-        android:id="@+id/favoriteSeats"
-        android:text="NOTHING"
+    <Button
+        android:id="@+id/report_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center" />
+        android:text="Contact to a Admin" />
 
-    <TextView
-        android:id="@+id/lastLoginTimeStamp"
-        android:text="NOTHING"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center" />
+        android:orientation="horizontal">
 
-    <TextView
-        android:id="@+id/lastStartSittingTimeStamp"
-        android:text="NOTHING"
+        <EditText
+            android:id="@+id/section_et"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Section Number"
+            android:layout_weight="0.5"/>
+
+        <EditText
+            android:id="@+id/seat_et"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Seat Number"
+            android:layout_weight="0.5"/>
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center" />
+        android:orientation="horizontal">
 
-    <TextView
-        android:id="@+id/lastBeingAwayTimeStamp"
-        android:text="NOTHING"
+        <Button
+            android:id="@+id/reserve_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Reserve"
+            android:layout_weight="0.5"/>
+
+        <Button
+            android:id="@+id/fast_reserve_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Fast Reserve"
+            android:layout_weight="0.5"/>
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center" />
+        android:orientation="horizontal">
 
-    <TextView
-        android:id="@+id/lastReservingTimeStamp"
-        android:text="NOTHING"
+        <Button
+            android:id="@+id/start_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Start"
+            android:layout_weight="0.5"/>
+
+
+        <Button
+            android:id="@+id/stop_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Stop"
+            android:layout_weight="0.5"/>
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center" />
+        android:orientation="horizontal">
 
-    <TextView
-        android:id="@+id/lastBlockedTimeStamp"
-        android:text="NOTHING"
+        <Button
+            android:id="@+id/idle_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Being Away"
+            android:layout_weight="0.5"/>
+
+
+        <Button
+            android:id="@+id/return_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Return to Seat"
+            android:layout_weight="0.5"/>
+    </LinearLayout>
+
+
+
+    <Button
+        android:id="@+id/penalty_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center" />
+        android:text="Get Penalty" />
 
-    <TextView
-        android:id="@+id/lastSetNotifiedTimeStamp"
-        android:text="NOTHING"
+    <Button
+        android:id="@+id/block_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center" />
-
+        android:text="Blocked" />
 
 </LinearLayout>

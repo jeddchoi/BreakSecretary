@@ -1,5 +1,5 @@
 package com.breaktime.breaksecretary.model;
 
-public interface MyCallback {
-    void onCallback(Long value);
+public interface MyCallback<T> {
+    void onCallback(T value);
 }
