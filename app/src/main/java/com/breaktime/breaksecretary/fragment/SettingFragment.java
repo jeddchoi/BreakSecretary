@@ -91,54 +91,54 @@ public class SettingFragment extends Fragment implements View.OnClickListener{
 
                 break;
             case R.id.delete_btn :
-                Toast.makeText(getActivity(), "DELETE ACOOUNT BUTTON", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "Delete Account", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.donate_btn :
-                Toast.makeText(getActivity(), "DONATE BUTTON", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "Donate", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.report_btn :
-                Toast.makeText(getActivity(), "REPORT BUTTON", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "Report", Toast.LENGTH_SHORT).show();
                 break;
 
             case R.id.reserve_btn :
                 Toast.makeText(getActivity(), "Reserve", Toast.LENGTH_SHORT).show();
-                mUser.userReserve(Integer.parseInt(section_et.getText().toString()), Integer.parseInt(seat_et.getText().toString()));
+                mUser.user_reserve(Integer.parseInt(section_et.getText().toString()), Integer.parseInt(seat_et.getText().toString()));
                 break;
 
             case R.id.fast_reserve_btn :
                 Toast.makeText(getActivity(), "Fast Reservation", Toast.LENGTH_SHORT).show();
-                // get available seat and userReserve
+                // get available seat and user_reserve
 
                 break;
 
             case R.id.start_btn :
                 Toast.makeText(getActivity(), "Start", Toast.LENGTH_SHORT).show();
-                mUser.userStart();
+                mUser.user_occupy();
                 break;
 
             case R.id.stop_btn :
                 Toast.makeText(getActivity(), "Stop", Toast.LENGTH_SHORT).show();
-                mUser.userStop();
+                mUser.user_stop();
                 break;
 
             case R.id.idle_btn :
                 Toast.makeText(getActivity(), "Being Away", Toast.LENGTH_SHORT).show();
-                mUser.userIdle();
+                mUser.user_step_out();
                 break;
 
             case R.id.return_btn :
                 Toast.makeText(getActivity(), "Return to Seat", Toast.LENGTH_SHORT).show();
-                mUser.userReturnToSeat();
+                mUser.user_return_to_seat();
                 break;
 
             case R.id.penalty_btn :
                 Toast.makeText(getActivity(), "Get Penalty", Toast.LENGTH_SHORT).show();
-                mUser.userPenalty();
+                mUser.user_get_penalty();
                 break;
 
             case R.id.block_btn :
                 Toast.makeText(getActivity(), "Get Blocked", Toast.LENGTH_SHORT).show();
-                mUser.userBlock();
+                mUser.user_get_block();
                 break;
 
             default:

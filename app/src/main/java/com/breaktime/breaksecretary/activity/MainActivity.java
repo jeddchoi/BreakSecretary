@@ -32,6 +32,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public User mUser;
 
     private TabLayout mTabLayout;
+    private List<Fragment> fragments;
+    private FragmentAdapter mFragmentAdapter;
 
     private int[] tabIcons = {
             R.drawable.ic_flash_on_white_24dp,
@@ -50,8 +52,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Log.d(TAG, "onCreate MainActivity");
 
 
-        mUser = new User(myFireBase.getAuth().getCurrentUser(), myFireBase.getRootRef());
-        mUser.userLogin();
+        mUser = new User(myFireBase);
 
         Window window = getWindow();
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
@@ -70,6 +71,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         initViewPager();
+
+
     }
 
     public void succeedToLogin() {
@@ -93,7 +96,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mTabLayout.addTab(mTabLayout.newTab().setText(titles.get(3)));
         mTabLayout.addTab(mTabLayout.newTab().setText(titles.get(4)));
 
-        List<Fragment> fragments = new ArrayList<>();
+        fragments = new ArrayList<>();
         fragments.add(new QuickReserveFragment());
         fragments.add(new ReserveAndCheckFragment());
         fragments.add(new MyStatusFragment());
@@ -103,10 +106,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mViewPager.setOffscreenPageLimit(4);
 
 
-        FragmentAdapter mFragmentAdapter = new FragmentAdapter(getSupportFragmentManager(), fragments, titles);
+        mFragmentAdapter = new FragmentAdapter(getSupportFragmentManager(), fragments, titles);
         mViewPager.setAdapter(mFragmentAdapter);
         mTabLayout.setupWithViewPager(mViewPager);
         setupTabIcons();
+
+
 
     }
 

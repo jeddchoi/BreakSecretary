@@ -73,7 +73,7 @@
 
 
                 <AutoCompleteTextView
-                    android:id="@+id/emailAddress"
+                    android:id="@+id/email_address"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
                     android:background="@drawable/edittext_box_bg"

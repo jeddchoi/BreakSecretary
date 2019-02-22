@@ -54,7 +54,7 @@
 //import static android.Manifest.permission.READ_CONTACTS;
 //
 ///**
-// * A userLogin screen that offers userLogin via email/password.
+// * A user_login screen that offers user_login via email/password.
 // */
 //public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor>, View.OnClickListener {
 //    private static final String TAG = "LoginActivity";
@@ -65,7 +65,7 @@
 //    private static final int REQUEST_READ_CONTACTS = 0;
 //
 //    /**
-//     * Keep track of the userLogin task to ensure we can cancel it if requested.
+//     * Keep track of the user_login task to ensure we can cancel it if requested.
 //     */
 //    private FirebaseUtil myFireBase = new FirebaseUtil();
 //
@@ -83,7 +83,7 @@
 //        setContentView(R.layout.activity_login);
 //
 //
-//        // Set up the userLogin form.
+//        // Set up the user_login form.
 //        mEmailView = findViewById(R.id.email);
 //        populateAutoComplete();
 //        mPasswordView = findViewById(R.id.password);
@@ -178,13 +178,13 @@
 //
 //
 //    /**
-//     * Attempts to sign in or register the account specified by the userLogin form.
+//     * Attempts to sign in or register the account specified by the user_login form.
 //     * If there are form errors (invalid email, missing fields, etc.), the
-//     * errors are presented and no actual userLogin attempt is made.
+//     * errors are presented and no actual user_login attempt is made.
 //     */
 //    private void attemptLogin() {
 //        if (myFireBase.getCurrenUser() != null) {
-//            Log.d(TAG, "Already userLogin !");
+//            Log.d(TAG, "Already user_login !");
 //            return;
 //        }
 //
@@ -192,7 +192,7 @@
 //        mEmailView.setError(null);
 //        mPasswordView.setError(null);
 //
-//        // Store values at the time of the userLogin attempt.
+//        // Store values at the time of the user_login attempt.
 //        String email = mEmailView.getText().toString();
 //        String password = mPasswordView.getText().toString();
 //
@@ -218,7 +218,7 @@
 //        }
 //
 //        if (cancel) {
-//            // There was an error; don't attempt userLogin and focus the first
+//            // There was an error; don't attempt user_login and focus the first
 //            // form field with an error.
 //            focusView.requestFocus();
 //        } else {
@@ -404,7 +404,7 @@
 //                        }
 //
 //                        if (cancel) {
-//                            // There was an error; don't attempt userLogin and focus the first
+//                            // There was an error; don't attempt user_login and focus the first
 //                            // form field with an error.
 //                            mResetEmail.requestFocus();
 //                            Log.d(TAG, "requestFocus");

@@ -62,7 +62,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="What's your emailAddress?"
+                android:text="What's your email_address?"
                 style="?android:textAppearanceMedium"
                 android:textColor="@android:color/white" />
 
@@ -75,7 +75,7 @@
 
 
                 <AutoCompleteTextView
-                    android:id="@+id/emailAddress"
+                    android:id="@+id/email_address"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
                     android:background="@drawable/edittext_box_bg"

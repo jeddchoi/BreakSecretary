@@ -44,7 +44,7 @@ public class FirstActivity extends AppCompatActivity {
         setContentView(R.layout.activity_first);
 
 
-        if (myFireBase.getAuth().getCurrentUser() != null) {
+        if (myFireBase.getCurrentUser() != null) {
             // User is signed in (getCurrentUser() will be null if not signed in)
             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
