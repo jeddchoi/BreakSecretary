@@ -1,12 +1,9 @@
 package com.breaktime.breaksecretary.model;
 
-import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseUser;
+import com.breaktime.breaksecretary.Util.FirebaseUtil;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -18,45 +15,44 @@ import com.google.firebase.database.ValueEventListener;
 @SuppressWarnings("serial")
 @IgnoreExtraProperties
 public class User {
-    public static final String TAG = "USER CLASS";
+    private static final String TAG = User.class.getName();
 
     /* status constant */
-    public static final int STATUS_NOTHING = 0;
-    public static final int STATUS_SITTING = 1;
-    public static final int STATUS_RESERVING = 2;
-    public static final int STATUS_BEING_AWAY = 3;
-    public static final int STATUS_PENALTY = 4;
-    public static final int STATUS_BLOCKED = 5;
+    public enum Status_user {
+        ONLINE, SUBSCRIBING, RESERVING, OCCUPYING, STEPPING_OUT, PAYING_PENALTY, BEING_BLOCKED
+    }
 
     @Exclude
-    private FirebaseUser currentUser;
+    private FirebaseUtil mFirebaseUtil;
     @Exclude
     private DatabaseReference mUserRef;
 
     // User Information
-    private String emailAddress = null;
-    private Integer status = STATUS_NOTHING;
-    private Integer mysectionNum = null;
-    private Integer myseatNum = null;
-
-    //private Boolean isExtended = false;
-    //private Map<String, Boolean> favoriteSeats = new HashMap<>();
+    private Status_user status;
+    private Integer num_section = null;
+    private Integer num_seat = null;
 
     // TimeStamp
-    private Long notifyTS = null;
-    private Long loginTS = null;
-    private Long startTS = null;
-    private Long reserveTS = null;
-    private Long idleTS = null;
-    private Long penaltyTS = null;
-    private Long blockTS = null;
+    private Long ts_login = null;
+    private Long ts_subscribe = null;
+    private Long ts_occupy = null;
+    private Long ts_reserve = null;
+    private Long ts_step_out = null;
+    private Long ts_get_penalty = null;
+    private Long ts_get_block = null;
 
 
-    public User(FirebaseUser currentUser, DatabaseReference rootRef) {
-        this.currentUser = currentUser;
-        emailAddress = currentUser.getEmail();
+    public User(FirebaseUtil mFirebaseUtil) {
+        this.mFirebaseUtil = mFirebaseUtil;
 
-        mUserRef = rootRef.child("Users").child(currentUser.getUid());
+
+        if (mFirebaseUtil.getCurrentUser() == null) {
+            Log.d(TAG, "getCurrentUser() is null");
+        }
+
+        mUserRef = mFirebaseUtil.getUsersRef().child(mFirebaseUtil.getCurrentUser().getUid());
+        mUserRef.child("email_address").setValue(mFirebaseUtil.getCurrentUser().getEmail());
+        user_login();
     }
 
     // Default Constructor
@@ -68,75 +64,76 @@ public class User {
     // [START]DON'T USE THESE FUNCTIONS. THEY'RE FOR FIREBASE REALTIME DATABASE
     // getters
 
-    public String getEmailAddress() { return emailAddress; }
 
-    public Integer getStatus() { return status; }
 
-    public Integer getMysectionNum() { return mysectionNum; }
+    public String getStatus() {
+        if (status == null) {
+            return null;
+        } else {
+            return status.name();
+        }
+    }
 
-    public Integer getMyseatNum() { return myseatNum; }
+    public Integer getNum_section() { return num_section; }
 
-    //public Boolean getIsExtended() { return isExtended; }
+    public Integer getNum_seat() { return num_seat; }
 
-    public Long getNotifyTS() { return notifyTS; }
+    public Long getTs_subscribe() { return ts_subscribe; }
 
-    public Long getLoginTS() { return loginTS; }
+    public Long getTs_login() { return ts_login; }
 
-    public Long getStartTS() { return startTS; }
+    public Long getTs_occupy() { return ts_occupy; }
 
-    public Long getReserveTS() { return reserveTS; }
+    public Long getTs_reserve() { return ts_reserve; }
 
-    public Long getIdleTS() { return idleTS; }
+    public Long getTs_step_out() { return ts_step_out; }
 
-    public Long getPenaltyTS() { return penaltyTS; }
+    public Long getTs_get_penalty() { return ts_get_penalty; }
 
-    public Long getBlockTS() { return blockTS; }
+    public Long getTs_get_block() { return ts_get_block; }
 
     // setters
 
-    public void setEmailAddress(String emailAddress) { this.emailAddress = emailAddress; }
-
-    public void setStatus(Integer status) { this.status = status; }
-
-    public void setMysectionNum(Integer mysectionNum) { this.mysectionNum = mysectionNum; }
-
-    public void setMyseatNum(Integer myseatNum) { this.myseatNum = myseatNum; }
-
-    //public void setIsExtended(Boolean isExtended) { this.isExtended = isExtended; }
-
-    public void setNotifyTS(Long time) {
-        this.notifyTS = time;
+    public void setStatus(String statusString) {
+        if (statusString == null){
+            status = null;
+        } else {
+            this.status = Status_user.valueOf(statusString);
+        }
     }
 
-    public void setLoginTS(Long time){
-        this.startTS = time;
+    public void setNum_section(Integer num_section) { this.num_section = num_section; }
+
+    public void setNum_seat(Integer num_seat) { this.num_seat = num_seat; }
+
+
+    public void setTs_subscribe(Long time) {
+        this.ts_subscribe = time;
     }
 
-    public void setStartTS(Long time) {
-        this.startTS = time;
+    public void setTs_login(Long time){
+        this.ts_occupy = time;
     }
 
-    public void setReserveTS(Long time) {
-        this.reserveTS = time;
+    public void setTs_occupy(Long time) {
+        this.ts_occupy = time;
     }
 
-    public void setIdleTS(Long time) {
-        this.idleTS = time;
+    public void setTs_reserve(Long time) {
+        this.ts_reserve = time;
     }
 
-    public void setPenaltyTS(Long penaltyTS) { this.penaltyTS = penaltyTS; }
+    public void setTs_step_out(Long time) {
+        this.ts_step_out = time;
+    }
 
-    public void setBlockTS(Long time) {
-        this.blockTS = time;
+    public void setTs_get_penalty(Long ts_get_penalty) { this.ts_get_penalty = ts_get_penalty; }
+
+    public void setTs_get_block(Long time) {
+        this.ts_get_block = time;
     }
 
 
-
-    /*
-    public void setFavoriteSeats(Map<String, Boolean> mymap) {
-        this.favoriteSeats = mymap;
-    }
-    */
 
     // [END]DON'T USE THESE FUNCTIONS. THEY'RE FOR FIREBASE REALTIME DATABASE
 
@@ -145,20 +142,23 @@ public class User {
 
 
     // USER FUNCTIONS
-
-
     @Exclude
     public String getEmailForSingleEvent() {
-        return (emailAddress = currentUser.getEmail());
+        if (mFirebaseUtil.getCurrentUser() == null) {
+            Log.e(TAG, "getCurrentUser() is null");
+            return "NO EMAIL";
+        }
+        return mFirebaseUtil.getCurrentUser().getEmail();
     }
 
 
+
     @Exclude
-    public void getStatusForSingleEvent(final MyCallback<Integer> myCallback) {
+    public void getStatusForSingleEvent(final MyCallback<Status_user> myCallback) {
         mUserRef.child("status").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Integer value = dataSnapshot.getValue(Integer.class);
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Status_user value = Status_user.valueOf(dataSnapshot.getValue(String.class));
                 myCallback.onCallback(value);
             }
 
@@ -168,344 +168,264 @@ public class User {
     }
 
     @Exclude
-    public void getSectionNumForSingleEvent(final MyCallback<Integer> myCallback) {
-        mUserRef.child("mysectionNum").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Integer value = dataSnapshot.getValue(Integer.class);
-                myCallback.onCallback(value);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {}
-        });
-    }
-
-    @Exclude
-    public void getSeatNumForSingleEvent(final MyCallback<Integer> myCallback) {
-        mUserRef.child("myseatNum").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Integer value = dataSnapshot.getValue(Integer.class);
-                myCallback.onCallback(value);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {}
-        });
-    }
-
-
-    @Exclude
-    public void getLoginTSForSingleEvent(final MyCallback<Long> myCallback) {
-        mUserRef.child("loginTS").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Long value = dataSnapshot.getValue(Long.class);
-                myCallback.onCallback(value);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {}
-        });
-    }
-
-    @Exclude
-    public void getStartTSForSingleEvent(final MyCallback<Long> myCallback) {
-        mUserRef.child("startTS").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Long value = dataSnapshot.getValue(Long.class);
-                myCallback.onCallback(value);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {}
-        });
-    }
-
-    @Exclude
-    public void getIdleTSForSingleEvent(final MyCallback<Long> myCallback) {
-        mUserRef.child("idleTS").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Long value = dataSnapshot.getValue(Long.class);
-                myCallback.onCallback(value);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {}
-        });
-    }
-
-    @Exclude
-    public void getReserveTSForSingleEvent(final MyCallback<Long> myCallback) {
-        mUserRef.child("reserveTS").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Long value = dataSnapshot.getValue(Long.class);
-                myCallback.onCallback(value);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {}
-        });
-    }
-
-    @Exclude
-    public void getPenaltyTSForSingleEvent(final MyCallback<Long> myCallback) {
-        mUserRef.child("penaltyTS").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Long value = dataSnapshot.getValue(Long.class);
-                myCallback.onCallback(value);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {}
-        });
-    }
-
-    @Exclude
-    public void getBlockTSForSingleEvent(final MyCallback<Long> myCallback) {
-        mUserRef.child("blockTS").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Long value = dataSnapshot.getValue(Long.class);
-                myCallback.onCallback(value);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {}
-        });
-    }
-
-    @Exclude
-    public void getNotifyTSForSingleEvent(final MyCallback<Long> myCallback) {
-        mUserRef.child("notifyTS").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Long value = dataSnapshot.getValue(Long.class);
-                myCallback.onCallback(value);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {}
-        });
-    }
-
-
-
-    @Exclude
-    public void setEmailForSingleEvent(String email) {
-        currentUser.updateEmail(email);
-        mUserRef.child("emailAddress").setValue(email);
-    }
-
-    @Exclude
-    public void setSectionNumForSingleEvent(Integer sectionNum) {
-        mUserRef.child("mysectionNum").setValue(sectionNum);
-    }
-
-    @Exclude
-    public void setSeatNumForSingleEvent(Integer seatNum) {
-        mUserRef.child("myseatNum").setValue(seatNum);
-    }
-
-    @Exclude
-    public void setStatusForSingleEvent(Integer status) {
-        mUserRef.child("status").setValue(status);
-    }
-
-    @Exclude
-    public void userLogin() {
-        mUserRef.child("loginTS").setValue(System.currentTimeMillis());
-    }
-
-    @Exclude
-    public void userStart() {
-        mUserRef.child("reserveTS").setValue(null);
-        mUserRef.child("startTS").setValue(System.currentTimeMillis());
-        setStatusForSingleEvent(STATUS_SITTING);
-    }
-
-    @Exclude
-    public void userStop() {
-        getStatusForSingleEvent(new MyCallback<Integer>() {
-            @Override
-            public void onCallback(Integer value) {
-                status = value;
-            }
-        });
-
-        switch (status) {
-            case STATUS_NOTHING :
-
-                break;
-
-            case STATUS_SITTING :
-                mUserRef.child("startTS").setValue(null);
-                setSectionNumForSingleEvent(null);
-                setSeatNumForSingleEvent(null);
-                break;
-
-            case STATUS_RESERVING :
-                mUserRef.child("reserveTS").setValue(null);
-                setSectionNumForSingleEvent(null);
-                setSeatNumForSingleEvent(null);
-                break;
-
-            case STATUS_BEING_AWAY :
-                mUserRef.child("startTS").setValue(null);
-                mUserRef.child("idleTS").setValue(null);
-                setSectionNumForSingleEvent(null);
-                setSeatNumForSingleEvent(null);
-                break;
-
-            case STATUS_PENALTY :
-                break;
-            case STATUS_BLOCKED :
-                break;
-
-            default:
-                break;
-        }
-
-        setStatusForSingleEvent(STATUS_NOTHING);
-    }
-
-    @Exclude
-    public void userIdle() {
-        mUserRef.child("idleTS").setValue(System.currentTimeMillis());
-        setStatusForSingleEvent(STATUS_BEING_AWAY);
-    }
-
-    @Exclude
-    public void userReturnToSeat() {
-        mUserRef.child("idleTS").setValue(null);
-        setStatusForSingleEvent(STATUS_SITTING);
-    }
-
-    @Exclude
-    public void userReserve(Integer sectionNum, Integer seatNum) {
-        mUserRef.child("reserveTS").setValue(System.currentTimeMillis());
-        setSectionNumForSingleEvent(sectionNum);
-        setSeatNumForSingleEvent(seatNum);
-
-        setStatusForSingleEvent(STATUS_RESERVING);
-    }
-
-    @Exclude
-    public void userPenalty() {
-
-        mUserRef.child("penaltyTS").setValue(System.currentTimeMillis());
-        setStatusForSingleEvent(STATUS_PENALTY);
-
-    }
-
-
-    @Exclude
-    public void userBlock() {
-        mUserRef.child("blockTS").setValue(System.currentTimeMillis());
-        setStatusForSingleEvent(STATUS_BLOCKED);
-    }
-
-
-    @Exclude
-    public void userNotify(Boolean decision) {
-        if ( decision )
-            mUserRef.child("notifyTS").setValue(System.currentTimeMillis());
-        else
-            mUserRef.child("notifyTS").setValue(null);
-    }
-
-
-
-    @Exclude
-    public FirebaseUser getCurrentUser() {
-        return currentUser;
-    }
-
-    @Exclude
-    public DatabaseReference getUserRef() {
-        return mUserRef;
-    }
-
-    @Exclude
-    public Boolean isVerified() {
-        return currentUser.isEmailVerified();
-    }
-
-    @Exclude
-    public void setVerified(Activity mContext) {
-        currentUser.sendEmailVerification().addOnCompleteListener(mContext, new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (task.isSuccessful()) {
-                    Log.d(TAG, "sendEmailVerification : succeed to " + emailAddress);
-
-                } else {
-                    Log.e(TAG, "sendEmailVerification : failed to " + emailAddress, task.getException());
-                }
-            }
-        });
-    }
-
-
-/*
-    @Exclude
-    public Map<String, Boolean> getFavoriteSeatsForSingleEvent() {
-        mUserRef.child("favoriteSeats").addListenerForSingleValueEvent(new ValueEventListener() {
+    public void getNum_sectionForSingleEvent(final MyCallback<Integer> myCallback) {
+        mUserRef.child("num_section").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                favoriteSeats = dataSnapshot.getValue(Map.class);
+                Integer value = dataSnapshot.getValue(Integer.class);
+                myCallback.onCallback(value);
+
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
+            public void onCancelled(@NonNull DatabaseError databaseError) {}
         });
-        return favoriteSeats;
     }
 
     @Exclude
-    public ArrayList<String> getFavoritesSeats() {
-        return new ArrayList<String>(getFavoriteSeatsForSingleEvent().keySet());
+    public void getNum_seatForSingleEvent(final MyCallback<Integer> myCallback) {
+        mUserRef.child("num_seat").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Integer value = dataSnapshot.getValue(Integer.class);
+                myCallback.onCallback(value);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {}
+        });
     }
 
 
     @Exclude
-    public void setFavoritesSeat(String seatNum, Boolean decision) {
-//        favoriteSeats.put(myseatNum, decision);
+    public void getTs_loginForSingleEvent(final MyCallback<Long> myCallback) {
+        mUserRef.child("ts_login").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Long value = dataSnapshot.getValue(Long.class);
+                myCallback.onCallback(value);
+            }
 
-        Map<String, Object> childUpdates = new HashMap<>();
-        childUpdates.put(seatNum, decision);
-        mUserRef.child("favoriteSeats").updateChildren(childUpdates);
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {}
+        });
     }
 
     @Exclude
-    public Map<String, Object> toMap() {
-        HashMap<String, Object> result = new HashMap<>();
-        result.put("emailAddress", emailAddress);
-        result.put("myseatNum", myseatNum);
-        result.put("status", status);
+    public void getTs_subscribeTSForSingleEvent(final MyCallback<Long> myCallback) {
+        mUserRef.child("ts_subscribe").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Long value = dataSnapshot.getValue(Long.class);
+                myCallback.onCallback(value);
+            }
 
-        result.put("isExtended", isExtended);
-//        result.put("isVerified", isVerified);
-        result.put("favoriteSeats", favoriteSeats);
-        result.put("loginTS", loginTS);
-        result.put("startTS", startTS);
-        result.put("idleTS", idleTS);
-        result.put("reserveTS", reserveTS);
-        result.put("blockTS", blockTS);
-        result.put("notifyTS", notifyTS);
-
-        return result;
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {}
+        });
     }
-*/
+
+    @Exclude
+    public void getTs_reserveForSingleEvent(final MyCallback<Long> myCallback) {
+        mUserRef.child("ts_reserve").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Long value = dataSnapshot.getValue(Long.class);
+                myCallback.onCallback(value);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {}
+        });
+    }
+
+    @Exclude
+    public void getTs_occupyForSingleEvent(final MyCallback<Long> myCallback) {
+        mUserRef.child("ts_occupy").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Long value = dataSnapshot.getValue(Long.class);
+                myCallback.onCallback(value);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {}
+        });
+    }
+
+    @Exclude
+    public void getTs_step_outForSingleEvent(final MyCallback<Long> myCallback) {
+        mUserRef.child("ts_step_out").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Long value = dataSnapshot.getValue(Long.class);
+                myCallback.onCallback(value);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {}
+        });
+    }
 
 
+    @Exclude
+    public void getTs_get_penaltyForSingleEvent(final MyCallback<Long> myCallback) {
+        mUserRef.child("ts_get_penalty").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Long value = dataSnapshot.getValue(Long.class);
+                myCallback.onCallback(value);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {}
+        });
+    }
+
+    @Exclude
+    public void getTs_get_blockForSingleEvent(final MyCallback<Long> myCallback) {
+        mUserRef.child("ts_get_block").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Long value = dataSnapshot.getValue(Long.class);
+                myCallback.onCallback(value);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {}
+        });
+    }
+
+
+
+
+    // TODO : verify 하는 것 구현하기
+
+    @Exclude
+    public void setEmail_addressForSingleEvent(String email) {
+        mFirebaseUtil.getCurrentUser().updateEmail(email);
+    }
+
+    @Exclude
+    public void setStatusForSingleEvent(Status_user status) {
+        mUserRef.child("status").setValue(status.name());
+    }
+
+    @Exclude
+    public void setNum_sectionForSingleEvent(Integer sectionNum) {
+        mUserRef.child("num_section").setValue(sectionNum);
+    }
+
+    @Exclude
+    public void setNum_seatForSingleEvent(Integer seatNum) {
+        mUserRef.child("num_seat").setValue(seatNum);
+    }
+
+
+
+
+
+    @Exclude
+    public void user_login() {
+        Log.d(TAG, "user login");
+        mUserRef.child("ts_login").setValue(System.currentTimeMillis());
+        setStatusForSingleEvent(Status_user.ONLINE);
+    }
+
+
+    // logout means that He/She will not use this service for a while.
+    @Exclude
+    public void user_logout() {
+        Log.d(TAG, "user logout -> delete UserReference");
+        mUserRef.removeValue();
+    }
+
+    @Exclude
+    public void user_subscribe() {
+        mUserRef.child("ts_subscribe").setValue(System.currentTimeMillis());
+        setStatusForSingleEvent(Status_user.SUBSCRIBING);
+
+    }
+
+    @Exclude
+    public void user_unsubscribe() {
+        mUserRef.child("ts_subscribe").removeValue();
+        setStatusForSingleEvent(Status_user.ONLINE);
+    }
+
+    @Exclude
+    public void user_reserve(Integer num_section, Integer num_seat) {
+        setNum_sectionForSingleEvent(num_section);
+        setNum_seatForSingleEvent(num_seat);
+        mUserRef.child("ts_reserve").setValue(System.currentTimeMillis());
+
+        setStatusForSingleEvent(Status_user.RESERVING);
+    }
+
+    @Exclude
+    public void user_cancel_reservation(Integer num_section, Integer num_seat) {
+        setNum_sectionForSingleEvent(null);
+        setNum_seatForSingleEvent(null);
+        mUserRef.child("ts_reserve").removeValue();
+
+        setStatusForSingleEvent(Status_user.ONLINE);
+    }
+
+    @Exclude
+    public void user_occupy() {
+        Log.d(TAG, "user occupy");
+        mUserRef.child("ts_occupy").setValue(System.currentTimeMillis());
+        mUserRef.child("ts_reserve").removeValue();
+        setStatusForSingleEvent(Status_user.OCCUPYING);
+    }
+
+    // stop means that He/She wants to stop using that seat.
+    @Exclude
+    public void user_stop() {
+        Log.d(TAG, "user stop");
+        mUserRef.child("ts_occupy").removeValue();
+        mUserRef.child("num_section").removeValue();
+        mUserRef.child("num_seat").removeValue();
+        setStatusForSingleEvent(Status_user.ONLINE);
+    }
+
+    @Exclude
+    public void user_step_out() {
+        mUserRef.child("ts_step_out").setValue(System.currentTimeMillis());
+        setStatusForSingleEvent(Status_user.STEPPING_OUT);
+    }
+
+    @Exclude
+    public void user_return_to_seat() {
+        mUserRef.child("ts_step_out").removeValue();
+        setStatusForSingleEvent(Status_user.OCCUPYING);
+    }
+
+    @Exclude
+    public void user_get_penalty() {
+        mUserRef.child("ts_reserve").removeValue();
+        mUserRef.child("ts_get_penalty").setValue(System.currentTimeMillis());
+        setStatusForSingleEvent(Status_user.PAYING_PENALTY);
+    }
+
+    @Exclude
+    public void user_end_penalty() {
+        mUserRef.child("ts_reserve").removeValue();
+        mUserRef.child("ts_get_penalty").setValue(System.currentTimeMillis());
+        setStatusForSingleEvent(Status_user.ONLINE);
+    }
+
+    @Exclude
+    public void user_get_block() {
+        mUserRef.child("ts_get_block").setValue(System.currentTimeMillis());
+        setStatusForSingleEvent(Status_user.BEING_BLOCKED);
+    }
+
+    @Exclude
+    public void user_free() {
+        mUserRef.child("ts_get_block").removeValue();
+        setStatusForSingleEvent(Status_user.ONLINE);
+    }
 
 
 
