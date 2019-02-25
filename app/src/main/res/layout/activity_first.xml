@@ -52,7 +52,7 @@
 
 
     <com.google.android.gms.common.SignInButton
-        android:id="@+id/googleSigninButton"
+        android:id="@+id/btn_google_sign_in"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"

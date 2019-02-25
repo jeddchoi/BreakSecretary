@@ -40,7 +40,7 @@
 //    /**
 //     * Keep track of the user_login task to ensure we can cancel it if requested.
 //     */
-//    private FirebaseUtil myFireBase = new FirebaseUtil();
+//    private FirebaseUtil mFirebaseUtil = new FirebaseUtil();
 //
 //    // UI references.
 //    private AutoCompleteTextView mEmailView;
@@ -120,8 +120,8 @@
 //     */
 //    private void attemptRegister() {
 //
-//        if ( myFireBase.getCurrenUser() != null ) {
-//            Log.d(TAG, "Already LOGINED " + myFireBase.getCurrenUser().getEmail());
+//        if ( mFirebaseUtil.getCurrenUser() != null ) {
+//            Log.d(TAG, "Already LOGINED " + mFirebaseUtil.getCurrenUser().getEmail());
 //            return;
 //        }
 //
@@ -203,7 +203,7 @@
 //        Log.d(TAG, "createAccount:" + mEmail);
 //
 //        // [START create_user_with_email]
-//        myFireBase.getAuth().createUserWithEmailAndPassword(mEmail, mPassword)
+//        mFirebaseUtil.getAuth().createUserWithEmailAndPassword(mEmail, mPassword)
 //                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
 //                    @Override
 //                    public void onComplete(@NonNull Task<AuthResult> task) {
@@ -230,7 +230,7 @@
 //        // Send verification email
 //        // [START send_email_verification]
 //
-//        myFireBase.getCurrenUser().sendEmailVerification()
+//        mFirebaseUtil.getCurrenUser().sendEmailVerification()
 //            .addOnCompleteListener(this, new OnCompleteListener<Void>() {
 //                @Override
 //                public void onComplete(@NonNull Task<Void> task) {
@@ -248,14 +248,14 @@
 //
 //    private void signInAfterRegister(final String mEmail, final String mPassword) {
 //        // [START sign_in_with_email]
-//        myFireBase.getAuth().signInWithEmailAndPassword(mEmail, mPassword)
+//        mFirebaseUtil.getAuth().signInWithEmailAndPassword(mEmail, mPassword)
 //                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
 //                    @Override
 //                    public void onComplete(@NonNull Task<AuthResult> task) {
 //                        if (task.isSuccessful()) {
 //                            // Sign in success, update UI with the signed-in user's information
 //                            Log.d(TAG, "signInWithEmail:success");
-//                            User user = new User(myFireBase.getCurrenUser(), myFireBase.getRootRef());
+//                            User user = new User(mFirebaseUtil.getCurrenUser(), mFirebaseUtil.getRootRef());
 //                            user.addToRegRef();
 //
 //                            Intent intent = new Intent(getApplicationContext(), MainActivity.class);

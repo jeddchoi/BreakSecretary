@@ -1,12 +1,12 @@
 package com.breaktime.breaksecretary.activity;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -27,13 +27,13 @@ import java.util.List;
 import java.util.Objects;
 
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-    public FirebaseUtil myFireBase = new FirebaseUtil();
+public class MainActivity extends BaseActivity implements View.OnClickListener {
+    private static final String TAG = MainActivity.class.getName();
+
+    public FirebaseUtil mFirebaseUtil;
     public User mUser;
 
     private TabLayout mTabLayout;
-    private List<Fragment> fragments;
-    private FragmentAdapter mFragmentAdapter;
 
     private int[] tabIcons = {
             R.drawable.ic_flash_on_white_24dp,
@@ -43,40 +43,84 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             R.drawable.ic_settings_white_24dp
     };
 
-    private static boolean isShowPageStart = true;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate()");
         super.onCreate(savedInstanceState);
-        String TAG = "MainActivity";
-        Log.d(TAG, "onCreate MainActivity");
 
+        setContentView(R.layout.activity_main);
 
-        mUser = new User(myFireBase);
 
         Window window = getWindow();
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark, null));
-        setContentView(R.layout.activity_main);
-
-
-        SharedPreferences sharedPreferences = getSharedPreferences("app", MODE_PRIVATE);
-
-        if (isShowPageStart) {
-            if (sharedPreferences.getBoolean("isFirst", true)) {
-                succeedToLogin();
-            }
-            isShowPageStart = false;
-        }
 
         initViewPager();
-
-
+        mFirebaseUtil = new FirebaseUtil();
+        mUser = new User(mFirebaseUtil);
     }
 
+    @Override
+    protected void onDestroy() {
+        Log.d(TAG, "onDestroy()");
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        Log.d(TAG, "onSaveInstanceState()");
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        Log.d(TAG, "onRestoreInstanceState()");
+        super.onRestoreInstanceState(savedInstanceState);
+    }
+
+
+    @Override
+    protected void onStart() {
+        Log.d(TAG, "onStart()");
+        super.onStart();
+
+
+
+        if (mFirebaseUtil.getCurrentUser() == null || !mFirebaseUtil.getCurrentUser().isEmailVerified()) {
+            startActivity(new Intent(MainActivity.this, FirstActivity.class));
+            finish();
+        } else
+            succeedToLogin();
+    }
+
+    @Override
+    protected void onStop() {
+        Log.d(TAG, "onStop()");
+        super.onStop();
+    }
+
+    @Override
+    protected void onResume() {
+        Log.d(TAG, "onResume()");
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        Log.d(TAG, "onPause()");
+        super.onPause();
+    }
+
+    @Override
+    public void onBackPressed() {
+        Log.d(TAG, "onBackPressed()");
+        super.onBackPressed();
+    }
+
+
     public void succeedToLogin() {
-        Snackbar.make(findViewById(R.id.container), "Sign in with " + mUser.getEmailForSingleEvent(), Snackbar.LENGTH_SHORT).show();
+        show_snackbar_msg("Successfully signed in : " + mUser.getEmailForSingleEvent(), true);
     }
 
 
@@ -96,7 +140,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mTabLayout.addTab(mTabLayout.newTab().setText(titles.get(3)));
         mTabLayout.addTab(mTabLayout.newTab().setText(titles.get(4)));
 
-        fragments = new ArrayList<>();
+        List<Fragment> fragments = new ArrayList<>();
         fragments.add(new QuickReserveFragment());
         fragments.add(new ReserveAndCheckFragment());
         fragments.add(new MyStatusFragment());
@@ -106,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mViewPager.setOffscreenPageLimit(4);
 
 
-        mFragmentAdapter = new FragmentAdapter(getSupportFragmentManager(), fragments, titles);
+        FragmentAdapter mFragmentAdapter = new FragmentAdapter(getSupportFragmentManager(), fragments, titles);
         mViewPager.setAdapter(mFragmentAdapter);
         mTabLayout.setupWithViewPager(mViewPager);
         setupTabIcons();
@@ -128,8 +172,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
+
+
 }

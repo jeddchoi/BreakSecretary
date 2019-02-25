@@ -67,7 +67,7 @@
 //    /**
 //     * Keep track of the user_login task to ensure we can cancel it if requested.
 //     */
-//    private FirebaseUtil myFireBase = new FirebaseUtil();
+//    private FirebaseUtil mFirebaseUtil = new FirebaseUtil();
 //
 //
 //    // UI references.
@@ -183,7 +183,7 @@
 //     * errors are presented and no actual user_login attempt is made.
 //     */
 //    private void attemptLogin() {
-//        if (myFireBase.getCurrenUser() != null) {
+//        if (mFirebaseUtil.getCurrenUser() != null) {
 //            Log.d(TAG, "Already user_login !");
 //            return;
 //        }
@@ -311,7 +311,7 @@
 //        Log.d(TAG, "signIn try with :" + mEmail);
 //
 //        // [START sign_in_with_email]
-//        myFireBase.getAuth().signInWithEmailAndPassword(mEmail, mPassword)
+//        mFirebaseUtil.getAuth().signInWithEmailAndPassword(mEmail, mPassword)
 //                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
 //                    @Override
 //                    public void onComplete(@NonNull Task<AuthResult> task) {
@@ -411,7 +411,7 @@
 //                        } else {
 //                            Log.d(TAG, "no error");
 //
-//                            myFireBase.getAuth().sendPasswordResetEmail(emailAddress);
+//                            mFirebaseUtil.getAuth().sendPasswordResetEmail(emailAddress);
 //                            notifyUser("Sent reset password mail", emailAddress);
 //                            alertDialog.dismiss();
 //                        }

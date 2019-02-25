@@ -4,8 +4,6 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -29,45 +27,39 @@ import com.yqritc.scalablevideoview.ScalableVideoView;
 import java.io.IOException;
 
 
-public class FirstActivity extends AppCompatActivity {
-    private String TAG = "FirstActivity";
+public class FirstActivity extends BaseActivity implements View.OnClickListener{
+    private static final String TAG = FirstActivity.class.getName();
     private static final int RC_SIGN_IN = 9001;
 
     private ScalableVideoView mVideoView;
-    private FirebaseUtil myFireBase = new FirebaseUtil();
+    private FirebaseUtil mFirebaseUtil;
     private GoogleSignInClient mGoogleSignInClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate()");
         super.onCreate(savedInstanceState);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         setContentView(R.layout.activity_first);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
 
-        if (myFireBase.getCurrentUser() != null) {
-            // User is signed in (getCurrentUser() will be null if not signed in)
-            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-
-            startActivity(intent);
-            finish();
-        }
-
-        Log.d(TAG, "FirstActivity onCreate");
         mVideoView = findViewById(R.id.video_view);
+        SignInButton btn_google_sign_in = findViewById(R.id.btn_google_sign_in);
+
         try {
-            mVideoView.setRawData(R.raw.bg_video);
+            mVideoView.setRawData(R.raw.bg_video_first);
             mVideoView.setVolume(0, 0);
             mVideoView.setScalableType(ScalableType.CENTER_BOTTOM_CROP);
             mVideoView.setLooping(true);
             mVideoView.prepareAsync(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
-                    mVideoView.start();
                     Log.d(TAG, "mVideoView playing");
+                    mVideoView.start();
+
                 }
             });
-
         } catch (IOException ioe) {
             //handle error
             Log.e(TAG, "mVideoView Error");
@@ -79,18 +71,70 @@ public class FirstActivity extends AppCompatActivity {
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
+
         // Build a GoogleSignInClient with the options specified by gso.
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-        SignInButton googleSigninButton = findViewById(R.id.googleSigninButton);
-        googleSigninButton.setSize(SignInButton.SIZE_WIDE);
-        googleSigninButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                signIn();
-            }
-        });
+        btn_google_sign_in.setSize(SignInButton.SIZE_WIDE);
+
+
+        btn_google_sign_in.setOnClickListener(this);
     }
 
+    @Override
+    protected void onDestroy() {
+        Log.d(TAG, "onDestroy()");
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        Log.d(TAG, "onSaveInstanceState()");
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        Log.d(TAG, "onRestoreInstanceState()");
+        super.onRestoreInstanceState(savedInstanceState);
+    }
+
+
+    @Override
+    protected void onStart() {
+        Log.d(TAG, "onStart()");
+        super.onStart();
+
+        mFirebaseUtil = new FirebaseUtil();
+        if (mFirebaseUtil.getCurrentUser() != null) {
+            // User is signed in (getCurrentUser() will be null if not signed in)
+            startActivity(new Intent(FirstActivity.this, MainActivity.class));
+            finish();
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        Log.d(TAG, "onStop()");
+        super.onStop();
+    }
+
+    @Override
+    protected void onResume() {
+        Log.d(TAG, "onResume()");
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        Log.d(TAG, "onPause()");
+        super.onPause();
+    }
+
+    @Override
+    public void onBackPressed() {
+        Log.d(TAG, "onBackPressed()");
+        super.onBackPressed();
+    }
 
 
     // [START onactivityresult]
@@ -122,22 +166,20 @@ public class FirstActivity extends AppCompatActivity {
         Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
 
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
-        myFireBase.getAuth().signInWithCredential(credential)
+        mFirebaseUtil.getAuth().signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
-
-                            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                            startActivity(intent);
+                            hide_progress_dialog();
+                            startActivity(new Intent(FirstActivity.this, MainActivity.class));
                             finish();
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
-                            Snackbar.make(findViewById(R.id.container), "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
+                            show_snackbar_msg("Authentication Failed.", false);
                         }
 
                     }
@@ -147,9 +189,23 @@ public class FirstActivity extends AppCompatActivity {
 
     // [START signin]
     private void signIn() {
+        show_progress_dialog();
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
     // [END signin]
 
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btn_google_sign_in:
+                signIn();
+                break;
+
+            default:
+                break;
+
+        }
+    }
 }

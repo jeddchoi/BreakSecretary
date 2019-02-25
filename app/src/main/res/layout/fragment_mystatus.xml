@@ -2,94 +2,137 @@
 <!-- This is the fragment  to be displayed for a section associated with a tab -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:padding="10dp">
 
 
         <Switch
-            android:id="@+id/notify_switch"
+            android:id="@+id/sw_subscribe"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Notify me if there is a vacant seat from 2 hours" />
+            android:text="Subscribe for vacant" />
 
-        <TextView
-            android:id="@+id/notify_ts"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|center_horizontal"
-            android:text="notify_ts : 0" />
+            android:orientation="vertical"
+            android:layout_margin="30dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|center_horizontal"
+                android:layout_marginBottom="10dp"
+                android:text="Timestamps for User Class" />
 
-        <TextView
-            android:id="@+id/login_ts"
-            android:layout_width="wrap_content"
+
+            <TextView
+                android:id="@+id/tv_login"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|center_horizontal"
+                android:text="login_ts : NULL" />
+
+
+            <TextView
+                android:id="@+id/tv_subscribe"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|center_horizontal"
+                android:text="ts_subscribe : NULL" />
+
+
+            <TextView
+                android:id="@+id/tv_occupy"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|center_horizontal"
+                android:text="ts_occupy : NULL" />
+
+            <TextView
+                android:id="@+id/tv_reserve"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|center_horizontal"
+                android:text="ts_reserve : NULL" />
+
+            <TextView
+                android:id="@+id/tv_step_out"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|center_horizontal"
+                android:text="ts_step_out : NULL" />
+
+            <TextView
+                android:id="@+id/tv_get_penalty"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|center_horizontal"
+                android:text="ts_get_penalty : NULL" />
+
+            <TextView
+                android:id="@+id/tv_get_block"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|center_horizontal"
+                android:text="ts_get_block : NULL" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|center_horizontal"
-            android:text="login_ts : 0" />
+            android:orientation="vertical"
+            android:layout_margin="30dp">
 
-        <TextView
-            android:id="@+id/start_ts"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|center_horizontal"
-            android:text="start_ts : 0" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|center_horizontal"
+                android:text="My Home for User" />
 
-        <TextView
-            android:id="@+id/reserve_ts"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|center_horizontal"
-            android:text="reserve_ts : 0" />
+            <TextView
+                android:id="@+id/tv_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|center_horizontal"
+                android:text="status : NULL" />
 
-        <TextView
-            android:id="@+id/idle_ts"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|center_horizontal"
-            android:text="idle_ts : 0" />
+            <TextView
+                android:id="@+id/tv_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|center_horizontal"
+                android:text="time : NULL" />
 
-        <TextView
-            android:id="@+id/penalty_ts"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|center_horizontal"
-            android:text="penalty_ts : 0" />
+            <TextView
+                android:id="@+id/tv_num_section"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|center_horizontal"
+                android:text="num_section : NULL" />
 
-        <TextView
-            android:id="@+id/block_ts"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|center_horizontal"
-            android:text="block_ts : 0" />
+            <TextView
+                android:id="@+id/tv_num_seat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|center_horizontal"
+                android:text="num_seat : NULL" />
+
+            <ProgressBar
+                android:id="@+id/pb_time"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:max="100"
+                android:progress="84"
+                android:layout_centerInParent="true"
+                android:layout_gravity="center"
+                android:progressDrawable="@drawable/circular_progress_bar" />
 
 
 
-        <TextView
-            android:id="@+id/status"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|center_horizontal"
-            android:text="@string/empty_state" />
+        </LinearLayout>
 
-        <TextView
-            android:id="@+id/left_time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|center_horizontal"
-            android:text="@string/empty_time"
-            android:visibility="visible"/>
-
-        <TextView
-            android:id="@+id/section_num"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|center_horizontal"
-            android:text="@string/empty_section" />
-
-        <TextView
-            android:id="@+id/seat_num"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|center_horizontal"
-            android:text="@string/empty_seat" />
 
 
 

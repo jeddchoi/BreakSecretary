@@ -3,10 +3,100 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <TextView
-        android:id="@+id/tvTitle"
-        android:text="Fragment #X"
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center" />
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/et_num_section"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Section Number"
+            android:layout_weight="0.5"/>
+
+        <EditText
+            android:id="@+id/et_num_seat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Seat Number"
+            android:layout_weight="0.5"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_reserve"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Reserve"
+            android:layout_weight="0.5"/>
+
+        <Button
+            android:id="@+id/btn_fast_reserve"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Fast Reserve"
+            android:layout_weight="0.5"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_occupy"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Start"
+            android:layout_weight="0.5"/>
+
+
+        <Button
+            android:id="@+id/btn_stop"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Stop"
+            android:layout_weight="0.5"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_step_out"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Being Away"
+            android:layout_weight="0.5"/>
+
+
+        <Button
+            android:id="@+id/btn_return_to_seat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Return to Seat"
+            android:layout_weight="0.5"/>
+    </LinearLayout>
+
+
+
+    <Button
+        android:id="@+id/btn_get_penalty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Get Penalty" />
+
+    <Button
+        android:id="@+id/btn_get_block"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Blocked" />
 </LinearLayout>
