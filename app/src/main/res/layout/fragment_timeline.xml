@@ -44,6 +44,12 @@
             android:layout_weight="0.5"/>
     </LinearLayout>
 
+    <Button
+        android:id="@+id/btn_cancel_reservation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Cancel Reservation"/>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -88,15 +94,47 @@
 
 
 
-    <Button
-        android:id="@+id/btn_get_penalty"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Get Penalty" />
+        android:orientation="horizontal">
 
-    <Button
-        android:id="@+id/btn_get_block"
+        <Button
+            android:id="@+id/btn_get_penalty"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Get Penalty"
+            android:layout_weight="0.5"/>
+
+
+        <Button
+            android:id="@+id/btn_cancel_penalty"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Cancel Penalty"
+            android:layout_weight="0.5"/>
+
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Blocked" />
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_get_block"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Blocked"
+            android:layout_weight="0.5"/>
+
+        <Button
+            android:id="@+id/btn_cancel_block"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Blocked"
+            android:layout_weight="0.5"/>
+    </LinearLayout>
+
+
 </LinearLayout>

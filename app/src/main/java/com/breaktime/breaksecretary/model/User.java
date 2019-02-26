@@ -409,6 +409,7 @@ public class User {
         Log.d(TAG, "user login");
         mUserRef.child("ts_login").setValue(System.currentTimeMillis());
         setStatusForSingleEvent(Status_user.ONLINE);
+
     }
 
 
@@ -518,5 +519,9 @@ public class User {
     }
 
 
+    @Exclude
+    public DatabaseReference get_user_ref() {
+        return mUserRef;
+    }
 
 }

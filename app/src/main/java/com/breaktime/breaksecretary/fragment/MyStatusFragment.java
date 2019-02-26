@@ -9,11 +9,16 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.breaktime.breaksecretary.R;
 import com.breaktime.breaksecretary.Util.FirebaseUtil;
 import com.breaktime.breaksecretary.activity.MainActivity;
 import com.breaktime.breaksecretary.model.User;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 
 
 // In this case, the fragment displays simple text based on the page
@@ -23,6 +28,10 @@ public class MyStatusFragment extends Fragment {
 
     private FirebaseUtil mFirebaseUtil;
     private User mUser;
+
+    private TextView tv_login, tv_subscribe, tv_occupy, tv_reserve, tv_step_out, tv_get_penalty, tv_get_block;
+    private TextView tv_status, tv_num_section, tv_num_seat, tv_time;
+    private ProgressBar pb_time;
 
     @Override
     public void onAttach(Context context) {
@@ -40,6 +49,22 @@ public class MyStatusFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView()");
         view = inflater.inflate(R.layout.fragment_mystatus, container, false);
+
+        tv_login = view.findViewById(R.id.tv_login);
+        tv_subscribe = view.findViewById(R.id.tv_subscribe);
+        tv_reserve = view.findViewById(R.id.tv_reserve);
+        tv_occupy = view.findViewById(R.id.tv_occupy);
+        tv_step_out = view.findViewById(R.id.tv_step_out);
+        tv_get_penalty = view.findViewById(R.id.tv_get_penalty);
+        tv_get_block = view.findViewById(R.id.tv_get_block);
+
+        tv_status = view.findViewById(R.id.tv_status);
+        tv_num_section = view.findViewById(R.id.tv_num_section);
+        tv_num_seat = view.findViewById(R.id.tv_num_seat);
+        tv_time = view.findViewById(R.id.tv_time);
+
+        pb_time = view.findViewById(R.id.pb_time);
+
         return view;
     }
 
@@ -55,6 +80,160 @@ public class MyStatusFragment extends Fragment {
         }
         mFirebaseUtil = ((MainActivity)getActivity()).mFirebaseUtil;
         mUser = ((MainActivity)getActivity()).mUser;
+
+        mUser.get_user_ref().child("ts_login").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Long value = dataSnapshot.getValue(Long.class);
+
+                if (value != null)
+                    tv_login.setText(value.toString());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        mUser.get_user_ref().child("ts_subscribe").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Long value = dataSnapshot.getValue(Long.class);
+
+                if (value != null)
+                    tv_subscribe.setText(value.toString());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        mUser.get_user_ref().child("ts_reserve").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Long value = dataSnapshot.getValue(Long.class);
+
+                if (value != null)
+                    tv_reserve.setText(value.toString());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
+        mUser.get_user_ref().child("ts_occupy").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Long value = dataSnapshot.getValue(Long.class);
+
+                if (value != null)
+                    tv_occupy.setText(value.toString());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
+
+        mUser.get_user_ref().child("ts_step_out").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Long value = dataSnapshot.getValue(Long.class);
+
+                if (value != null)
+                    tv_step_out.setText(value.toString());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        mUser.get_user_ref().child("ts_get_penalty").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Long value = dataSnapshot.getValue(Long.class);
+
+                if (value != null)
+                    tv_get_penalty.setText(value.toString());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        mUser.get_user_ref().child("ts_get_block").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Long value = dataSnapshot.getValue(Long.class);
+
+                if (value != null)
+                    tv_get_block.setText(value.toString());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        mUser.get_user_ref().child("status").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String value = dataSnapshot.getValue(String.class);
+
+                if (value != null)
+                    tv_status.setText(value);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        mUser.get_user_ref().child("num_section").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Integer value = dataSnapshot.getValue(Integer.class);
+
+                if (value != null)
+                    tv_num_section.setText(value.toString());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
+        mUser.get_user_ref().child("num_seat").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Integer value = dataSnapshot.getValue(Integer.class);
+
+                if (value != null)
+                    tv_num_seat.setText(value.toString());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
     }
 
