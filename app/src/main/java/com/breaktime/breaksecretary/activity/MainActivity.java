@@ -1,9 +1,7 @@
 package com.breaktime.breaksecretary.activity;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -55,6 +53,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark, null));
+
 
         initViewPager();
         mFirebaseUtil = new FirebaseUtil();
@@ -155,8 +154,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mTabLayout.setupWithViewPager(mViewPager);
         setupTabIcons();
 
-
-
     }
 
     private void setupTabIcons() {
@@ -171,7 +168,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     public void onClick(View v) {
 
     }
-
 
 
 }
