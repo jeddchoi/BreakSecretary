@@ -77,9 +77,9 @@ public class MyService extends Service implements BeaconConsumer, Observer {
         if(intent != null) {
             major = intent.getIntExtra("major", 0);
             minor = intent.getIntExtra("minor", 0);
-            mUser = (User)intent.getSerializableExtra("user");
+            //mUser = (User)intent.getSerializableExtra("user");
         }
-        Log.d("TEST", "확인용"+mUser.getStatus());
+//        Log.d("TEST", "확인용"+mUser.getStatus());
         setStatus(STATUS.RESERVATION);
         // do heavy work on a background THREAD
         return START_STICKY;
@@ -250,7 +250,7 @@ public class MyService extends Service implements BeaconConsumer, Observer {
         threadhold = 0;
         status = STATUS.RESERVATION;
         mFirebaseUtil = new FirebaseUtil();
-       // mUser = new User(mFirebaseUtil);
+        mUser = new User(mFirebaseUtil);
 
     }
 

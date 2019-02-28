@@ -163,6 +163,7 @@ public class TimeLineFragment extends Fragment implements View.OnClickListener {
                     }
                 });
 
+
                 break;
 
             case R.id.btn_fast_reserve:
@@ -178,7 +179,7 @@ public class TimeLineFragment extends Fragment implements View.OnClickListener {
                     public void onCallback(User.Status_user value) {
                         switch (value) {
                             case RESERVING:
-                                mUser.user_cancel_reservation(Integer.parseInt(et_num_section.getText().toString()), Integer.parseInt(et_num_seat.getText().toString()));
+                                mUser.user_cancel_reservation();
                                 ((MainActivity)getActivity()).show_snackbar_msg("[SUCC] You canceled " + et_num_seat.getText().toString() + " seat of " + et_num_section.getText().toString() + " section.", false);
                                 break;
 
