@@ -1,12 +1,18 @@
 package com.breaktime.breaksecretary.activity;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.Toast;
 
 import com.breaktime.breaksecretary.R;
 import com.breaktime.breaksecretary.Util.FirebaseUtil;
@@ -35,11 +41,11 @@ public class FirstActivity extends BaseActivity implements View.OnClickListener{
     private FirebaseUtil mFirebaseUtil;
     private GoogleSignInClient mGoogleSignInClient;
 
+    private final String[] permissions = {Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION};
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate()");
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_first);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
@@ -65,6 +71,7 @@ public class FirstActivity extends BaseActivity implements View.OnClickListener{
             Log.e(TAG, "mVideoView Error");
         }
 
+        checkPermissions();
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -208,4 +215,44 @@ public class FirstActivity extends BaseActivity implements View.OnClickListener{
 
         }
     }
+
+    private void checkPermissions() {
+        boolean notgranted = true;
+        for (String permission : permissions) {
+            notgranted = notgranted && ContextCompat.checkSelfPermission(getApplicationContext(),
+                    permission) != PackageManager.PERMISSION_GRANTED;
+        }
+
+        if (notgranted) {
+            boolean showrationale = true;
+            for (String permission : permissions) {
+                showrationale = showrationale && (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                        permission));
+            }
+            if (showrationale) {
+                Toast.makeText(this, "권한 부족, 설정 확인", Toast.LENGTH_LONG).show();
+            } else {
+                ActivityCompat.requestPermissions(FirstActivity.this,
+                        permissions,
+                        100);
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case 100: {
+                for (int i = 0; i < grantResults.length; i++) {
+                    if (grantResults.length > 0 && grantResults[i] == PackageManager.PERMISSION_GRANTED) {
+
+                    } else {
+                        Toast.makeText(this, "권한 부족, 설정 확인", Toast.LENGTH_LONG).show();
+                    }
+                }
+            }
+        }
+    }
+
 }

@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.breaktime.breaksecretary.Observer;
 import com.breaktime.breaksecretary.R;
 import com.breaktime.breaksecretary.Util.FirebaseUtil;
 import com.breaktime.breaksecretary.activity.MainActivity;
@@ -22,14 +23,14 @@ import com.google.firebase.database.ValueEventListener;
 
 
 // In this case, the fragment displays simple text based on the page
-public class MyStatusFragment extends Fragment {
+public class MyStatusFragment extends Fragment implements Observer {
     private static final String TAG = MyStatusFragment.class.getName();
     private View view;
 
     private FirebaseUtil mFirebaseUtil;
     private User mUser;
 
-    private TextView tv_login, tv_subscribe, tv_occupy, tv_reserve, tv_step_out, tv_get_penalty, tv_get_block;
+    private TextView tv_login, tv_subscribe, tv_occupy, tv_reserve, tv_step_out, tv_get_penalty, tv_get_block, txt_test;
     private TextView tv_status, tv_num_section, tv_num_seat, tv_time;
     private ProgressBar pb_time;
 
@@ -57,6 +58,7 @@ public class MyStatusFragment extends Fragment {
         tv_step_out = view.findViewById(R.id.tv_step_out);
         tv_get_penalty = view.findViewById(R.id.tv_get_penalty);
         tv_get_block = view.findViewById(R.id.tv_get_block);
+        txt_test = view.findViewById(R.id.txt_test);
 
         tv_status = view.findViewById(R.id.tv_status);
         tv_num_section = view.findViewById(R.id.tv_num_section);
@@ -66,6 +68,32 @@ public class MyStatusFragment extends Fragment {
         pb_time = view.findViewById(R.id.pb_time);
 
         return view;
+    }
+
+    @Override
+    public void update(User.Status_user status) {
+        try{
+            Log.d("HELLO", "call update in MyStatus Frag");
+            switch (status){
+                case ONLINE:
+                    txt_test.setText("None");
+                    break;
+                case RESERVING:
+
+                    txt_test.setText("예약중");
+                    break;
+                case OCCUPYING:
+                    Log.d("HELLO", "call occupy case in switch");
+                    txt_test.setText("사용중");
+                    break;
+                case STEPPING_OUT:
+
+                    txt_test.setText("자리비움");
+                    break;
+                case SUBSCRIBING:
+                    break;
+            }
+        }catch (Exception e){}
     }
 
     @Override

@@ -39,6 +39,14 @@
           }
         },
         {
+          "client_id": "30519294348-kaotjhq1itoc218dmlkl2aefatfl4vk8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.breaktime.breaksecretary",
+            "certificate_hash": "999a41124291e5f655c4899b70a0b71bfb71953f"
+          }
+        },
+        {
           "client_id": "30519294348-nicn1rd8mi1vfges7t2h31c0j27go0hc.apps.googleusercontent.com",
           "client_type": 3
         }
