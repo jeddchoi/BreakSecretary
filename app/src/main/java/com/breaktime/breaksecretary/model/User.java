@@ -21,7 +21,7 @@ public class User implements Serializable {
 
     /* status constant */
     public enum Status_user {
-        ONLINE, SUBSCRIBING, RESERVING, OCCUPYING, STEPPING_OUT, PAYING_PENALTY, BEING_BLOCKED
+        ONLINE, SUBSCRIBING, RESERVING, RESERVING_OVER, OCCUPYING, OCCUPYING_OVER, STEPPING_OUT, STEPPING_OUT_OVER, PAYING_PENALTY, BEING_BLOCKED
     }
 
     @Exclude
@@ -54,7 +54,7 @@ public class User implements Serializable {
 
         mUserRef = mFirebaseUtil.getUsersRef().child(mFirebaseUtil.getCurrentUser().getUid());
         mUserRef.child("email_address").setValue(mFirebaseUtil.getCurrentUser().getEmail());
-        user_login();
+
     }
 
     // Default Constructor
@@ -340,71 +340,6 @@ public class User implements Serializable {
 
 
 
-    @Exclude
-    public void user_action(String ts_type, Boolean decision, Integer num_section, Integer num_seat) {
-        if (ts_type.equals("ts_reserve")) {
-            if (decision)
-                user_reserve(num_section, num_seat);
-            else
-                user_cancel_reservation(num_section, num_seat);
-        } else {
-            Log.e(TAG, "user_action error");
-        }
-    }
-
-    // except reserve
-    @Exclude
-    public void user_action(String ts_type, Boolean decision) {
-        switch (ts_type) {
-            case "ts_login":
-                if (decision)
-                    user_login();
-                else
-                    user_logout();
-                break;
-
-            case "ts_subscribe":
-                if (decision)
-                    user_subscribe();
-                else
-                    user_unsubscribe();
-
-                break;
-
-            case "ts_occupy":
-                if (decision)
-                    user_occupy();
-                else
-                    user_stop();
-                break;
-
-            case "ts_step_out":
-                if (decision)
-                    user_step_out();
-                else
-                    user_return_to_seat();
-                break;
-
-            case "ts_get_penalty":
-                if (decision)
-                    user_get_penalty();
-                else
-                    user_cancel_penalty();
-                break;
-
-            case "ts_get_block":
-                if (decision)
-                    user_get_block();
-                else
-                    user_cancel_block();
-                break;
-
-            default:
-                Log.e(TAG, "undefined action");
-                break;
-        }
-    }
-
 
     @Exclude
     public void user_login() {
@@ -443,7 +378,7 @@ public class User implements Serializable {
 
     @Exclude
     public void user_reserve(Integer num_section, Integer num_seat) {
-        // TODO:
+        // TODO: seat에 자리 사용중 표시
         Log.d(TAG, "user reserve");
         setStatusForSingleEvent(Status_user.RESERVING);
         setNum_sectionForSingleEvent(num_section);
@@ -456,15 +391,32 @@ public class User implements Serializable {
 
 
     @Exclude
-    public void user_cancel_reservation(Integer num_section, Integer num_seat) {
+    public void user_cancel_reservation() {
+        // TODO: seat에서 available이라고 표시하기
         Log.d(TAG, "user cancel reservation");
         setStatusForSingleEvent(Status_user.ONLINE);
         setNum_sectionForSingleEvent(null);
         setNum_seatForSingleEvent(null);
         mUserRef.child("ts_reserve").removeValue();
-
-
     }
+
+    @Exclude
+    public void user_reservation_over() {
+        // TODO: seat에서 available이라고 표시하기
+        Log.d(TAG, "user reservation over");
+        setStatusForSingleEvent(Status_user.RESERVING_OVER);
+        setNum_sectionForSingleEvent(null);
+        setNum_seatForSingleEvent(null);
+    }
+
+    @Exclude
+    public void user_reservation_over_confirm() {
+        Log.d(TAG, "user reservation over confirm");
+        setStatusForSingleEvent(Status_user.ONLINE);
+        mUserRef.child("ts_reserve").removeValue();
+    }
+
+
 
     @Exclude
     public void user_occupy() {
@@ -478,14 +430,33 @@ public class User implements Serializable {
     // stop means that He/She wants to stop using that seat.
     @Exclude
     public void user_stop() {
+        // TODO: seat에서 available이라고 표시하기
         Log.d(TAG, "user stop");
         setStatusForSingleEvent(Status_user.ONLINE);
         mUserRef.child("ts_occupy").removeValue();
         mUserRef.child("ts_step_out").removeValue();
         mUserRef.child("num_section").removeValue();
         mUserRef.child("num_seat").removeValue();
-
     }
+
+    @Exclude
+    public void user_occupy_over() {
+        // TODO: seat에서 available이라고 표시하기
+        Log.d(TAG, "user occupy over");
+        setStatusForSingleEvent(Status_user.OCCUPYING_OVER);
+        mUserRef.child("ts_step_out").removeValue();
+        mUserRef.child("num_section").removeValue();
+        mUserRef.child("num_seat").removeValue();
+    }
+
+    @Exclude
+    public void user_occupy_over_confirm() {
+        Log.d(TAG, "user occupy over confirm");
+        setStatusForSingleEvent(Status_user.ONLINE);
+        mUserRef.child("ts_occupy").removeValue();
+    }
+
+
 
     @Exclude
     public void user_step_out() {
@@ -502,6 +473,25 @@ public class User implements Serializable {
         mUserRef.child("ts_step_out").removeValue();
 
     }
+
+    @Exclude
+    public void user_step_out_over() {
+        // TODO: seat에서 available이라고 표시하기
+        Log.d(TAG, "user step out over");
+        setStatusForSingleEvent(Status_user.STEPPING_OUT_OVER);
+        mUserRef.child("ts_step_out").removeValue();
+
+    }
+
+    @Exclude
+    public void user_step_out_over_confirm() {
+        Log.d(TAG, "user return to seat");
+        setStatusForSingleEvent(Status_user.ONLINE);
+        mUserRef.child("ts_step_out").removeValue();
+
+    }
+
+
 
     @Exclude
     public void user_get_penalty() {

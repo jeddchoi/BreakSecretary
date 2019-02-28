@@ -58,10 +58,6 @@ public class QuickReserveFragment extends Fragment implements Observer {
         Log.d(TAG, "onCreateView()");
         view = inflater.inflate(R.layout.fragment_quickreserve, container, false);
 
-        mFirebaseUtil = ((MainActivity)getActivity()).mFirebaseUtil;
-        mUser = ((MainActivity)getActivity()).mUser;
-
-
         Button quick_btn = view.findViewById(R.id.btn_quick_res);
         quick_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -124,6 +120,7 @@ public class QuickReserveFragment extends Fragment implements Observer {
         Intent intent = new Intent(getActivity(), MyService.class);
         intent.putExtra("major", 1002);
         intent.putExtra("minor", 20);
+//        intent.putExtra("user", mUser);
         ContextCompat.startForegroundService(getActivity(), intent);
     }
 

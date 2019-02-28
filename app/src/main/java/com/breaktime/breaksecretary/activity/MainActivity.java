@@ -21,6 +21,7 @@ import com.breaktime.breaksecretary.fragment.QuickReserveFragment;
 import com.breaktime.breaksecretary.fragment.ReserveAndCheckFragment;
 import com.breaktime.breaksecretary.fragment.SettingFragment;
 import com.breaktime.breaksecretary.fragment.TimeLineFragment;
+import com.breaktime.breaksecretary.model.MyCallback;
 import com.breaktime.breaksecretary.model.User;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -73,8 +74,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 String value = dataSnapshot.getValue(String.class);
                 if (value != null){
-                    User.Status_user status = StringToEnumStatus(value);
-                    notifyTheStatus(status);
+                    notifyTheStatus(User.Status_user.valueOf(value));
                 }
             }
 
@@ -112,34 +112,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     }
 
 
-
-    User.Status_user StringToEnumStatus(String status) {
-        //ONLINE, SUBSCRIBING, RESERVING, OCCUPYING, STEPPING_OUT, PAYING_PENALTY, BEING_BLOCKED
-        if (status.equals("ONLINE")) {
-            return User.Status_user.ONLINE;
-        } else if (status.equals("SUBSCRIBING")) {
-            return User.Status_user.SUBSCRIBING;
-        } else if (status.equals("RESERVING")) {
-            return User.Status_user.RESERVING;
-        } else if (status.equals("OCCUPYING")) {
-            return User.Status_user.OCCUPYING;
-        } else if (status.equals("STEPPING_OUT")) {
-            return User.Status_user.STEPPING_OUT;
-        } else if (status.equals("PAYING_PENALTY")) {
-            return User.Status_user.PAYING_PENALTY;
-        } else if (status.equals("BEING_BLOCKED")) {
-            return User.Status_user.BEING_BLOCKED;
-        }else{
-            // 에러처리
-            return null;
-        }
-    }
-
-
     @Override
     protected void onDestroy() {
         Log.d(TAG, "onDestroy()");
+
         super.onDestroy();
+
+
+
     }
 
     @Override
@@ -165,14 +145,18 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         if (mFirebaseUtil.getCurrentUser() == null || !mFirebaseUtil.getCurrentUser().isEmailVerified()) {
             startActivity(new Intent(MainActivity.this, FirstActivity.class));
             finish();
-        } else
-            succeedToLogin();
+        } else {
+            mUser.user_login();
+            show_snackbar_msg("Successfully signed in : " + mUser.getEmailForSingleEvent(), true);
+        }
+
     }
 
     @Override
     protected void onStop() {
         Log.d(TAG, "onStop()");
         super.onStop();
+
     }
 
     @Override
@@ -191,11 +175,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     public void onBackPressed() {
         Log.d(TAG, "onBackPressed()");
         super.onBackPressed();
-    }
-
-
-    public void succeedToLogin() {
-        show_snackbar_msg("Successfully signed in : " + mUser.getEmailForSingleEvent(), true);
     }
 
 

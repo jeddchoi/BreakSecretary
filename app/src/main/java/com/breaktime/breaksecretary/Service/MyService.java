@@ -50,6 +50,7 @@ public class MyService extends Service implements BeaconConsumer, Observer {
     private STATUS status;
     private DISTANCE distance;
     private BeaconManager beaconManager;
+    private boolean isOutofRange;
     private int threadhold;
     private User mUser;
     private FirebaseUtil mFirebaseUtil;
@@ -132,6 +133,7 @@ public class MyService extends Service implements BeaconConsumer, Observer {
     @Override
     public void onBeaconServiceConnect() {
         beaconManager.removeAllRangeNotifiers();
+
         beaconManager.addRangeNotifier(new RangeNotifier() {
             @Override
             public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {

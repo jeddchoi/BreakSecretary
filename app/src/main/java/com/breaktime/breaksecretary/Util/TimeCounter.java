@@ -16,17 +16,6 @@ public class TimeCounter extends CountDownTimer {
         super(min_limit * 1000 * 60L, 1000);
         mUser = user;
         this.type = type;
-        mUser.getTSForSingleEvent(this.type, new MyCallback<Long>() {
-            @Override
-            public void onCallback(Long value) {
-                ts_begin = value;
-                if (ts_begin != null) {
-                    Log.d(TAG, "start timer : " + type);
-                    start();
-                }
-            }
-        });
-
 
     }
 
@@ -42,7 +31,6 @@ public class TimeCounter extends CountDownTimer {
     @Override
     public void onFinish() {
         Log.d(TAG, "finish timer : " + type);
-        mUser.user_action(type, false);
     }
 
 }
