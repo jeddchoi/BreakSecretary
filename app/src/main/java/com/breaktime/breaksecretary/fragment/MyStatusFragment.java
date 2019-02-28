@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.breaktime.breaksecretary.Observer;
 import com.breaktime.breaksecretary.R;
 import com.breaktime.breaksecretary.Util.FirebaseUtil;
 import com.breaktime.breaksecretary.activity.MainActivity;
@@ -21,7 +22,7 @@ import com.google.firebase.database.ValueEventListener;
 
 
 // In this case, the fragment displays simple text based on the page
-public class MyStatusFragment extends Fragment {
+public class MyStatusFragment extends Fragment implements Observer {
     private static final String TAG = MyStatusFragment.class.getName();
     private View view;
 
@@ -268,4 +269,8 @@ public class MyStatusFragment extends Fragment {
     }
 
 
+    @Override
+    public void update(User.Status_user status) {
+
+    }
 }
