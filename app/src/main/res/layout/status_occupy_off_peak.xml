@@ -6,7 +6,7 @@
 
 
     <ProgressBar
-        android:id="@+id/pb_penalty"
+        android:id="@+id/pb_occupy_peak_off"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="200dp"
         android:layout_height="200dp"
@@ -14,19 +14,13 @@
         android:progress="100"
         android:layout_centerInParent="true"
         android:layout_gravity="center"
-        android:progressDrawable="@drawable/circular_progress_bar_warning" />
+        android:progressDrawable="@drawable/circular_progress_bar_off" />
 
     <TextView
         android:id="@+id/tv_ts"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="You got penalty at ... " />
-
-    <TextView
-        android:id="@+id/tv_time"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="left time : " />
+        android:text="You started using at ... " />
 
 
 
