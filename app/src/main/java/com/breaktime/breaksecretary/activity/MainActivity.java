@@ -2,6 +2,7 @@ package com.breaktime.breaksecretary.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -10,7 +11,9 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
+import com.breaktime.breaksecretary.Observer;
 import com.breaktime.breaksecretary.R;
+import com.breaktime.breaksecretary.Subject;
 import com.breaktime.breaksecretary.Util.FirebaseUtil;
 import com.breaktime.breaksecretary.adapter.FragmentAdapter;
 import com.breaktime.breaksecretary.fragment.MyStatusFragment;
@@ -19,13 +22,16 @@ import com.breaktime.breaksecretary.fragment.ReserveAndCheckFragment;
 import com.breaktime.breaksecretary.fragment.SettingFragment;
 import com.breaktime.breaksecretary.fragment.TimeLineFragment;
 import com.breaktime.breaksecretary.model.User;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 
-public class MainActivity extends BaseActivity implements View.OnClickListener {
+public class MainActivity extends BaseActivity implements View.OnClickListener, Subject {
     private static final String TAG = MainActivity.class.getName();
 
     public FirebaseUtil mFirebaseUtil;
@@ -41,13 +47,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             R.drawable.ic_settings_white_24dp
     };
 
+    public ArrayList<Observer> observers;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate()");
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
-
+        observers = new ArrayList<>();
 
         Window window = getWindow();
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
@@ -56,9 +64,75 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
 
         initViewPager();
+
+
         mFirebaseUtil = new FirebaseUtil();
         mUser = new User(mFirebaseUtil);
+        mUser.get_user_ref().child("status").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String value = dataSnapshot.getValue(String.class);
+                if (value != null){
+                    User.Status_user status = StringToEnumStatus(value);
+                    notifyTheStatus(status);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
     }
+
+    @Override
+    public void registerObserver(Observer ob) {
+        observers.add(ob);
+    }
+
+    @Override
+    public void deleteObserver(Observer ob) {
+        int index = observers.indexOf(ob);
+        observers.remove(index);
+    }
+
+    @Override
+    public void notifyTheStatus(User.Status_user status) {
+        Log.d("TEST", "call notify in subject");
+        // To observers
+        for(Observer ob : observers){
+            Log.d("TEST", "call for loop ");
+            ob.update(status);
+        }
+
+        // To service
+    }
+
+
+
+    User.Status_user StringToEnumStatus(String status) {
+        //ONLINE, SUBSCRIBING, RESERVING, OCCUPYING, STEPPING_OUT, PAYING_PENALTY, BEING_BLOCKED
+        if (status.equals("ONLINE")) {
+            return User.Status_user.ONLINE;
+        } else if (status.equals("SUBSCRIBING")) {
+            return User.Status_user.SUBSCRIBING;
+        } else if (status.equals("RESERVING")) {
+            return User.Status_user.RESERVING;
+        } else if (status.equals("OCCUPYING")) {
+            return User.Status_user.OCCUPYING;
+        } else if (status.equals("STEPPING_OUT")) {
+            return User.Status_user.STEPPING_OUT;
+        } else if (status.equals("PAYING_PENALTY")) {
+            return User.Status_user.PAYING_PENALTY;
+        } else if (status.equals("BEING_BLOCKED")) {
+            return User.Status_user.BEING_BLOCKED;
+        }else{
+            // 에러처리
+            return null;
+        }
+    }
+
 
     @Override
     protected void onDestroy() {
@@ -140,19 +214,28 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mTabLayout.addTab(mTabLayout.newTab().setText(titles.get(4)));
 
         List<Fragment> fragments = new ArrayList<>();
-        fragments.add(new QuickReserveFragment());
+        QuickReserveFragment quickReserveFragment = new QuickReserveFragment();
+        fragments.add(quickReserveFragment);
+        registerObserver(quickReserveFragment);
+
         fragments.add(new ReserveAndCheckFragment());
-        fragments.add(new MyStatusFragment());
+
+        MyStatusFragment myStatusFragment = new MyStatusFragment();
+        fragments.add(myStatusFragment);
+        registerObserver(myStatusFragment);
+
         fragments.add(new TimeLineFragment());
+
         fragments.add(new SettingFragment());
 
+
         mViewPager.setOffscreenPageLimit(4);
-
-
         FragmentAdapter mFragmentAdapter = new FragmentAdapter(getSupportFragmentManager(), fragments, titles);
         mViewPager.setAdapter(mFragmentAdapter);
         mTabLayout.setupWithViewPager(mViewPager);
         setupTabIcons();
+
+
 
     }
 
@@ -164,10 +247,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         Objects.requireNonNull(mTabLayout.getTabAt(4)).setIcon(tabIcons[4]);
     }
 
+
     @Override
-    public void onClick(View v) {
+    public void onClick(View view) {
 
     }
-
-
 }

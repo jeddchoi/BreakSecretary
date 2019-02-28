@@ -11,10 +11,12 @@ import com.google.firebase.database.Exclude;
 import com.google.firebase.database.IgnoreExtraProperties;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.Serializable;
+
 
 @SuppressWarnings("serial")
 @IgnoreExtraProperties
-public class User {
+public class User implements Serializable {
     private static final String TAG = User.class.getName();
 
     /* status constant */
