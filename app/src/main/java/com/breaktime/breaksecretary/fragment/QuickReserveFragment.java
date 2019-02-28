@@ -36,6 +36,7 @@ public class QuickReserveFragment extends Fragment implements Observer {
     private User mUser;
     private CircularImageView imgView;
     private TextView sta;
+    private boolean isFlag = false;
 
     @Override
     public void onAttach(Context context) {
@@ -68,6 +69,7 @@ public class QuickReserveFragment extends Fragment implements Observer {
                 startService();
             }
         });
+
         Button btn_stop = view.findViewById(R.id.btn_stop);
         btn_stop.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,18 +90,21 @@ public class QuickReserveFragment extends Fragment implements Observer {
 
     @Override
     public void update(User.Status_user status){
-        Log.d("TEST", "call update in qucikFrag with :" + status);
         try{
             switch (status){
                 case ONLINE:
-                    imgView.setImageResource(R.drawable.jal);
-                    sta.setText("None");
+                    if(!isFlag){
+                        imgView.setImageResource(R.drawable.jal);
+                        sta.setText("None");
+                    }
                     break;
                 case RESERVING:
+                    isFlag = true;
                     imgView.setImageResource(R.drawable.ad);
                     sta.setText("예약중");
                     break;
                 case OCCUPYING:
+                    isFlag = false;
                     imgView.setImageResource(R.drawable.empty_state);
                     sta.setText("사용중");
                     break;
@@ -119,7 +124,6 @@ public class QuickReserveFragment extends Fragment implements Observer {
         Intent intent = new Intent(getActivity(), MyService.class);
         intent.putExtra("major", 1002);
         intent.putExtra("minor", 20);
-        intent.putExtra("user", mUser);
         ContextCompat.startForegroundService(getActivity(), intent);
     }
 

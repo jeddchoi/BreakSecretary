@@ -30,7 +30,7 @@ public class MyStatusFragment extends Fragment implements Observer {
     private User mUser;
 
     private TextView tv_login, tv_subscribe, tv_occupy, tv_reserve, tv_step_out, tv_get_penalty, tv_get_block;
-    private TextView tv_status;
+    private TextView tv_status, txt_test;
 
     @Override
     public void onAttach(Context context) {
@@ -58,7 +58,8 @@ public class MyStatusFragment extends Fragment implements Observer {
         tv_get_block = view.findViewById(R.id.tv_get_block);
 
         tv_status = view.findViewById(R.id.tv_status);
-
+        txt_test = view.findViewById(R.id.txt_test);
+        ;
 
         return view;
     }
@@ -271,6 +272,17 @@ public class MyStatusFragment extends Fragment implements Observer {
 
     @Override
     public void update(User.Status_user status) {
-
+        switch (status){
+            case RESERVING:
+                txt_test.setText("예약중");
+                break;
+            case OCCUPYING:
+                txt_test.setText("사용중");
+                break;
+            case STEPPING_OUT:
+                txt_test.setText("자리비움");
+                break;
+        }
     }
+
 }

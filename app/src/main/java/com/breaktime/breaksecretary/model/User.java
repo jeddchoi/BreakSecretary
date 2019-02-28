@@ -440,6 +440,7 @@ public class User implements Serializable {
 
     }
 
+
     @Exclude
     public void user_reserve(Integer num_section, Integer num_seat) {
         // TODO:
@@ -450,8 +451,9 @@ public class User implements Serializable {
         mUserRef.child("ts_reserve").setValue(System.currentTimeMillis());
         mUserRef.child("ts_subscribe").removeValue();
 
-
     }
+
+
 
     @Exclude
     public void user_cancel_reservation(Integer num_section, Integer num_seat) {

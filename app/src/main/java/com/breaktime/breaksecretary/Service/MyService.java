@@ -50,7 +50,6 @@ public class MyService extends Service implements BeaconConsumer, Observer {
     private STATUS status;
     private DISTANCE distance;
     private BeaconManager beaconManager;
-    private boolean isOutofRange;
     private int threadhold;
     private User mUser;
     private FirebaseUtil mFirebaseUtil;
@@ -77,9 +76,7 @@ public class MyService extends Service implements BeaconConsumer, Observer {
         if(intent != null) {
             major = intent.getIntExtra("major", 0);
             minor = intent.getIntExtra("minor", 0);
-            mUser = (User)intent.getSerializableExtra("user");
         }
-        Log.d("TEST", "확인용"+mUser.getStatus());
         setStatus(STATUS.RESERVATION);
         // do heavy work on a background THREAD
         return START_STICKY;
@@ -135,7 +132,6 @@ public class MyService extends Service implements BeaconConsumer, Observer {
     @Override
     public void onBeaconServiceConnect() {
         beaconManager.removeAllRangeNotifiers();
-
         beaconManager.addRangeNotifier(new RangeNotifier() {
             @Override
             public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
@@ -143,9 +139,15 @@ public class MyService extends Service implements BeaconConsumer, Observer {
                 // Collection<Beacon>)which gives you a list of every beacon matched in the last scan interval.
                 // unbind 전까지 1초에 한번씩 호출된다.
                 threadhold++;
-                isOutofRange = true;
-                Log.d(TAG, "How many beacon in region ::" + String.valueOf(beacons.size()));
+                logg("threadhold : "+String.valueOf(threadhold));
+                if(status == STATUS.RESERVATION && threadhold == 10){
+                    // 예약 타임 아웃
+                    mUser.get_user_ref().child("status").setValue(User.Status_user.ONLINE);
+                    stopForeground(true);
+                    stopSelf();
+                }
 
+                logg("현재 상태 : "+String.valueOf(status));
                 if (beacons.size() > 0) {
                     for (Beacon beacon : beacons) {
                         if(major == beacon.getId2().toInt() && minor == beacon.getId3().toInt()){
@@ -156,7 +158,6 @@ public class MyService extends Service implements BeaconConsumer, Observer {
                                 }
 
                             }else{ // 시작 후의 상황
-                                logg("threadhold : "+String.valueOf(threadhold));
                                 switch (status){
                                     case USING:
                                         if(beacon.getDistance() >App.EMPTY_RANGE &&threadhold ==5){
@@ -250,7 +251,7 @@ public class MyService extends Service implements BeaconConsumer, Observer {
         threadhold = 0;
         status = STATUS.RESERVATION;
         mFirebaseUtil = new FirebaseUtil();
-       // mUser = new User(mFirebaseUtil);
+        mUser = new User(mFirebaseUtil);
 
     }
 

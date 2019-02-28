@@ -84,6 +84,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             }
         });
 
+        //notifyTheStatus(User.Status_user.valueOf();
+
+
     }
 
     @Override
@@ -102,7 +105,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         Log.d("TEST", "call notify in subject");
         // To observers
         for(Observer ob : observers){
-            Log.d("TEST", "call for loop ");
             ob.update(status);
         }
 
