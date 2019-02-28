@@ -20,10 +20,6 @@ import com.breaktime.breaksecretary.Service.MyService;
 import com.breaktime.breaksecretary.Util.FirebaseUtil;
 import com.breaktime.breaksecretary.activity.MainActivity;
 import com.breaktime.breaksecretary.model.User;
-import com.dinuscxj.progressbar.CircleProgressBar;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.ValueEventListener;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
 
@@ -47,9 +43,6 @@ public class QuickReserveFragment extends Fragment implements Observer {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         Log.d(TAG, "onCreate()");
         super.onCreate(savedInstanceState);
-
-
-
     }
 
     @Override
@@ -81,8 +74,6 @@ public class QuickReserveFragment extends Fragment implements Observer {
         sta = view.findViewById(R.id.txt_sta);
 
         //imgView.setImageResource(R.drawable.ad);
-
-
         return view;
     }
 
