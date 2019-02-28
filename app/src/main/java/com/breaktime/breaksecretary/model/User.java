@@ -387,14 +387,14 @@ public class User {
                 if (decision)
                     user_get_penalty();
                 else
-                    user_end_penalty();
+                    user_cancel_penalty();
                 break;
 
             case "ts_get_block":
                 if (decision)
                     user_get_block();
                 else
-                    user_free();
+                    user_cancel_block();
                 break;
 
             default:
@@ -407,8 +407,9 @@ public class User {
     @Exclude
     public void user_login() {
         Log.d(TAG, "user login");
-        mUserRef.child("ts_login").setValue(System.currentTimeMillis());
         setStatusForSingleEvent(Status_user.ONLINE);
+        mUserRef.child("ts_login").setValue(System.currentTimeMillis());
+
 
     }
 
@@ -423,99 +424,123 @@ public class User {
     @Exclude
     public void user_subscribe() {
         Log.d(TAG, "user subscribe");
-        mUserRef.child("ts_subscribe").setValue(System.currentTimeMillis());
         setStatusForSingleEvent(Status_user.SUBSCRIBING);
+        mUserRef.child("ts_subscribe").setValue(System.currentTimeMillis());
+
 
     }
 
     @Exclude
     public void user_unsubscribe() {
         Log.d(TAG, "user unsubscribe");
-        mUserRef.child("ts_subscribe").removeValue();
         setStatusForSingleEvent(Status_user.ONLINE);
+        mUserRef.child("ts_subscribe").removeValue();
+
     }
 
     @Exclude
     public void user_reserve(Integer num_section, Integer num_seat) {
         // TODO:
         Log.d(TAG, "user reserve");
+        setStatusForSingleEvent(Status_user.RESERVING);
         setNum_sectionForSingleEvent(num_section);
         setNum_seatForSingleEvent(num_seat);
         mUserRef.child("ts_reserve").setValue(System.currentTimeMillis());
+        mUserRef.child("ts_subscribe").removeValue();
 
-        setStatusForSingleEvent(Status_user.RESERVING);
+
     }
 
     @Exclude
     public void user_cancel_reservation(Integer num_section, Integer num_seat) {
         Log.d(TAG, "user cancel reservation");
+        setStatusForSingleEvent(Status_user.ONLINE);
         setNum_sectionForSingleEvent(null);
         setNum_seatForSingleEvent(null);
         mUserRef.child("ts_reserve").removeValue();
 
-        setStatusForSingleEvent(Status_user.ONLINE);
+
     }
 
     @Exclude
     public void user_occupy() {
         Log.d(TAG, "user occupy");
+        setStatusForSingleEvent(Status_user.OCCUPYING);
         mUserRef.child("ts_occupy").setValue(System.currentTimeMillis());
         mUserRef.child("ts_reserve").removeValue();
-        setStatusForSingleEvent(Status_user.OCCUPYING);
+
     }
 
     // stop means that He/She wants to stop using that seat.
     @Exclude
     public void user_stop() {
         Log.d(TAG, "user stop");
+        setStatusForSingleEvent(Status_user.ONLINE);
         mUserRef.child("ts_occupy").removeValue();
+        mUserRef.child("ts_step_out").removeValue();
         mUserRef.child("num_section").removeValue();
         mUserRef.child("num_seat").removeValue();
-        setStatusForSingleEvent(Status_user.ONLINE);
+
     }
 
     @Exclude
     public void user_step_out() {
         Log.d(TAG, "user step out");
-        mUserRef.child("ts_step_out").setValue(System.currentTimeMillis());
         setStatusForSingleEvent(Status_user.STEPPING_OUT);
+        mUserRef.child("ts_step_out").setValue(System.currentTimeMillis());
+
     }
 
     @Exclude
     public void user_return_to_seat() {
         Log.d(TAG, "user return to seat");
-        mUserRef.child("ts_step_out").removeValue();
         setStatusForSingleEvent(Status_user.OCCUPYING);
+        mUserRef.child("ts_step_out").removeValue();
+
     }
 
     @Exclude
     public void user_get_penalty() {
         Log.d(TAG, "user get penalty");
+        setStatusForSingleEvent(Status_user.PAYING_PENALTY);
         mUserRef.child("ts_reserve").removeValue();
         mUserRef.child("ts_get_penalty").setValue(System.currentTimeMillis());
-        setStatusForSingleEvent(Status_user.PAYING_PENALTY);
+
     }
 
     @Exclude
-    public void user_end_penalty() {
-        Log.d(TAG, "user end penalty");
-        mUserRef.child("ts_reserve").removeValue();
-        mUserRef.child("ts_get_penalty").setValue(System.currentTimeMillis());
+    public void user_cancel_penalty() {
+        Log.d(TAG, "user cancel penalty");
         setStatusForSingleEvent(Status_user.ONLINE);
+        mUserRef.child("ts_reserve").removeValue();
+        mUserRef.child("ts_get_penalty").removeValue();
+
     }
 
     @Exclude
     public void user_get_block() {
         Log.d(TAG, "user get block");
-        mUserRef.child("ts_get_block").setValue(System.currentTimeMillis());
         setStatusForSingleEvent(Status_user.BEING_BLOCKED);
+        mUserRef.child("ts_get_block").setValue(System.currentTimeMillis());
+        mUserRef.child("num_section").removeValue();
+        mUserRef.child("num_seat").removeValue();
+        mUserRef.child("ts_subscribe").removeValue();
+        mUserRef.child("ts_reserve").removeValue();
+        mUserRef.child("ts_occupy").removeValue();
+        mUserRef.child("ts_step_out").removeValue();
+        mUserRef.child("ts_get_penalty").removeValue();
+
+
+
+
     }
 
     @Exclude
-    public void user_free() {
-        Log.d(TAG, "user free");
-        mUserRef.child("ts_get_block").removeValue();
+    public void user_cancel_block() {
+        Log.d(TAG, "user cancel block");
         setStatusForSingleEvent(Status_user.ONLINE);
+        mUserRef.child("ts_get_block").removeValue();
+
     }
 
 

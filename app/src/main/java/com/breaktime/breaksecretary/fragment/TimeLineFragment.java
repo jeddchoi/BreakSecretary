@@ -14,6 +14,7 @@ import android.widget.EditText;
 import com.breaktime.breaksecretary.R;
 import com.breaktime.breaksecretary.Util.FirebaseUtil;
 import com.breaktime.breaksecretary.activity.MainActivity;
+import com.breaktime.breaksecretary.model.MyCallback;
 import com.breaktime.breaksecretary.model.User;
 
 
@@ -133,43 +134,286 @@ public class TimeLineFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_reserve:
+
                 if (et_num_seat.getText().toString().length() == 0 || et_num_section.getText().toString().length() == 0) {
                     ((MainActivity)getActivity()).show_toast_msg("You should fill out number first!", true);
                     return;
                 }
-                mUser.user_reserve(Integer.parseInt(et_num_section.getText().toString()), Integer.parseInt(et_num_seat.getText().toString()));
+                mUser.getStatusForSingleEvent(new MyCallback<User.Status_user>() {
+                    @Override
+                    public void onCallback(User.Status_user value) {
+                        switch (value) {
+                            case ONLINE:
+                            case SUBSCRIBING:
+                                mUser.user_reserve(Integer.parseInt(et_num_section.getText().toString()), Integer.parseInt(et_num_seat.getText().toString()));
+                                ((MainActivity)getActivity()).show_snackbar_msg("[SUCC] reserved on " + et_num_seat.getText().toString() + " seat of " + et_num_section.getText().toString() + " section.", true);
+                                break;
 
-                ((MainActivity)getActivity()).show_snackbar_msg("You reserved " + et_num_seat.getText().toString() + " seat of " + et_num_section.getText().toString() + " section.", true);
+                            case RESERVING:
+                            case OCCUPYING:
+                            case STEPPING_OUT:
+                            case PAYING_PENALTY:
+                            case BEING_BLOCKED:
+                                ((MainActivity)getActivity()).show_snackbar_msg("[FAIL] Can't reserve on" + et_num_seat.getText().toString() + " seat of " + et_num_section.getText().toString() + " section.", true);
+                                break;
+
+                            default:
+                                Log.e(TAG, "undefined user status");
+                        }
+                    }
+                });
+
                 break;
 
             case R.id.btn_fast_reserve:
                 break;
 
             case R.id.btn_cancel_reservation:
+                if (et_num_seat.getText().toString().length() == 0 || et_num_section.getText().toString().length() == 0) {
+                    ((MainActivity)getActivity()).show_toast_msg("You should fill out number first!", false);
+                    return;
+                }
+                mUser.getStatusForSingleEvent(new MyCallback<User.Status_user>() {
+                    @Override
+                    public void onCallback(User.Status_user value) {
+                        switch (value) {
+                            case RESERVING:
+                                mUser.user_cancel_reservation(Integer.parseInt(et_num_section.getText().toString()), Integer.parseInt(et_num_seat.getText().toString()));
+                                ((MainActivity)getActivity()).show_snackbar_msg("[SUCC] You canceled " + et_num_seat.getText().toString() + " seat of " + et_num_section.getText().toString() + " section.", false);
+                                break;
+
+                            case ONLINE:
+                            case SUBSCRIBING:
+                            case OCCUPYING:
+                            case STEPPING_OUT:
+                            case PAYING_PENALTY:
+                            case BEING_BLOCKED:
+                                ((MainActivity)getActivity()).show_snackbar_msg("[FAIL] Can't cancel reservation on " + et_num_seat.getText().toString() + " seat of " + et_num_section.getText().toString() + " section.", true);
+                                break;
+
+                            default:
+                                Log.e(TAG, "undefined user status");
+                        }
+                    }
+                });
                 break;
 
             case R.id.btn_occupy:
+                mUser.getStatusForSingleEvent(new MyCallback<User.Status_user>() {
+                    @Override
+                    public void onCallback(User.Status_user value) {
+                        switch (value) {
+                            case RESERVING:
+                                mUser.user_occupy();
+                                ((MainActivity)getActivity()).show_snackbar_msg("[SUCC] You started to use " + et_num_seat.getText().toString() + " seat of " + et_num_section.getText().toString() + " section.", false);
+                                break;
+
+                            case ONLINE:
+                            case SUBSCRIBING:
+                            case OCCUPYING:
+                            case STEPPING_OUT:
+                            case PAYING_PENALTY:
+                            case BEING_BLOCKED:
+                                ((MainActivity)getActivity()).show_snackbar_msg("[FAIL] Can't start to use " + et_num_seat.getText().toString() + " seat of " + et_num_section.getText().toString() + " section.", true);
+                                break;
+
+                            default:
+                                Log.e(TAG, "undefined user status");
+                        }
+                    }
+                });
+
                 break;
 
             case R.id.btn_stop:
+                mUser.getStatusForSingleEvent(new MyCallback<User.Status_user>() {
+                    @Override
+                    public void onCallback(User.Status_user value) {
+                        switch (value) {
+                            case OCCUPYING:
+                            case STEPPING_OUT:
+                                mUser.user_stop();
+                                ((MainActivity)getActivity()).show_snackbar_msg("[SUCC] You stopped.", false);
+                                break;
+
+
+                            case ONLINE:
+                            case SUBSCRIBING:
+                            case RESERVING:
+                            case PAYING_PENALTY:
+                            case BEING_BLOCKED:
+                                ((MainActivity)getActivity()).show_snackbar_msg("[FAIL] Can't stop.", true);
+                                break;
+
+                            default:
+                                Log.e(TAG, "undefined user status");
+                        }
+                    }
+                });
                 break;
 
             case R.id.btn_step_out:
+                mUser.getStatusForSingleEvent(new MyCallback<User.Status_user>() {
+                    @Override
+                    public void onCallback(User.Status_user value) {
+                        switch (value) {
+                            case OCCUPYING:
+                                mUser.user_step_out();
+                                ((MainActivity)getActivity()).show_snackbar_msg("[SUCC] You stepped out.", false);
+                                break;
+
+
+                            case ONLINE:
+                            case SUBSCRIBING:
+                            case RESERVING:
+                            case STEPPING_OUT:
+                            case PAYING_PENALTY:
+                            case BEING_BLOCKED:
+                                ((MainActivity)getActivity()).show_snackbar_msg("[FAIL] Can't step out.", true);
+                                break;
+
+                            default:
+                                Log.e(TAG, "undefined user status");
+                        }
+                    }
+                });
                 break;
 
             case R.id.btn_return_to_seat:
+                mUser.getStatusForSingleEvent(new MyCallback<User.Status_user>() {
+                    @Override
+                    public void onCallback(User.Status_user value) {
+                        switch (value) {
+
+                            case STEPPING_OUT:
+                                mUser.user_return_to_seat();
+                                ((MainActivity)getActivity()).show_snackbar_msg("[SUCC] You returned to seat.", false);
+                                break;
+
+
+                            case ONLINE:
+                            case SUBSCRIBING:
+                            case RESERVING:
+                            case OCCUPYING:
+                            case PAYING_PENALTY:
+                            case BEING_BLOCKED:
+                                ((MainActivity)getActivity()).show_snackbar_msg("[FAIL] Can't return to seat.", true);
+                                break;
+
+                            default:
+                                Log.e(TAG, "undefined user status");
+                        }
+                    }
+                });
                 break;
 
             case R.id.btn_get_penalty:
+                mUser.getStatusForSingleEvent(new MyCallback<User.Status_user>() {
+                    @Override
+                    public void onCallback(User.Status_user value) {
+                        switch (value) {
+                            case RESERVING:
+                                mUser.user_get_penalty();
+                                ((MainActivity)getActivity()).show_snackbar_msg("[SUCC] You got penalty.", false);
+                                break;
+
+
+                            case ONLINE:
+                            case SUBSCRIBING:
+                            case OCCUPYING:
+                            case STEPPING_OUT:
+                            case PAYING_PENALTY:
+                            case BEING_BLOCKED:
+                                ((MainActivity)getActivity()).show_snackbar_msg("[FAIL] Can't get penalty.", true);
+                                break;
+
+                            default:
+                                Log.e(TAG, "undefined user status");
+                        }
+                    }
+                });
                 break;
 
             case R.id.btn_cancel_penalty:
+                mUser.getStatusForSingleEvent(new MyCallback<User.Status_user>() {
+                    @Override
+                    public void onCallback(User.Status_user value) {
+                        switch (value) {
+
+                            case PAYING_PENALTY:
+                                mUser.user_cancel_penalty();
+                                ((MainActivity)getActivity()).show_snackbar_msg("[SUCC] You ended penalty.", false);
+                                break;
+
+
+                            case ONLINE:
+                            case SUBSCRIBING:
+                            case RESERVING:
+                            case OCCUPYING:
+                            case STEPPING_OUT:
+                            case BEING_BLOCKED:
+                                ((MainActivity)getActivity()).show_snackbar_msg("[FAIL] Can't end penalty.", true);
+                                break;
+
+                            default:
+                                Log.e(TAG, "undefined user status");
+                        }
+                    }
+                });
                 break;
 
             case R.id.btn_get_block:
+                mUser.getStatusForSingleEvent(new MyCallback<User.Status_user>() {
+                    @Override
+                    public void onCallback(User.Status_user value) {
+                        switch (value) {
+                            case ONLINE:
+                            case SUBSCRIBING:
+                            case RESERVING:
+                            case PAYING_PENALTY:
+                            case OCCUPYING:
+                            case STEPPING_OUT:
+                                mUser.user_get_block();
+                                ((MainActivity)getActivity()).show_snackbar_msg("[SUCC] You got blocked.", false);
+                                break;
+
+
+                            case BEING_BLOCKED:
+                                ((MainActivity)getActivity()).show_snackbar_msg("[FAIL] Can't get blocked.", true);
+                                break;
+
+                            default:
+                                Log.e(TAG, "undefined user status");
+                        }
+                    }
+                });
+
                 break;
 
             case R.id.btn_cancel_block:
+                mUser.getStatusForSingleEvent(new MyCallback<User.Status_user>() {
+                    @Override
+                    public void onCallback(User.Status_user value) {
+                        switch (value) {
+                            case BEING_BLOCKED:
+                                mUser.user_cancel_block();
+                                ((MainActivity)getActivity()).show_snackbar_msg("[SUCC] You are free.", false);
+                                break;
+
+                            case ONLINE:
+                            case SUBSCRIBING:
+                            case RESERVING:
+                            case PAYING_PENALTY:
+                            case OCCUPYING:
+                            case STEPPING_OUT:
+                                ((MainActivity)getActivity()).show_snackbar_msg("[FAIL] Can't be free.", true);
+                                break;
+
+                            default:
+                                Log.e(TAG, "undefined user status");
+                        }
+                    }
+                });
                 break;
 
             default:

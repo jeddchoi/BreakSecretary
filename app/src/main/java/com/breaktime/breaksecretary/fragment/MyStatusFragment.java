@@ -9,7 +9,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.breaktime.breaksecretary.R;
@@ -30,8 +29,7 @@ public class MyStatusFragment extends Fragment {
     private User mUser;
 
     private TextView tv_login, tv_subscribe, tv_occupy, tv_reserve, tv_step_out, tv_get_penalty, tv_get_block;
-    private TextView tv_status, tv_num_section, tv_num_seat, tv_time;
-    private ProgressBar pb_time;
+    private TextView tv_status;
 
     @Override
     public void onAttach(Context context) {
@@ -59,11 +57,7 @@ public class MyStatusFragment extends Fragment {
         tv_get_block = view.findViewById(R.id.tv_get_block);
 
         tv_status = view.findViewById(R.id.tv_status);
-        tv_num_section = view.findViewById(R.id.tv_num_section);
-        tv_num_seat = view.findViewById(R.id.tv_num_seat);
-        tv_time = view.findViewById(R.id.tv_time);
 
-        pb_time = view.findViewById(R.id.pb_time);
 
         return view;
     }
@@ -87,7 +81,9 @@ public class MyStatusFragment extends Fragment {
                 Long value = dataSnapshot.getValue(Long.class);
 
                 if (value != null)
-                    tv_login.setText(value.toString());
+                    tv_login.setText("ts_login : " + value.toString());
+                else
+                    tv_login.setText("ts_login : NULL");
             }
 
             @Override
@@ -102,7 +98,9 @@ public class MyStatusFragment extends Fragment {
                 Long value = dataSnapshot.getValue(Long.class);
 
                 if (value != null)
-                    tv_subscribe.setText(value.toString());
+                    tv_subscribe.setText("ts_subscribe : " + value.toString());
+                else
+                    tv_subscribe.setText("ts_subscribe : NULL");
             }
 
             @Override
@@ -117,7 +115,9 @@ public class MyStatusFragment extends Fragment {
                 Long value = dataSnapshot.getValue(Long.class);
 
                 if (value != null)
-                    tv_reserve.setText(value.toString());
+                    tv_reserve.setText("ts_reserve : " + value.toString());
+                else
+                    tv_reserve.setText("ts_reserve : NULL");
             }
 
             @Override
@@ -133,7 +133,9 @@ public class MyStatusFragment extends Fragment {
                 Long value = dataSnapshot.getValue(Long.class);
 
                 if (value != null)
-                    tv_occupy.setText(value.toString());
+                    tv_occupy.setText("ts_occupy : " + value.toString());
+                else
+                    tv_occupy.setText("ts_occupy : NULL");
             }
 
             @Override
@@ -150,7 +152,9 @@ public class MyStatusFragment extends Fragment {
                 Long value = dataSnapshot.getValue(Long.class);
 
                 if (value != null)
-                    tv_step_out.setText(value.toString());
+                    tv_step_out.setText("ts_step_out : " + value.toString());
+                else
+                    tv_step_out.setText("ts_step_out : NULL");
             }
 
             @Override
@@ -165,7 +169,9 @@ public class MyStatusFragment extends Fragment {
                 Long value = dataSnapshot.getValue(Long.class);
 
                 if (value != null)
-                    tv_get_penalty.setText(value.toString());
+                    tv_get_penalty.setText("ts_get_penalty : " + value.toString());
+                else
+                    tv_get_penalty.setText("ts_get_penalty : NULL");
             }
 
             @Override
@@ -180,7 +186,9 @@ public class MyStatusFragment extends Fragment {
                 Long value = dataSnapshot.getValue(Long.class);
 
                 if (value != null)
-                    tv_get_block.setText(value.toString());
+                    tv_get_block.setText("ts_get_block : " + value.toString());
+                else
+                    tv_get_block.setText("ts_get_block : NULL");
             }
 
             @Override
@@ -195,7 +203,9 @@ public class MyStatusFragment extends Fragment {
                 String value = dataSnapshot.getValue(String.class);
 
                 if (value != null)
-                    tv_status.setText(value);
+                    tv_status.setText("status : " + value);
+                else
+                    tv_status.setText("status : NULL");
             }
 
             @Override
@@ -204,36 +214,6 @@ public class MyStatusFragment extends Fragment {
             }
         });
 
-        mUser.get_user_ref().child("num_section").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Integer value = dataSnapshot.getValue(Integer.class);
-
-                if (value != null)
-                    tv_num_section.setText(value.toString());
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-
-        mUser.get_user_ref().child("num_seat").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Integer value = dataSnapshot.getValue(Integer.class);
-
-                if (value != null)
-                    tv_num_seat.setText(value.toString());
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
 
     }
 

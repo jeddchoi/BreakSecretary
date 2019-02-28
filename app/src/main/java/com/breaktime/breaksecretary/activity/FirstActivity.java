@@ -180,6 +180,7 @@ public class FirstActivity extends BaseActivity implements View.OnClickListener{
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
                             show_snackbar_msg("Authentication Failed.", false);
+                            hide_progress_dialog();
                         }
 
                     }

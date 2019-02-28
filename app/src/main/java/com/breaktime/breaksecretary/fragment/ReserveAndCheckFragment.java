@@ -24,6 +24,8 @@ public class ReserveAndCheckFragment extends Fragment {
     private FirebaseUtil mFirebaseUtil;
     private User mUser;
 
+
+
     @Override
     public void onAttach(Context context) {
         Log.d(TAG, "onAttach()");

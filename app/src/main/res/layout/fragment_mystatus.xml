@@ -91,37 +91,12 @@
                 android:layout_gravity="center_vertical|center_horizontal"
                 android:text="status : NULL" />
 
-            <TextView
-                android:id="@+id/tv_time"
-                android:layout_width="wrap_content"
+            <FrameLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical|center_horizontal"
-                android:text="time : NULL" />
+                android:id="@+id/container_status">
 
-            <TextView
-                android:id="@+id/tv_num_section"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical|center_horizontal"
-                android:text="num_section : NULL" />
-
-            <TextView
-                android:id="@+id/tv_num_seat"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical|center_horizontal"
-                android:text="num_seat : NULL" />
-
-            <ProgressBar
-                android:id="@+id/pb_time"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:max="100"
-                android:progress="84"
-                android:layout_centerInParent="true"
-                android:layout_gravity="center"
-                android:progressDrawable="@drawable/circular_progress_bar" />
+            </FrameLayout>
 
 
 
