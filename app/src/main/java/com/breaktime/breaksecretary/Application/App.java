@@ -7,7 +7,7 @@ import android.os.Build;
 
 public class App extends Application {
     public static final String CHANNEL_ID = "ServiceChannel";
-    public static final int EMPTY_RANGE = 5;
+    public static final int EMPTY_RANGE = 3;
 
 
     @Override

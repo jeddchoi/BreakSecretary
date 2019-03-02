@@ -2,11 +2,11 @@
 <!-- This is the fragment  to be displayed for a section associated with a tab -->
 
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:custom="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="match_parent">
 
     <com.mikhaellopez.circularimageview.CircularImageView
         android:id="@+id/circularImageView"
@@ -15,6 +15,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="48dp"
         android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
         android:src="@drawable/jal"
         app:civ_border_color="#EEEEEE"
         app:civ_border_width="8dp"
@@ -23,53 +24,85 @@
         app:civ_shadow_radius="10"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
+        app:layout_constraintTop_toTopOf="parent"
+        custom:layout_constraintBottom_toBottomOf="parent"
+        custom:layout_constraintVertical_bias="0.002" />
 
 
     <Button
         android:id="@+id/btn_quick_res"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="84dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginStart="88dp"
         android:layout_marginRight="36dp"
         android:layout_marginBottom="8dp"
         android:text="빠른 예약"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toLeftOf="@id/btn_stop"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/circularImageView"
-        app:layout_constraintVertical_bias="0.754" />
+        app:layout_constraintVertical_bias="0.97"
+        custom:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/btn_stop"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="56dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="88dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="92dp"
+        android:layout_marginBottom="28dp"
         android:text="종료"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
 
-        app:layout_constraintLeft_toRightOf="@id/btn_quick_res"
-        app:layout_constraintTop_toBottomOf="@+id/circularImageView"
-        app:layout_constraintVertical_bias="0.754" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
+
+
+    <com.dinuscxj.progressbar.CircleProgressBar
+        android:id="@+id/progressbar"
+        android:layout_width="307dp"
+        android:layout_height="296dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="48dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        custom:layout_constraintBottom_toBottomOf="parent"
+        custom:layout_constraintEnd_toEndOf="parent"
+        custom:layout_constraintHorizontal_bias="0.511"
+        custom:layout_constraintStart_toStartOf="parent"
+        custom:layout_constraintTop_toTopOf="parent"
+        custom:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/txt_sta"
         android:layout_width="93dp"
         android:layout_height="43dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:text="TextView"
         android:textColor="@color/black"
+
         custom:layout_constraintBottom_toTopOf="@+id/btn_quick_res"
         custom:layout_constraintEnd_toEndOf="parent"
         custom:layout_constraintStart_toStartOf="parent"
-        custom:layout_constraintTop_toBottomOf="@+id/circularImageView" />
+        custom:layout_constraintTop_toTopOf="parent"
+        custom:layout_constraintVertical_bias="0.939" />
+
+    <Button
+        android:id="@+id/btn_rere"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="다시;;"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.436"
+        app:layout_constraintStart_toEndOf="@+id/txt_sta"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.83" />
+
 </android.support.constraint.ConstraintLayout>

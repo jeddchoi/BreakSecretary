@@ -15,6 +15,7 @@ import com.breaktime.breaksecretary.Observer;
 import com.breaktime.breaksecretary.R;
 import com.breaktime.breaksecretary.STATUS;
 import com.breaktime.breaksecretary.Util.FirebaseUtil;
+import com.breaktime.breaksecretary.Util.Singleton;
 import com.breaktime.breaksecretary.activity.MainActivity;
 import com.breaktime.breaksecretary.model.User;
 
@@ -69,7 +70,6 @@ public class MyService extends Service implements BeaconConsumer, Observer {
     public void onCreate() {
         super.onCreate();
         Init();
-
     }
 
     @Override
@@ -141,10 +141,12 @@ public class MyService extends Service implements BeaconConsumer, Observer {
                 // Collection<Beacon>)which gives you a list of every beacon matched in the last scan interval.
                 // unbind 전까지 1초에 한번씩 호출된다.
                 threadhold++;
+
                 logg("threadhold : "+String.valueOf(threadhold));
-                if(status == STATUS.RESERVATION && threadhold == 10){
+                if(status == STATUS.RESERVATION && threadhold > Singleton.getInstance().getLimitsReserving()-2){
                     // 예약 타임 아웃
-                    mUser.get_user_ref().child("status").setValue(User.Status_user.ONLINE);
+                    mUser.user_reservation_over();
+                    //mUser.get_user_ref().child("status").setValue(User.Status_user.RESERVING_OVER);
                     stopForeground(true);
                     stopSelf();
                 }
@@ -153,7 +155,6 @@ public class MyService extends Service implements BeaconConsumer, Observer {
                 if (beacons.size() > 0) {
                     for (Beacon beacon : beacons) {
                         if(major == beacon.getId2().toInt() && minor == beacon.getId3().toInt()){
-
                             if(status == STATUS.RESERVATION){// 예약 -> 시작직전의 상황
                                 if(beacon.getDistance() < App.EMPTY_RANGE) {
                                     setStatus(STATUS.USING);
@@ -162,26 +163,32 @@ public class MyService extends Service implements BeaconConsumer, Observer {
                             }else{ // 시작 후의 상황
                                 switch (status){
                                     case USING:
-                                        if(beacon.getDistance() >App.EMPTY_RANGE &&threadhold ==5){
+                                        if(beacon.getDistance() > App.EMPTY_RANGE && threadhold > 4){ //
                                             setStatus(STATUS.EMPTY);
-                                        }
-                                        if(beacon.getDistance() <App.EMPTY_RANGE)
                                             threadhold = 0;
-                                        else
-                                            threadhold++;
+                                        }
+                                        if(beacon.getDistance() < App.EMPTY_RANGE){
+                                            threadhold = 0;
+                                        }
+
                                         break;
                                     case EMPTY:
                                         if(beacon.getDistance() < App.EMPTY_RANGE){
                                             threadhold = 0;
                                             setStatus(STATUS.USING);
                                         }
+                                        // 비움 초과 시
+                                        if(threadhold >= Singleton.getInstance().getLimitsStepOut()){
+                                            mUser.user_step_out_over();
+                                            stopForeground(true);
+                                            stopSelf();
+                                        }
+
                                         break;
                                 }
 
                             }
                         }
-
-                    // threadhold를 이용하여 30초 세기
                     }
                 }
             }

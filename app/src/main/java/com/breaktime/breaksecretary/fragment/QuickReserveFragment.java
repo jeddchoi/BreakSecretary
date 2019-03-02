@@ -3,6 +3,7 @@ package com.breaktime.breaksecretary.fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -12,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.breaktime.breaksecretary.Observer;
@@ -31,12 +33,15 @@ import com.mikhaellopez.circularimageview.CircularImageView;
 public class QuickReserveFragment extends Fragment implements Observer {
     private static final String TAG = QuickReserveFragment.class.getName();
     private View view;
-
+    Button btn_re;
     private FirebaseUtil mFirebaseUtil;
     private User mUser;
     private CircularImageView imgView;
     private TextView sta;
     private boolean isFlag = false;
+    private int i = 0;
+    CircleProgressBar mProgressBar;
+    CountDownTimer mCountDownTimer;
 
     @Override
     public void onAttach(Context context) {
@@ -58,6 +63,11 @@ public class QuickReserveFragment extends Fragment implements Observer {
         Log.d(TAG, "onCreateView()");
         view = inflater.inflate(R.layout.fragment_quickreserve, container, false);
 
+        ViewInit();
+        return view;
+    }
+
+    public void ViewInit(){
         Button quick_btn = view.findViewById(R.id.btn_quick_res);
         quick_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,17 +81,54 @@ public class QuickReserveFragment extends Fragment implements Observer {
             @Override
             public void onClick(View view) {
                 stopService();
+                mCountDownTimer.cancel();
             }
         });
+        btn_re = view.findViewById(R.id.btn_rere);
+        btn_re.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // 시간초과 후 초기화 과정...
+                mUser.get_user_ref().child("status").setValue(User.Status_user.ONLINE);
 
+            }
+        });
 
         imgView = view.findViewById(R.id.circularImageView);
         sta = view.findViewById(R.id.txt_sta);
 
-        //imgView.setImageResource(R.drawable.ad);
 
+        mProgressBar=view.findViewById(R.id.progressbar);
+        mProgressBar.setMax(10);
+        mProgressBar.setProgressTextSize(80);
+        mProgressBar.setProgressFormatter(new CircleProgressBar.ProgressFormatter() {
+            @Override
+            public CharSequence format(int progress, int max) {
+                return max-progress+"s";
+            }
+        });
 
-        return view;
+        mCountDownTimer=new CountDownTimer(10000,1000) {
+
+            @Override
+            public void onTick(long millisUntilFinished) {
+                Log.v("Log_tag", "Tick of Progress"+ i+ millisUntilFinished);
+                i++;
+                mProgressBar.setProgress(i);
+
+            }
+
+            @Override
+            public void onFinish() {
+                //Do what you want
+                i++;
+                mProgressBar.setProgress(100);
+            }
+        };
+
+        mProgressBar.setVisibility(View.GONE);
+        btn_re.setVisibility(View.GONE);
+
     }
 
     @Override
@@ -89,24 +136,39 @@ public class QuickReserveFragment extends Fragment implements Observer {
         try{
             switch (status){
                 case ONLINE:
-                    if(!isFlag){
-                        imgView.setImageResource(R.drawable.jal);
-                        sta.setText("None");
-                    }
+                    mProgressBar.setVisibility(View.GONE);
+                    imgView.setImageResource(R.drawable.jal);
+                    btn_re.setVisibility(View.GONE);
+                    sta.setText("None");
                     break;
                 case RESERVING:
                     isFlag = true;
-                    imgView.setImageResource(R.drawable.ad);
+                    imgView.setVisibility(View.GONE);
+                    mProgressBar.setVisibility(View.VISIBLE);
+                    mCountDownTimer.start();
                     sta.setText("예약중");
+                    break;
+                case RESERVING_OVER:
+                    imgView.setVisibility(View.VISIBLE);
+                    mProgressBar.setVisibility(View.GONE);
+                    btn_re.setVisibility(View.VISIBLE);
+                    imgView.setImageResource(R.drawable.ad);
+                    sta.setText("에약 시간초과");
                     break;
                 case OCCUPYING:
                     isFlag = false;
+                    imgView.setVisibility(View.VISIBLE);
+                    mProgressBar.setVisibility(View.GONE);
                     imgView.setImageResource(R.drawable.empty_state);
                     sta.setText("사용중");
                     break;
                 case STEPPING_OUT:
                     imgView.setImageResource(R.drawable.ad);
-                    sta.setText("자리비움");
+                    sta.setText("자리비움 중");
+                    break;
+                case STEPPING_OUT_OVER:
+                    sta.setText("자리비움 초과");
+                    btn_re.setVisibility(View.VISIBLE);
                     break;
                 case SUBSCRIBING:
                     break;
@@ -120,7 +182,6 @@ public class QuickReserveFragment extends Fragment implements Observer {
         Intent intent = new Intent(getActivity(), MyService.class);
         intent.putExtra("major", 1002);
         intent.putExtra("minor", 20);
-//        intent.putExtra("user", mUser);
         ContextCompat.startForegroundService(getActivity(), intent);
     }
 

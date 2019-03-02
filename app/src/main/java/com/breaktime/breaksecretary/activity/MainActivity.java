@@ -15,6 +15,7 @@ import com.breaktime.breaksecretary.Observer;
 import com.breaktime.breaksecretary.R;
 import com.breaktime.breaksecretary.Subject;
 import com.breaktime.breaksecretary.Util.FirebaseUtil;
+import com.breaktime.breaksecretary.Util.Singleton;
 import com.breaktime.breaksecretary.adapter.FragmentAdapter;
 import com.breaktime.breaksecretary.fragment.MyStatusFragment;
 import com.breaktime.breaksecretary.fragment.QuickReserveFragment;
@@ -84,9 +85,39 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             }
         });
 
-        //notifyTheStatus(User.Status_user.valueOf();
+        InitSetting();
 
+    }
 
+    public void InitSetting(){
+        Singleton.getInstance().Init(mFirebaseUtil);
+        /*
+        // Setting updates
+        mFirebaseUtil.getSettingRef().child("Limits").child("reserve").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                int a = dataSnapshot.getValue(Integer.class);
+                Singleton.setLimitsA(a);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        mFirebaseUtil.getSettingRef().child("Limits").child("step_out").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+        */
     }
 
     @Override
