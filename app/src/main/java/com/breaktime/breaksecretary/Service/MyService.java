@@ -85,6 +85,7 @@ public class MyService extends Service implements BeaconConsumer, Observer {
 
     @Override
     public void onDestroy() {
+        logg("call onDestroy");
         super.onDestroy();
         beaconManager.unbind(this);
     }
@@ -124,9 +125,9 @@ public class MyService extends Service implements BeaconConsumer, Observer {
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
-    private void sendMessage(String msg){
+    private void sendMessage(int threadhold){
         Intent intent = new Intent("from_beacon");
-        intent.putExtra("msg", msg);
+        intent.putExtra("msg", threadhold);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
@@ -143,10 +144,11 @@ public class MyService extends Service implements BeaconConsumer, Observer {
                 threadhold++;
 
                 logg("threadhold : "+String.valueOf(threadhold));
+                sendMessage(threadhold);
                 if(status == STATUS.RESERVATION && threadhold > Singleton.getInstance().getLimitsReserving()-2){
                     // 예약 타임 아웃
-                    mUser.user_reservation_over();
-                    //mUser.get_user_ref().child("status").setValue(User.Status_user.RESERVING_OVER);
+                    //mUser.user_reservation_over();
+                    mUser.get_user_ref().child("status").setValue(User.Status_user.RESERVING_OVER);
                     stopForeground(true);
                     stopSelf();
                 }
@@ -180,7 +182,7 @@ public class MyService extends Service implements BeaconConsumer, Observer {
                                         // 비움 초과 시
                                         if(threadhold >= Singleton.getInstance().getLimitsStepOut()){
                                             //mUser.user_step_out_over();
-                                            mUser.get_user_ref().child("status").setValue(User.Status_user.STEPPING_OUT);
+                                            mUser.get_user_ref().child("status").setValue(User.Status_user.STEPPING_OUT_OVER);
                                             stopForeground(true);
                                             stopSelf();
                                         }

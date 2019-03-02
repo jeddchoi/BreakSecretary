@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
+import com.breaktime.breaksecretary.Application.App;
 import com.breaktime.breaksecretary.Observer;
 import com.breaktime.breaksecretary.R;
 import com.breaktime.breaksecretary.Subject;
@@ -64,7 +65,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark, null));
 
-
         initViewPager();
 
 
@@ -86,38 +86,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         });
 
         InitSetting();
-
+        ((App)getApplicationContext()).ref(this);
     }
 
     public void InitSetting(){
         Singleton.getInstance().Init(mFirebaseUtil);
-        /*
-        // Setting updates
-        mFirebaseUtil.getSettingRef().child("Limits").child("reserve").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                int a = dataSnapshot.getValue(Integer.class);
-                Singleton.setLimitsA(a);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-        mFirebaseUtil.getSettingRef().child("Limits").child("step_out").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-        */
     }
 
     @Override

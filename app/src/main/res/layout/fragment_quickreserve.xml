@@ -58,21 +58,6 @@
         app:layout_constraintVertical_bias="1.0" />
 
 
-    <com.dinuscxj.progressbar.CircleProgressBar
-        android:id="@+id/progressbar"
-        android:layout_width="307dp"
-        android:layout_height="296dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="48dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        custom:layout_constraintBottom_toBottomOf="parent"
-        custom:layout_constraintEnd_toEndOf="parent"
-        custom:layout_constraintHorizontal_bias="0.511"
-        custom:layout_constraintStart_toStartOf="parent"
-        custom:layout_constraintTop_toTopOf="parent"
-        custom:layout_constraintVertical_bias="0.0" />
-
     <TextView
         android:id="@+id/txt_sta"
         android:layout_width="93dp"

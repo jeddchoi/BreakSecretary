@@ -13,19 +13,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.breaktime.breaksecretary.Observer;
 import com.breaktime.breaksecretary.R;
+import com.breaktime.breaksecretary.activity.ReservingActivity;
 import com.breaktime.breaksecretary.Service.MyService;
 import com.breaktime.breaksecretary.Util.FirebaseUtil;
 import com.breaktime.breaksecretary.activity.MainActivity;
 import com.breaktime.breaksecretary.model.User;
-import com.dinuscxj.progressbar.CircleProgressBar;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.ValueEventListener;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
 
@@ -40,7 +36,7 @@ public class QuickReserveFragment extends Fragment implements Observer {
     private TextView sta;
     private boolean isFlag = false;
     private int i = 0;
-    CircleProgressBar mProgressBar;
+
     CountDownTimer mCountDownTimer;
 
     @Override
@@ -69,6 +65,8 @@ public class QuickReserveFragment extends Fragment implements Observer {
         quick_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), ReservingActivity.class);
+                startActivity(intent);
                 startService();
             }
         });
@@ -78,7 +76,6 @@ public class QuickReserveFragment extends Fragment implements Observer {
             @Override
             public void onClick(View view) {
                 stopService();
-                mCountDownTimer.cancel();
             }
         });
         btn_re = view.findViewById(R.id.btn_rere);
@@ -94,36 +91,6 @@ public class QuickReserveFragment extends Fragment implements Observer {
         imgView = view.findViewById(R.id.circularImageView);
         sta = view.findViewById(R.id.txt_sta);
 
-
-        mProgressBar=view.findViewById(R.id.progressbar);
-        mProgressBar.setMax(10);
-        mProgressBar.setProgressTextSize(80);
-        mProgressBar.setProgressFormatter(new CircleProgressBar.ProgressFormatter() {
-            @Override
-            public CharSequence format(int progress, int max) {
-                return max-progress+"s";
-            }
-        });
-
-        mCountDownTimer=new CountDownTimer(10000,1000) {
-
-            @Override
-            public void onTick(long millisUntilFinished) {
-                Log.v("Log_tag", "Tick of Progress"+ i+ millisUntilFinished);
-                i++;
-                mProgressBar.setProgress(i);
-
-            }
-
-            @Override
-            public void onFinish() {
-                //Do what you want
-                i++;
-                mProgressBar.setProgress(100);
-            }
-        };
-
-        mProgressBar.setVisibility(View.GONE);
         btn_re.setVisibility(View.GONE);
 
     }
@@ -133,7 +100,6 @@ public class QuickReserveFragment extends Fragment implements Observer {
         try{
             switch (status){
                 case ONLINE:
-                    mProgressBar.setVisibility(View.GONE);
                     imgView.setImageResource(R.drawable.jal);
                     btn_re.setVisibility(View.GONE);
                     sta.setText("None");
@@ -141,13 +107,11 @@ public class QuickReserveFragment extends Fragment implements Observer {
                 case RESERVING:
                     isFlag = true;
                     imgView.setVisibility(View.GONE);
-                    mProgressBar.setVisibility(View.VISIBLE);
                     mCountDownTimer.start();
                     sta.setText("예약중");
                     break;
                 case RESERVING_OVER:
                     imgView.setVisibility(View.VISIBLE);
-                    mProgressBar.setVisibility(View.GONE);
                     btn_re.setVisibility(View.VISIBLE);
                     imgView.setImageResource(R.drawable.ad);
                     sta.setText("에약 시간초과");
@@ -155,7 +119,6 @@ public class QuickReserveFragment extends Fragment implements Observer {
                 case OCCUPYING:
                     isFlag = false;
                     imgView.setVisibility(View.VISIBLE);
-                    mProgressBar.setVisibility(View.GONE);
                     imgView.setImageResource(R.drawable.empty_state);
                     sta.setText("사용중");
                     break;
