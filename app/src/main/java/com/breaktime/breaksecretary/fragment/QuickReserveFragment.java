@@ -53,9 +53,6 @@ public class QuickReserveFragment extends Fragment implements Observer {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         Log.d(TAG, "onCreate()");
         super.onCreate(savedInstanceState);
-
-
-
     }
 
     @Override
