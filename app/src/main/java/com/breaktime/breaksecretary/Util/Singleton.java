@@ -26,12 +26,13 @@ public class Singleton {
     }
 
     // Singleton 인스턴스를 얻기 위한 static 메소드
-    public synchronized static Singleton getInstance() {
+    public static Singleton getInstance() {
         // 아직 인스턴스가 생성된적이 없음 = 존재하지 않음
         if(singleton == null) {
-
-            // 인스턴스 생성. 생성자가 private이니까 클래스 내부에서는 가능.
-            singleton = new Singleton();
+            synchronized (Singleton.class){
+                // 인스턴스 생성. 생성자가 private이니까 클래스 내부에서는 가능.
+                singleton = new Singleton();
+            }
         }
         return singleton;
     }
