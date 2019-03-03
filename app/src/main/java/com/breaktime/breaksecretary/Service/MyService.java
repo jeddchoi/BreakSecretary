@@ -48,7 +48,7 @@ public class MyService extends Service implements BeaconConsumer, Observer {
 
     private static final String TAG = "TEST";
     private int major, minor;
-    private STATUS status;
+    private User.Status_user status;
     private DISTANCE distance;
     private BeaconManager beaconManager;
     private boolean isOutofRange;
@@ -78,7 +78,7 @@ public class MyService extends Service implements BeaconConsumer, Observer {
             major = intent.getIntExtra("major", 0);
             minor = intent.getIntExtra("minor", 0);
         }
-        setStatus(STATUS.RESERVATION);
+        setStatus(User.Status_user.RESERVING);
         // do heavy work on a background THREAD
         return START_STICKY;
     }
@@ -98,32 +98,27 @@ public class MyService extends Service implements BeaconConsumer, Observer {
     }
 
 
-    private void setStatus(STATUS to){
+    private void setStatus(User.Status_user to){
         stopForeground(true);
         switch (to){
-            case RESERVATION:
+            case RESERVING:
                 startForeground(1,Notify.get(STATUS.RESERVATION));
                 break;
-            case USING:
+            case OCCUPYING:
                 startForeground(1,Notify.get(STATUS.USING));
                 distance = DISTANCE.IMMEDIATE;
-                status = STATUS.USING;
+                status = User.Status_user.OCCUPYING;
                 mUser.get_user_ref().child("status").setValue(User.Status_user.OCCUPYING);
                 break;
-            case EMPTY:
+            case STEPPING_OUT:
                 startForeground(1,Notify.get(STATUS.EMPTY));
                 distance = DISTANCE.NEAR;
-                status = STATUS.EMPTY;
+                status = User.Status_user.STEPPING_OUT;
                 mUser.get_user_ref().child("status").setValue(User.Status_user.STEPPING_OUT);
                 break;
         }
     }
 
-    private void sendMessage(STATUS status){
-        Intent intent = new Intent("from_beacon");
-        intent.putExtra("status", status);
-        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
-    }
 
     private void sendMessage(int threadhold){
         Intent intent = new Intent("from_beacon");
@@ -143,41 +138,42 @@ public class MyService extends Service implements BeaconConsumer, Observer {
                 // unbind 전까지 1초에 한번씩 호출된다.
                 threadhold++;
 
+                logg("현재 상태 : "+String.valueOf(status));
                 logg("threadhold : "+String.valueOf(threadhold));
-                sendMessage(threadhold);
-                if(status == STATUS.RESERVATION && threadhold > Singleton.getInstance().getLimitsReserving()-2){
-                    // 예약 타임 아웃
-                    //mUser.user_reservation_over();
-                    mUser.get_user_ref().child("status").setValue(User.Status_user.RESERVING_OVER);
-                    stopForeground(true);
-                    stopSelf();
+
+                if(status == User.Status_user.RESERVING) {
+                    sendMessage(threadhold);
+                    if (threadhold >= Singleton.getInstance().getLimitsReserving()) {
+                        // 예약 타임 아웃
+                        mUser.get_user_ref().child("status").setValue(User.Status_user.RESERVING_OVER);
+                        stopForeground(true);
+                        stopSelf();
+                    }
                 }
 
-                logg("현재 상태 : "+String.valueOf(status));
                 if (beacons.size() > 0) {
                     for (Beacon beacon : beacons) {
                         if(major == beacon.getId2().toInt() && minor == beacon.getId3().toInt()){
-                            if(status == STATUS.RESERVATION){// 예약 -> 시작직전의 상황
+                            if(status == User.Status_user.RESERVING){// 예약 -> 시작직전의 상황
                                 if(beacon.getDistance() < App.EMPTY_RANGE) {
-                                    setStatus(STATUS.USING);
+                                    setStatus(User.Status_user.OCCUPYING);
                                 }
 
                             }else{ // 시작 후의 상황
                                 switch (status){
-                                    case USING:
+                                    case OCCUPYING:
                                         if(beacon.getDistance() > App.EMPTY_RANGE && threadhold > 4){ //
-                                            setStatus(STATUS.EMPTY);
+                                            setStatus(User.Status_user.STEPPING_OUT);
                                             threadhold = 0;
                                         }
                                         if(beacon.getDistance() < App.EMPTY_RANGE){
                                             threadhold = 0;
                                         }
-
                                         break;
-                                    case EMPTY:
+                                    case STEPPING_OUT:
                                         if(beacon.getDistance() < App.EMPTY_RANGE){
                                             threadhold = 0;
-                                            setStatus(STATUS.USING);
+                                            setStatus(User.Status_user.OCCUPYING);
                                         }
                                         // 비움 초과 시
                                         if(threadhold >= Singleton.getInstance().getLimitsStepOut()){
@@ -186,10 +182,8 @@ public class MyService extends Service implements BeaconConsumer, Observer {
                                             stopForeground(true);
                                             stopSelf();
                                         }
-
                                         break;
                                 }
-
                             }
                         }
                     }
@@ -229,7 +223,6 @@ public class MyService extends Service implements BeaconConsumer, Observer {
 
     private void Init(){
         // 1) init beaconManager
-        status = STATUS.RESERVATION;
         beaconManager = BeaconManager.getInstanceForApplication(this);
         beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
         beaconManager.bind(this);
@@ -261,7 +254,7 @@ public class MyService extends Service implements BeaconConsumer, Observer {
         // 3) init fields
         distance = DISTANCE.FAR;
         threadhold = 0;
-        status = STATUS.RESERVATION;
+        status = User.Status_user.RESERVING;
         mFirebaseUtil = new FirebaseUtil();
         mUser = new User(mFirebaseUtil);
 

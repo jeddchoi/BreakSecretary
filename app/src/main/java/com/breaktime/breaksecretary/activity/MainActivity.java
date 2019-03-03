@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
@@ -14,6 +15,7 @@ import android.view.WindowManager;
 import com.breaktime.breaksecretary.Application.App;
 import com.breaktime.breaksecretary.Observer;
 import com.breaktime.breaksecretary.R;
+import com.breaktime.breaksecretary.Service.MyService;
 import com.breaktime.breaksecretary.Subject;
 import com.breaktime.breaksecretary.Util.FirebaseUtil;
 import com.breaktime.breaksecretary.Util.Singleton;
@@ -39,9 +41,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     public FirebaseUtil mFirebaseUtil;
     public User mUser;
-
+    private User.Status_user status = null;
     private TabLayout mTabLayout;
-
+    ViewPager mViewPager;
     private int[] tabIcons = {
             R.drawable.ic_flash_on_white_24dp,
             R.drawable.ic_timer_white_24dp,
@@ -75,6 +77,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 String value = dataSnapshot.getValue(String.class);
                 if (value != null){
+                    status = User.Status_user.valueOf(value);
                     notifyTheStatus(User.Status_user.valueOf(value));
                 }
             }
@@ -84,9 +87,32 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
             }
         });
+        /*
+        mUser.get_user_ref().child("status").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String value = dataSnapshot.getValue(String.class);
+                if (value != null){
+                    notifyTheStatus(User.Status_user.valueOf(value));
+                }
+            }
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+        */
         InitSetting();
         ((App)getApplicationContext()).ref(this);
+
+        if (mFirebaseUtil.getCurrentUser() == null || !mFirebaseUtil.getCurrentUser().isEmailVerified()) {
+            startActivity(new Intent(MainActivity.this, FirstActivity.class));
+            finish();
+        } else {
+            //mUser.user_login();
+            show_snackbar_msg("Successfully signed in : " + mUser.getEmailForSingleEvent(), true);
+        }
     }
 
     public void InitSetting(){
@@ -143,16 +169,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     protected void onStart() {
         Log.d(TAG, "onStart()");
         super.onStart();
-
-
-
-        if (mFirebaseUtil.getCurrentUser() == null || !mFirebaseUtil.getCurrentUser().isEmailVerified()) {
-            startActivity(new Intent(MainActivity.this, FirstActivity.class));
-            finish();
-        } else {
-            mUser.user_login();
-            show_snackbar_msg("Successfully signed in : " + mUser.getEmailForSingleEvent(), true);
-        }
+        if(status == User.Status_user.OCCUPYING)
+            mViewPager.setCurrentItem(2);
 
     }
 
@@ -184,8 +202,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     private void initViewPager() {
         mTabLayout = findViewById(R.id.tab_layout_main);
-        ViewPager mViewPager = findViewById(R.id.view_pager_main);
-
+        mViewPager = findViewById(R.id.view_pager_main);
         List<String> titles = new ArrayList<>();
         titles.add(getString(R.string.tab_title_main_1));
         titles.add(getString(R.string.tab_title_main_2));
@@ -236,5 +253,19 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     @Override
     public void onClick(View view) {
 
+    }
+
+    public void startService(int major , int minor){
+        mUser.get_user_ref().child("status").setValue(User.Status_user.RESERVING);
+        Intent intent = new Intent(this, MyService.class);
+        intent.putExtra(ReservingActivity.R_MAJOR, major);
+        intent.putExtra(ReservingActivity.R_MINOR, minor);
+        ContextCompat.startForegroundService(this, intent);
+    }
+
+    public void stopService(){
+        mUser.get_user_ref().child("status").setValue(User.Status_user.ONLINE);
+        Intent intent = new Intent(this, MyService.class);
+        this.stopService(intent);
     }
 }

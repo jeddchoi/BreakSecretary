@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -33,7 +34,7 @@ public class MyStatusFragment extends Fragment implements Observer {
     private TextView tv_login, tv_subscribe, tv_occupy, tv_reserve, tv_step_out, tv_get_penalty, tv_get_block;
     private TextView tv_status;
     private FrameLayout container_status;
-
+    private Button button_stop;
     @Override
     public void onAttach(Context context) {
         Log.d(TAG, "onAttach()");
@@ -62,6 +63,15 @@ public class MyStatusFragment extends Fragment implements Observer {
         tv_status = view.findViewById(R.id.tv_status);
         container_status = view.findViewById(R.id.container_status);
 
+        button_stop = view.findViewById(R.id.button2);
+        button_stop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ((MainActivity)getActivity()).show_toast_msg("사용종료", true);
+                ((MainActivity)getActivity()).stopService();
+            }
+        });
+        button_stop.setVisibility(View.GONE);
         return view;
     }
 
@@ -199,7 +209,7 @@ public class MyStatusFragment extends Fragment implements Observer {
 
             }
         });
-
+        /*
         mUser.get_user_ref().child("status").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -216,7 +226,7 @@ public class MyStatusFragment extends Fragment implements Observer {
 
             }
         });
-
+        */
 
     }
 
@@ -273,7 +283,38 @@ public class MyStatusFragment extends Fragment implements Observer {
 
     @Override
     public void update(User.Status_user status) {
+        try{
+            switch (status){
+                case ONLINE:
+                    //btn_re.setVisibility(View.GONE);
+                    button_stop.setVisibility(View.GONE);
+                    tv_status.setText("None");
+                    break;
+                case RESERVING:
 
+                   // mCountDownTimer.start();
+                    tv_status.setText("예약중");
+                    break;
+                case RESERVING_OVER:
+                    //btn_re.setVisibility(View.VISIBLE);
+                    tv_status.setText("에약 시간초과");
+                    break;
+                case OCCUPYING:
+                    //isFlag = false;
+                    button_stop.setVisibility(View.VISIBLE);
+                    tv_status.setText("사용중");
+                    break;
+                case STEPPING_OUT:
+                    tv_status.setText("자리비움 중");
+                    break;
+                case STEPPING_OUT_OVER:
+                    tv_status.setText("자리비움 초과");
+                    //btn_re.setVisibility(View.VISIBLE);
+                    break;
+                case SUBSCRIBING:
+                    break;
+            }
+        }catch (Exception e){}
     }
 
 }
