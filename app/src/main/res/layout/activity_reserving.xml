@@ -9,6 +9,10 @@
 
 
     <com.dinuscxj.progressbar.CircleProgressBar
+        app:progress_stroke_width="3dp"
+        app:progress_stroke_cap="square"
+        app:progress_start_color="@color/app_blue_dark"
+        app:progress_end_color="@color/amber_primary"
         android:id="@+id/progressbar"
         android:layout_width="307dp"
         android:layout_height="300dp"

@@ -29,7 +29,10 @@ public class ReservingActivity extends BaseActivity implements Observer {
         Log.d("TTT", "Call update in RA :"+status);
         switch (status){
             case OCCUPYING:
+                finish();
+                break;
             case RESERVING_OVER:
+                show_toast_msg("예약 시간 초과", true);
                 finish();
             break;
         }

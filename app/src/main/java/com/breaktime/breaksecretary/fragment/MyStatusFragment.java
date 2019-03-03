@@ -283,6 +283,7 @@ public class MyStatusFragment extends Fragment implements Observer {
 
     @Override
     public void update(User.Status_user status) {
+        Log.d("TESS", "call update in MyStatusFragment : "+status);
         try{
             switch (status){
                 case ONLINE:
