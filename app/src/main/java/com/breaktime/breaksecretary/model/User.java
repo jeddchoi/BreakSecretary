@@ -54,7 +54,6 @@ public class User implements Serializable {
 
         mUserRef = mFirebaseUtil.getUsersRef().child(mFirebaseUtil.getCurrentUser().getUid());
         mUserRef.child("email_address").setValue(mFirebaseUtil.getCurrentUser().getEmail());
-
     }
 
     // Default Constructor
@@ -376,9 +375,11 @@ public class User implements Serializable {
 
     }
 
+
     @Exclude
     public void user_reserve(Integer num_section, Integer num_seat) {
-        // TODO: seat에 자리 사용중 표시
+
+        mFirebaseUtil.getSeatsRef().child(num_section.toString()).child("_" + num_seat.toString()).setValue(mFirebaseUtil.getAuth().getUid());
         Log.d(TAG, "user reserve");
         setStatusForSingleEvent(Status_user.RESERVING);
         setNum_sectionForSingleEvent(num_section);
@@ -386,38 +387,47 @@ public class User implements Serializable {
         mUserRef.child("ts_reserve").setValue(System.currentTimeMillis());
         mUserRef.child("ts_subscribe").removeValue();
 
-
     }
+
+
 
     @Exclude
     public void user_cancel_reservation() {
-        // TODO: seat에서 available이라고 표시하기
-
         getNum_sectionForSingleEvent(new MyCallback<Integer>() {
             @Override
-            public void onCallback(final Integer value1) {
+            public void onCallback(final Integer section) {
                 getNum_seatForSingleEvent(new MyCallback<Integer>() {
                     @Override
-                    public void onCallback(Integer value2) {
-                        Log.d(TAG, value1.toString());
+                    public void onCallback(Integer seatnum) {
+                        mFirebaseUtil.getSeatsRef().child(section.toString()).child("_" + seatnum.toString()).setValue("None");
+                        Log.d(TAG, "user cancel reservation");
+                        setStatusForSingleEvent(Status_user.ONLINE);
+                        setNum_sectionForSingleEvent(null);
+                        setNum_seatForSingleEvent(null);
+                        mUserRef.child("ts_reserve").removeValue();
                     }
                 });
             }
         });
-        Log.d(TAG, "user cancel reservation");
-        setStatusForSingleEvent(Status_user.ONLINE);
-        setNum_sectionForSingleEvent(null);
-        setNum_seatForSingleEvent(null);
-        mUserRef.child("ts_reserve").removeValue();
     }
 
     @Exclude
     public void user_reservation_over() {
-        // TODO: seat에서 available이라고 표시하기
-        Log.d(TAG, "user reservation over");
-        setStatusForSingleEvent(Status_user.RESERVING_OVER);
-        setNum_sectionForSingleEvent(null);
-        setNum_seatForSingleEvent(null);
+        getNum_sectionForSingleEvent(new MyCallback<Integer>() {
+            @Override
+            public void onCallback(final Integer section) {
+                getNum_seatForSingleEvent(new MyCallback<Integer>() {
+                    @Override
+                    public void onCallback(Integer seatnum) {
+                        mFirebaseUtil.getSeatsRef().child(section.toString()).child("_" + seatnum.toString()).setValue("None");
+                        Log.d(TAG, "user reservation over");
+                        setStatusForSingleEvent(Status_user.RESERVING_OVER);
+                        setNum_sectionForSingleEvent(null);
+                        setNum_seatForSingleEvent(null);
+                    }
+                });
+            }
+        });
     }
 
     @Exclude
@@ -441,23 +451,44 @@ public class User implements Serializable {
     // stop means that He/She wants to stop using that seat.
     @Exclude
     public void user_stop() {
-        // TODO: seat에서 available이라고 표시하기
-        Log.d(TAG, "user stop");
-        setStatusForSingleEvent(Status_user.ONLINE);
-        mUserRef.child("ts_occupy").removeValue();
-        mUserRef.child("ts_step_out").removeValue();
-        mUserRef.child("num_section").removeValue();
-        mUserRef.child("num_seat").removeValue();
+        getNum_sectionForSingleEvent(new MyCallback<Integer>() {
+            @Override
+            public void onCallback(final Integer section) {
+                getNum_seatForSingleEvent(new MyCallback<Integer>() {
+                    @Override
+                    public void onCallback(Integer seatnum) {
+                        mFirebaseUtil.getSeatsRef().child(section.toString()).child("_" + seatnum.toString()).setValue("None");
+                        Log.d(TAG, "user stop");
+                        setStatusForSingleEvent(Status_user.ONLINE);
+                        mUserRef.child("ts_occupy").removeValue();
+                        mUserRef.child("ts_step_out").removeValue();
+                        mUserRef.child("num_section").removeValue();
+                        mUserRef.child("num_seat").removeValue();
+                    }
+                });
+            }
+        });
     }
 
     @Exclude
     public void user_occupy_over() {
-        // TODO: seat에서 available이라고 표시하기
-        Log.d(TAG, "user occupy over");
-        setStatusForSingleEvent(Status_user.OCCUPYING_OVER);
-        mUserRef.child("ts_step_out").removeValue();
-        mUserRef.child("num_section").removeValue();
-        mUserRef.child("num_seat").removeValue();
+
+        getNum_sectionForSingleEvent(new MyCallback<Integer>() {
+            @Override
+            public void onCallback(final Integer section) {
+                getNum_seatForSingleEvent(new MyCallback<Integer>() {
+                    @Override
+                    public void onCallback(Integer seatnum) {
+                        mFirebaseUtil.getSeatsRef().child(section.toString()).child("_" + seatnum.toString()).setValue("None");
+                        Log.d(TAG, "user occupy over");
+                        setStatusForSingleEvent(Status_user.OCCUPYING_OVER);
+                        mUserRef.child("ts_step_out").removeValue();
+                        mUserRef.child("num_section").removeValue();
+                        mUserRef.child("num_seat").removeValue();
+                    }
+                });
+            }
+        });
     }
 
     @Exclude
@@ -487,10 +518,26 @@ public class User implements Serializable {
 
     @Exclude
     public void user_step_out_over() {
-        // TODO: seat에서 available이라고 표시하기
+
+        mFirebaseUtil.getSeatsRef().child(num_section.toString()).child("_" + num_seat.toString()).setValue("None");
         Log.d(TAG, "user step out over");
         setStatusForSingleEvent(Status_user.STEPPING_OUT_OVER);
         mUserRef.child("ts_step_out").removeValue();
+
+        getNum_sectionForSingleEvent(new MyCallback<Integer>() {
+            @Override
+            public void onCallback(final Integer section) {
+                getNum_seatForSingleEvent(new MyCallback<Integer>() {
+                    @Override
+                    public void onCallback(Integer seatnum) {
+                        mFirebaseUtil.getSeatsRef().child(section.toString()).child("_" + seatnum.toString()).setValue("None");
+                        Log.d(TAG, "user step out over");
+                        setStatusForSingleEvent(Status_user.STEPPING_OUT_OVER);
+                        mUserRef.child("ts_step_out").removeValue();
+                    }
+                });
+            }
+        });
 
     }
 
@@ -547,7 +594,6 @@ public class User implements Serializable {
         mUserRef.child("ts_get_block").removeValue();
 
     }
-
 
     @Exclude
     public DatabaseReference get_user_ref() {

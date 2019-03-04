@@ -9,11 +9,19 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.GridView;
+import android.widget.Toast;
 
 import com.breaktime.breaksecretary.R;
 import com.breaktime.breaksecretary.Util.FirebaseUtil;
 import com.breaktime.breaksecretary.activity.MainActivity;
+import com.breaktime.breaksecretary.adapter.GridAdapter;
+import com.breaktime.breaksecretary.model.Section;
+import com.breaktime.breaksecretary.model.SectionItem;
 import com.breaktime.breaksecretary.model.User;
+
+import java.util.ArrayList;
 
 
 // In this case, the fragment displays simple text based on the page
@@ -24,7 +32,9 @@ public class ReserveAndCheckFragment extends Fragment {
     private FirebaseUtil mFirebaseUtil;
     private User mUser;
 
-
+    private GridView gridView;
+    private GridAdapter adapter;
+    private ArrayList<Section> sectionItems;
 
     @Override
     public void onAttach(Context context) {
@@ -44,6 +54,24 @@ public class ReserveAndCheckFragment extends Fragment {
         mFirebaseUtil = ((MainActivity)getActivity()).mFirebaseUtil;
         mUser = ((MainActivity)getActivity()).mUser;
 
+        GridView gridView = (GridView) view.findViewById(R.id.grid_section_info);
+        sectionItems = new ArrayList<>();
+        adapter = new GridAdapter(((MainActivity)getActivity()).getApplicationContext(), sectionItems);
+        gridView.setAdapter(adapter);
+
+        sectionItems.add(new Section("A", "0", "50"));
+        sectionItems.add(new Section("B", "0", "50"));
+        sectionItems.add(new Section("C", "0", "50"));
+        sectionItems.add(new Section("D", "0", "50"));
+
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Toast.makeText(((MainActivity)getActivity()), ((SectionItem)view).getTotalNum(), Toast.LENGTH_LONG).show();
+            }
+        });
+
+        adapter.notifyDataSetChanged();
         return view;
     }
 

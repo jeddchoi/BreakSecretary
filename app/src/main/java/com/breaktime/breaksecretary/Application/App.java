@@ -4,16 +4,20 @@ import android.app.Application;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.os.Build;
+import android.util.Log;
+
+import com.breaktime.breaksecretary.activity.MainActivity;
 
 public class App extends Application {
     public static final String CHANNEL_ID = "ServiceChannel";
-    public static final int EMPTY_RANGE = 5;
+    public static final int EMPTY_RANGE = 3;
+    public MainActivity ma;
 
 
     @Override
     public void onCreate() {
         super.onCreate();
-
+        Log.d("App", "onCreate");
         createNotificationChannel();
     }
 
@@ -29,7 +33,9 @@ public class App extends Application {
             manager.createNotificationChannel(serviceChannel);
 
         }
+    }
 
-
+    public void ref(MainActivity ma){
+        this.ma = ma;
     }
 }

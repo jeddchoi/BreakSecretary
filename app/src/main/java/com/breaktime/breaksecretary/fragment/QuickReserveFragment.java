@@ -3,6 +3,7 @@ package com.breaktime.breaksecretary.fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -12,18 +13,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.breaktime.breaksecretary.Observer;
 import com.breaktime.breaksecretary.R;
+import com.breaktime.breaksecretary.activity.ReservingActivity;
 import com.breaktime.breaksecretary.Service.MyService;
 import com.breaktime.breaksecretary.Util.FirebaseUtil;
 import com.breaktime.breaksecretary.activity.MainActivity;
 import com.breaktime.breaksecretary.model.User;
-import com.dinuscxj.progressbar.CircleProgressBar;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.ValueEventListener;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.DrawableImageViewTarget;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
 
@@ -31,11 +33,14 @@ import com.mikhaellopez.circularimageview.CircularImageView;
 public class QuickReserveFragment extends Fragment implements Observer {
     private static final String TAG = QuickReserveFragment.class.getName();
     private View view;
-
+    Button btn_re;
     private FirebaseUtil mFirebaseUtil;
     private User mUser;
-    private CircularImageView imgView;
     private TextView sta;
+    private boolean isFlag = false;
+    private MainActivity mActivity;
+
+    CountDownTimer mCountDownTimer;
 
     @Override
     public void onAttach(Context context) {
@@ -47,9 +52,7 @@ public class QuickReserveFragment extends Fragment implements Observer {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         Log.d(TAG, "onCreate()");
         super.onCreate(savedInstanceState);
-
-
-
+        mActivity = (MainActivity)getActivity();
     }
 
     @Override
@@ -57,51 +60,71 @@ public class QuickReserveFragment extends Fragment implements Observer {
         Log.d(TAG, "onCreateView()");
         view = inflater.inflate(R.layout.fragment_quickreserve, container, false);
 
+
+        ViewInit();
+        return view;
+    }
+
+    public void ViewInit(){
         Button quick_btn = view.findViewById(R.id.btn_quick_res);
         quick_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startService();
+                Intent intent = new Intent(getActivity(), ReservingActivity.class);
+                intent.putExtra("major", 1002);
+                intent.putExtra("minor", 20);
+                startActivity(intent);
+                mActivity.startService(1002, 20);
             }
         });
-        Button btn_stop = view.findViewById(R.id.btn_stop);
-        btn_stop.setOnClickListener(new View.OnClickListener() {
+
+        btn_re = view.findViewById(R.id.btn_rere);
+        btn_re.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                stopService();
+                // 시간초과 후 초기화 과정...
+                mUser.get_user_ref().child("status").setValue(User.Status_user.ONLINE);
+
             }
         });
 
+        ImageView imageView = view.findViewById(R.id.imageView2);
+        RequestOptions requestOptions = new RequestOptions().centerCrop();
+        DrawableImageViewTarget target = new DrawableImageViewTarget(imageView);
+        Glide.with(this).setDefaultRequestOptions(requestOptions.override(300,500)).load(R.raw.bgbg).into(target);
 
-        imgView = view.findViewById(R.id.circularImageView);
         sta = view.findViewById(R.id.txt_sta);
+        btn_re.setVisibility(View.GONE);
 
-        //imgView.setImageResource(R.drawable.ad);
-
-
-        return view;
     }
 
     @Override
     public void update(User.Status_user status){
-        Log.d("TEST", "call update in qucikFrag with :" + status);
         try{
             switch (status){
                 case ONLINE:
-                    imgView.setImageResource(R.drawable.jal);
+                    btn_re.setVisibility(View.GONE);
                     sta.setText("None");
                     break;
                 case RESERVING:
-                    imgView.setImageResource(R.drawable.ad);
+                    isFlag = true;
+                    mCountDownTimer.start();
                     sta.setText("예약중");
                     break;
+                case RESERVING_OVER:
+                    btn_re.setVisibility(View.VISIBLE);
+                    sta.setText("에약 시간초과");
+                    break;
                 case OCCUPYING:
-                    imgView.setImageResource(R.drawable.empty_state);
+                    isFlag = false;
                     sta.setText("사용중");
                     break;
                 case STEPPING_OUT:
-                    imgView.setImageResource(R.drawable.ad);
-                    sta.setText("자리비움");
+                    sta.setText("자리비움 중");
+                    break;
+                case STEPPING_OUT_OVER:
+                    sta.setText("자리비움 초과");
+                    btn_re.setVisibility(View.VISIBLE);
                     break;
                 case SUBSCRIBING:
                     break;
@@ -110,20 +133,6 @@ public class QuickReserveFragment extends Fragment implements Observer {
 
     }
 
-    public void startService(){
-        mUser.get_user_ref().child("status").setValue(User.Status_user.RESERVING);
-        Intent intent = new Intent(getActivity(), MyService.class);
-        intent.putExtra("major", 1002);
-        intent.putExtra("minor", 20);
-//        intent.putExtra("user", mUser);
-        ContextCompat.startForegroundService(getActivity(), intent);
-    }
-
-    public void stopService(){
-        mUser.get_user_ref().child("status").setValue(User.Status_user.ONLINE);
-        Intent intent = new Intent(getActivity(), MyService.class);
-        getActivity().stopService(intent);
-    }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
