@@ -13,6 +13,7 @@ import android.view.WindowManager;
 
 import com.breaktime.breaksecretary.Observer;
 import com.breaktime.breaksecretary.R;
+import com.breaktime.breaksecretary.Service.SessionExpired;
 import com.breaktime.breaksecretary.Subject;
 import com.breaktime.breaksecretary.Util.FirebaseUtil;
 import com.breaktime.breaksecretary.adapter.FragmentAdapter;
@@ -21,7 +22,6 @@ import com.breaktime.breaksecretary.fragment.QuickReserveFragment;
 import com.breaktime.breaksecretary.fragment.ReserveAndCheckFragment;
 import com.breaktime.breaksecretary.fragment.SettingFragment;
 import com.breaktime.breaksecretary.fragment.TimeLineFragment;
-import com.breaktime.breaksecretary.model.MyCallback;
 import com.breaktime.breaksecretary.model.User;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -69,6 +69,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
         mFirebaseUtil = new FirebaseUtil();
         mUser = new User(mFirebaseUtil);
+        startService(new Intent(this, SessionExpired.class));
         mUser.get_user_ref().child("status").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -113,9 +114,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     @Override
     protected void onDestroy() {
         Log.d(TAG, "onDestroy()");
-
         super.onDestroy();
-
 
 
     }

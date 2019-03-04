@@ -17,7 +17,11 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
-
+        <service
+            android:name=".Service.SessionExpired"
+            android:enabled="true"
+            android:exported="true"
+            android:stopWithTask="false"></service>
         <service
             android:name=".Service.MyService"
             android:enabled="true"

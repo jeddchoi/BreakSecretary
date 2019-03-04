@@ -354,8 +354,9 @@ public class User implements Serializable {
     // logout means that He/She will not use this service for a while.
     @Exclude
     public void user_logout() {
-        Log.d(TAG, "user logout -> delete UserReference");
+        Log.d(TAG, "user logout -> delete UserReference1");
         mUserRef.removeValue();
+
     }
 
     @Exclude
@@ -391,6 +392,18 @@ public class User implements Serializable {
     @Exclude
     public void user_cancel_reservation() {
         // TODO: seat에서 available이라고 표시하기
+
+        getNum_sectionForSingleEvent(new MyCallback<Integer>() {
+            @Override
+            public void onCallback(final Integer value1) {
+                getNum_seatForSingleEvent(new MyCallback<Integer>() {
+                    @Override
+                    public void onCallback(Integer value2) {
+                        Log.d(TAG, value1.toString());
+                    }
+                });
+            }
+        });
         Log.d(TAG, "user cancel reservation");
         setStatusForSingleEvent(Status_user.ONLINE);
         setNum_sectionForSingleEvent(null);

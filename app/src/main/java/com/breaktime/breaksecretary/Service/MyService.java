@@ -89,6 +89,7 @@ public class MyService extends Service implements BeaconConsumer, Observer {
     public void onDestroy() {
         super.onDestroy();
         beaconManager.unbind(this);
+
     }
 
 
