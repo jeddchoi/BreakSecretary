@@ -32,13 +32,15 @@ public class MyStatusFragment extends Fragment implements Observer {
     private User mUser;
 
     private TextView tv_login, tv_subscribe, tv_occupy, tv_reserve, tv_step_out, tv_get_penalty, tv_get_block;
-    private TextView tv_status;
     private FrameLayout container_status;
     private Button button_stop;
+
     @Override
     public void onAttach(Context context) {
         Log.d(TAG, "onAttach()");
         super.onAttach(context);
+
+
     }
 
     @Override
@@ -60,7 +62,6 @@ public class MyStatusFragment extends Fragment implements Observer {
         tv_get_penalty = view.findViewById(R.id.tv_get_penalty);
         tv_get_block = view.findViewById(R.id.tv_get_block);
 
-        tv_status = view.findViewById(R.id.tv_status);
         container_status = view.findViewById(R.id.container_status);
 
         button_stop = view.findViewById(R.id.button2);
@@ -87,6 +88,21 @@ public class MyStatusFragment extends Fragment implements Observer {
         }
         mFirebaseUtil = ((MainActivity)getActivity()).mFirebaseUtil;
         mUser = ((MainActivity)getActivity()).mUser;
+
+        mUser.get_user_ref().child("status").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String value = dataSnapshot.getValue(String.class);
+                if (value != null && getActivity() instanceof  MainActivity){
+                    ((MainActivity)getActivity()).notifyTheStatus(User.Status_user.valueOf(value));
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
         mUser.get_user_ref().child("ts_login").addValueEventListener(new ValueEventListener() {
             @Override
@@ -209,26 +225,8 @@ public class MyStatusFragment extends Fragment implements Observer {
 
             }
         });
-        /*
-        mUser.get_user_ref().child("status").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                String value = dataSnapshot.getValue(String.class);
-
-                if (value != null)
-                    tv_status.setText("status : " + value);
-                else
-                    tv_status.setText("status : NULL");
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-        */
-
     }
+
 
     @Override
     public void onDestroyView() {
@@ -284,38 +282,85 @@ public class MyStatusFragment extends Fragment implements Observer {
     @Override
     public void update(User.Status_user status) {
         Log.d("TESS", "call update in MyStatusFragment : "+status);
-        try{
-            switch (status){
-                case ONLINE:
-                    //btn_re.setVisibility(View.GONE);
-                    button_stop.setVisibility(View.GONE);
-                    tv_status.setText("None");
-                    break;
-                case RESERVING:
+        status_change(status);
+    }
 
-                   // mCountDownTimer.start();
-                    tv_status.setText("예약중");
-                    break;
-                case RESERVING_OVER:
-                    //btn_re.setVisibility(View.VISIBLE);
-                    tv_status.setText("에약 시간초과");
-                    break;
-                case OCCUPYING:
-                    //isFlag = false;
-                    button_stop.setVisibility(View.VISIBLE);
-                    tv_status.setText("사용중");
-                    break;
-                case STEPPING_OUT:
-                    tv_status.setText("자리비움 중");
-                    break;
-                case STEPPING_OUT_OVER:
-                    tv_status.setText("자리비움 초과");
-                    //btn_re.setVisibility(View.VISIBLE);
+    private void status_change(User.Status_user status) {
+        Log.d(TAG, "status_change" + status.name());
+
+        if (isAdded()) {
+            LayoutInflater inflater = getLayoutInflater();
+
+
+            if (container_status.getChildCount() > 0) {
+                // FrameLayout에서 뷰 삭제.
+                container_status.removeViewAt(0);
+            }
+
+            // XML에 작성된 레이아웃을 View 객체로 변환.
+            View view_layout = null;
+            switch (status) {
+                case ONLINE:
+                    Log.d(TAG, "-1");
+                    view_layout = inflater.inflate(R.layout.status_online, container_status, false);
                     break;
                 case SUBSCRIBING:
+                    Log.d(TAG, "0");
+                    view_layout = inflater.inflate(R.layout.status_online, container_status, false);
                     break;
+
+                case RESERVING:
+                    Log.d(TAG, "1");
+                    view_layout = inflater.inflate(R.layout.status_reserve, container_status, false);
+                    break;
+
+                case RESERVING_OVER:
+                    Log.d(TAG, "2");
+                    view_layout = inflater.inflate(R.layout.status_reservation_over, container_status, false);
+                    break;
+
+                case OCCUPYING:
+                    Log.d(TAG, "3");
+                    view_layout = inflater.inflate(R.layout.status_occupy, container_status, false);
+                    break;
+
+                case OCCUPYING_OVER:
+                    Log.d(TAG, "4");
+                    view_layout = inflater.inflate(R.layout.status_occupy_over, container_status, false);
+                    break;
+
+                case STEPPING_OUT:
+                    Log.d(TAG, "5");
+                    view_layout = inflater.inflate(R.layout.status_step_out, container_status, false);
+                    break;
+
+                case STEPPING_OUT_OVER:
+                    Log.d(TAG, "6");
+                    view_layout = inflater.inflate(R.layout.status_step_out_over, container_status, false);
+                    break;
+
+                case PAYING_PENALTY:
+                    Log.d(TAG, "7");
+                    view_layout = inflater.inflate(R.layout.status_get_penalty, container_status, false);
+                    break;
+
+                case BEING_BLOCKED:
+                    Log.d(TAG, "8");
+                    view_layout = inflater.inflate(R.layout.status_get_block, container_status, false);
+                    break;
+
+                default:
+                    Log.d(TAG, "9");
+                    Log.e(TAG, "Undefined User Status");
             }
-        }catch (Exception e){}
+
+            // FrameLayout에 뷰 추가.
+            if (view_layout != null) {
+                Log.d(TAG, "add view !");
+                container_status.addView(view_layout);
+            }
+        }
     }
+
 
 }
