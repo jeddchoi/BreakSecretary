@@ -387,6 +387,7 @@ public class MyStatusFragment extends Fragment implements Observer {
                 Log.d(TAG, "add view !");
                 container_status.addView(view_layout);
             }
+
         }
     }
 
