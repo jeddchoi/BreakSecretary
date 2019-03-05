@@ -1,21 +1,27 @@
 package com.breaktime.breaksecretary.fragment;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.breaktime.breaksecretary.Observer;
 import com.breaktime.breaksecretary.R;
 import com.breaktime.breaksecretary.Util.FirebaseUtil;
+import com.breaktime.breaksecretary.Util.Singleton;
 import com.breaktime.breaksecretary.activity.MainActivity;
 import com.breaktime.breaksecretary.model.User;
 import com.google.firebase.database.DataSnapshot;
@@ -27,7 +33,7 @@ import com.google.firebase.database.ValueEventListener;
 public class MyStatusFragment extends Fragment implements Observer {
     private static final String TAG = MyStatusFragment.class.getName();
     private View view;
-
+    ProgressBar mProgressBar;
     private FirebaseUtil mFirebaseUtil;
     private User mUser;
 
@@ -73,6 +79,9 @@ public class MyStatusFragment extends Fragment implements Observer {
             }
         });
         button_stop.setVisibility(View.GONE);
+
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(
+                messageReceiver, new IntentFilter("from_beacon"));
         return view;
     }
 
@@ -270,6 +279,8 @@ public class MyStatusFragment extends Fragment implements Observer {
     public void onResume() {
         Log.d(TAG, "onResume()");
         super.onResume();
+
+
     }
 
     @Override
@@ -312,6 +323,9 @@ public class MyStatusFragment extends Fragment implements Observer {
                 case RESERVING:
                     Log.d(TAG, "1");
                     view_layout = inflater.inflate(R.layout.status_reserve, container_status, false);
+                    mProgressBar = view_layout.findViewById(R.id.pb_reserve);
+                    mProgressBar.setMax(Singleton.getInstance().getLimitsReserving());
+                    mProgressBar.setProgress(0);
                     break;
 
                 case RESERVING_OVER:
@@ -362,6 +376,15 @@ public class MyStatusFragment extends Fragment implements Observer {
 
         }
     }
+
+    private BroadcastReceiver messageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d("HEEL", "onReceivce on MyStatus");
+            int dis = intent.getIntExtra("msg", 0);
+            mProgressBar.setProgress(dis);
+        }
+    };
 
 
 }

@@ -124,6 +124,7 @@ public class MyService extends Service implements BeaconConsumer, Observer {
     private void sendMessage(int threadhold){
         Intent intent = new Intent("from_beacon");
         intent.putExtra("msg", threadhold);
+        Log.d("HEEL", "send msg from service");
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
