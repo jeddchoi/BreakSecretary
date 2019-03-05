@@ -27,9 +27,7 @@ public class SessionExpired extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        Log.d(TAG, "onBind()");
-        // TODO: Return the communication channel to the service.
-        throw new UnsupportedOperationException("Not yet implemented");
+        return null;
     }
 
     @Override
@@ -40,15 +38,13 @@ public class SessionExpired extends Service {
             public void onCallback(User.Status_user value) {
 
                 if (value == User.Status_user.ONLINE) {
-                    Log.d(TAG, value.name() + "1");
-                    mUser.get_user_ref().removeValue();
-                    Log.d(TAG, value.name() + "2");
                     mUser.user_logout();
+                    stopSelf();
                 }
             }
         });
 
-        stopSelf();
+
     }
 
     @Override

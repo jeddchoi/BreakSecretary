@@ -320,6 +320,7 @@ public class User implements Serializable {
     @Exclude
     public void setEmail_addressForSingleEvent(String email) {
         mFirebaseUtil.getCurrentUser().updateEmail(email);
+        mUserRef.child("email_address").setValue(email);
     }
 
     @Exclude

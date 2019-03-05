@@ -111,7 +111,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             startActivity(new Intent(MainActivity.this, FirstActivity.class));
             finish();
         } else {
-            //mUser.user_login();
+            mUser.user_login();
             show_snackbar_msg("Successfully signed in : " + mUser.getEmailForSingleEvent(), true);
         }
     }
