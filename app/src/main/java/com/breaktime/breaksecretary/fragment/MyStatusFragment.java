@@ -17,10 +17,14 @@ import com.breaktime.breaksecretary.Observer;
 import com.breaktime.breaksecretary.R;
 import com.breaktime.breaksecretary.Util.FirebaseUtil;
 import com.breaktime.breaksecretary.activity.MainActivity;
+import com.breaktime.breaksecretary.model.MyCallback;
 import com.breaktime.breaksecretary.model.User;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 
 // In this case, the fragment displays simple text based on the page
@@ -301,56 +305,80 @@ public class MyStatusFragment extends Fragment implements Observer {
             View view_layout = null;
             switch (status) {
                 case ONLINE:
-                    Log.d(TAG, "-1");
                     view_layout = inflater.inflate(R.layout.status_online, container_status, false);
+                    final TextView tv0 = view_layout.findViewById(R.id.tv_ts);
+                    mUser.getTs_loginForSingleEvent(new MyCallback<Long>() {
+                        @Override
+                        public void onCallback(Long value) {
+                            if (value != null) {
+                                SimpleDateFormat sdf = new SimpleDateFormat("MM월 dd일 HH시 mm분에 로그인 됨");
+                                Date resultdate = new Date(value);
+
+                                tv0.setText(sdf.format(resultdate));
+                            }
+
+                        }
+                    });
                     break;
                 case SUBSCRIBING:
-                    Log.d(TAG, "0");
                     view_layout = inflater.inflate(R.layout.status_online, container_status, false);
+                    final TextView tv1 = view_layout.findViewById(R.id.tv_ts);
+                    mUser.getTs_loginForSingleEvent(new MyCallback<Long>() {
+                        @Override
+                        public void onCallback(Long value) {
+                            if (value != null) {
+                                SimpleDateFormat sdf = new SimpleDateFormat("MM월 dd일 HH시 mm분에 로그인 됨");
+                                Date resultdate = new Date(value);
+
+                                tv1.setText(sdf.format(resultdate));
+                            }
+
+                        }
+                    });
                     break;
 
                 case RESERVING:
-                    Log.d(TAG, "1");
+
                     view_layout = inflater.inflate(R.layout.status_reserve, container_status, false);
                     break;
 
                 case RESERVING_OVER:
-                    Log.d(TAG, "2");
+
                     view_layout = inflater.inflate(R.layout.status_reservation_over, container_status, false);
                     break;
 
                 case OCCUPYING:
-                    Log.d(TAG, "3");
+
                     view_layout = inflater.inflate(R.layout.status_occupy, container_status, false);
                     break;
 
                 case OCCUPYING_OVER:
-                    Log.d(TAG, "4");
+
                     view_layout = inflater.inflate(R.layout.status_occupy_over, container_status, false);
                     break;
 
                 case STEPPING_OUT:
-                    Log.d(TAG, "5");
+
                     view_layout = inflater.inflate(R.layout.status_step_out, container_status, false);
                     break;
 
                 case STEPPING_OUT_OVER:
-                    Log.d(TAG, "6");
+
                     view_layout = inflater.inflate(R.layout.status_step_out_over, container_status, false);
                     break;
 
                 case PAYING_PENALTY:
-                    Log.d(TAG, "7");
+
                     view_layout = inflater.inflate(R.layout.status_get_penalty, container_status, false);
                     break;
 
                 case BEING_BLOCKED:
-                    Log.d(TAG, "8");
+
                     view_layout = inflater.inflate(R.layout.status_get_block, container_status, false);
                     break;
 
                 default:
-                    Log.d(TAG, "9");
+
                     Log.e(TAG, "Undefined User Status");
             }
 

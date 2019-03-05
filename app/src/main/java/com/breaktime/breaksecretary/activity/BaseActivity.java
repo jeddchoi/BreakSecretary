@@ -5,7 +5,11 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class BaseActivity extends AppCompatActivity {
+
     private ProgressDialog mProgressDialog;
 
     public void show_progress_dialog() {
