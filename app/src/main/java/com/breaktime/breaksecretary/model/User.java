@@ -519,12 +519,10 @@ public class User implements Serializable {
 
     @Exclude
     public void user_step_out_over() {
-
         mFirebaseUtil.getSeatsRef().child(num_section.toString()).child("_" + num_seat.toString()).setValue("None");
         Log.d(TAG, "user step out over");
         setStatusForSingleEvent(Status_user.STEPPING_OUT_OVER);
         mUserRef.child("ts_step_out").removeValue();
-
         getNum_sectionForSingleEvent(new MyCallback<Integer>() {
             @Override
             public void onCallback(final Integer section) {
