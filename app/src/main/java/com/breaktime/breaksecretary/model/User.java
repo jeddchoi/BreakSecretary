@@ -377,7 +377,6 @@ public class User implements Serializable {
 
     @Exclude
     public void user_reserve(Integer num_section, Integer num_seat) {
-
         mFirebaseUtil.getSeatsRef().child(num_section.toString()).child("_" + num_seat.toString()).setValue(mFirebaseUtil.getAuth().getUid());
         Log.d(TAG, "user reserve");
         setStatusForSingleEvent(Status_user.RESERVING);

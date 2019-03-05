@@ -55,6 +55,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     public ArrayList<Observer> observers;
 
     @Override
+    public void onAttachFragment(Fragment fragment) {
+        super.onAttachFragment(fragment);
+        Log.d("HHH", "called");
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate()");
         super.onCreate(savedInstanceState);
@@ -256,7 +262,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     public void startService(int major , int minor){
-        mUser.get_user_ref().child("status").setValue(User.Status_user.RESERVING);
+        //mUser.get_user_ref().child("status").setValue(User.Status_user.RESERVING);
+        mUser.user_reserve(1,1);
         Intent intent = new Intent(this, MyService.class);
         intent.putExtra(ReservingActivity.R_MAJOR, major);
         intent.putExtra(ReservingActivity.R_MINOR, minor);

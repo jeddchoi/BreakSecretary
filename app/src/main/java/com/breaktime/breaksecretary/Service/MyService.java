@@ -53,6 +53,7 @@ public class MyService extends Service implements BeaconConsumer, Observer {
     private BeaconManager beaconManager;
     private boolean isOutofRange;
     private int threadhold;
+    private int usingtime;
     private User mUser;
     private FirebaseUtil mFirebaseUtil;
     HashMap<STATUS, Notification> Notify;
@@ -129,7 +130,6 @@ public class MyService extends Service implements BeaconConsumer, Observer {
     @Override
     public void onBeaconServiceConnect() {
         beaconManager.removeAllRangeNotifiers();
-
         beaconManager.addRangeNotifier(new RangeNotifier() {
             @Override
             public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
@@ -137,15 +137,17 @@ public class MyService extends Service implements BeaconConsumer, Observer {
                 // Collection<Beacon>)which gives you a list of every beacon matched in the last scan interval.
                 // unbind 전까지 1초에 한번씩 호출된다.
                 threadhold++;
-
+                usingtime++;
                 logg("현재 상태 : "+String.valueOf(status));
                 logg("threadhold : "+String.valueOf(threadhold));
+                logg("usingtime : "+String.valueOf(usingtime));
 
                 if(status == User.Status_user.RESERVING) {
                     sendMessage(threadhold);
                     if (threadhold >= Singleton.getInstance().getLimitsReserving()) {
                         // 예약 타임 아웃
-                        mUser.get_user_ref().child("status").setValue(User.Status_user.RESERVING_OVER);
+                        //mUser.get_user_ref().child("status").setValue(User.Status_user.RESERVING_OVER);
+                        mUser.user_reservation_over();
                         stopForeground(true);
                         stopSelf();
                     }
@@ -157,8 +159,8 @@ public class MyService extends Service implements BeaconConsumer, Observer {
                             if(status == User.Status_user.RESERVING){// 예약 -> 시작직전의 상황
                                 if(beacon.getDistance() < App.EMPTY_RANGE) {
                                     setStatus(User.Status_user.OCCUPYING);
+                                    usingtime = 0;
                                 }
-
                             }else{ // 시작 후의 상황
                                 switch (status){
                                     case OCCUPYING:
@@ -234,19 +236,19 @@ public class MyService extends Service implements BeaconConsumer, Observer {
                 0, notificationIntent, 0);
         Notify.put(STATUS.RESERVATION, new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setContentTitle("예약중")
-                .setContentText("hihi")
+                .setContentText("에약중입니다.")
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
                 .setContentIntent(pendingIntent)
                 .build());
         Notify.put(STATUS.USING, new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setContentTitle("사용중")
-                .setContentText("hihi")
+                .setContentText("사용중입니다.")
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
                 .setContentIntent(pendingIntent)
                 .build());
         Notify.put(STATUS.EMPTY, new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setContentTitle("자리비움")
-                .setContentText("hihi")
+                .setContentText("자리비움중입니다.")
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
                 .setContentIntent(pendingIntent)
                 .build());
@@ -254,6 +256,7 @@ public class MyService extends Service implements BeaconConsumer, Observer {
         // 3) init fields
         distance = DISTANCE.FAR;
         threadhold = 0;
+        usingtime = 0;
         status = User.Status_user.RESERVING;
         mFirebaseUtil = new FirebaseUtil();
         mUser = new User(mFirebaseUtil);

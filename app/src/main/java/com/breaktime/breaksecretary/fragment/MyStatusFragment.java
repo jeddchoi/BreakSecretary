@@ -209,6 +209,7 @@ public class MyStatusFragment extends Fragment implements Observer {
 
             }
         });
+
         /*
         mUser.get_user_ref().child("status").addValueEventListener(new ValueEventListener() {
             @Override
@@ -284,7 +285,7 @@ public class MyStatusFragment extends Fragment implements Observer {
     @Override
     public void update(User.Status_user status) {
         Log.d("TESS", "call update in MyStatusFragment : "+status);
-        try{
+
             switch (status){
                 case ONLINE:
                     //btn_re.setVisibility(View.GONE);
@@ -292,7 +293,6 @@ public class MyStatusFragment extends Fragment implements Observer {
                     tv_status.setText("None");
                     break;
                 case RESERVING:
-
                    // mCountDownTimer.start();
                     tv_status.setText("예약중");
                     break;
@@ -315,7 +315,7 @@ public class MyStatusFragment extends Fragment implements Observer {
                 case SUBSCRIBING:
                     break;
             }
-        }catch (Exception e){}
+
     }
 
 }
