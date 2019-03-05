@@ -70,10 +70,10 @@ public class QuickReserveFragment extends Fragment implements Observer {
         quick_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getActivity(), ReservingActivity.class);
-                intent.putExtra("major", 1002);
-                intent.putExtra("minor", 20);
-                startActivity(intent);
+//                Intent intent = new Intent(getActivity(), ReservingActivity.class);
+//                intent.putExtra("major", 1002);
+//                intent.putExtra("minor", 20);
+//                startActivity(intent);
                 mActivity.startService(1002, 20);
             }
         });
@@ -100,7 +100,7 @@ public class QuickReserveFragment extends Fragment implements Observer {
 
     @Override
     public void update(User.Status_user status){
-        try{
+            Log.d("HEEH", "update in fragement");
             switch (status){
                 case ONLINE:
                     btn_re.setVisibility(View.GONE);
@@ -108,7 +108,6 @@ public class QuickReserveFragment extends Fragment implements Observer {
                     break;
                 case RESERVING:
                     isFlag = true;
-                    mCountDownTimer.start();
                     sta.setText("예약중");
                     break;
                 case RESERVING_OVER:
@@ -129,7 +128,7 @@ public class QuickReserveFragment extends Fragment implements Observer {
                 case SUBSCRIBING:
                     break;
             }
-        }catch (Exception e){}
+
 
     }
 

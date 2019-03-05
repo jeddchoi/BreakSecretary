@@ -14,12 +14,12 @@ import java.util.ArrayList;
 1) 멀티쓰레딩 환경에서의 다중생성
 
  */
+
 public class Singleton {
     // 유일한 인스턴스를 담고있는 static 변수
     private static Singleton singleton;
-
     private ArrayList<Integer> LimitsArray;
-
+    private ArrayList<Integer> PeakTimeArray;
     // 생성자를 private으로 선언함
     private Singleton(){
 
@@ -39,13 +39,28 @@ public class Singleton {
 
     public void Init(FirebaseUtil firebaseUtil){
         LimitsArray = new ArrayList<>();
-
+        PeakTimeArray = new ArrayList<>();
         firebaseUtil.getSettingRef().child("Limits").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for(DataSnapshot ds : dataSnapshot.getChildren()){
                     Log.d("HEE", ds.getKey()+" :"+String.valueOf(ds.getValue(Integer.class)));
                     LimitsArray.add(ds.getValue(Integer.class));
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        firebaseUtil.getSettingRef().child("Peak").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot ds : dataSnapshot.getChildren()){
+                    Log.d("HEE", ds.getKey()+" :"+String.valueOf(ds.getValue(Integer.class)));
+                    PeakTimeArray.add(ds.getValue(Integer.class));
                 }
             }
 
@@ -62,5 +77,7 @@ public class Singleton {
     public int getLimitsStepOut(){
         return LimitsArray.get(5);
     }
+    public int getPeakStartTime(){return PeakTimeArray.get(1);}
+    public int getPeakEndTime(){return PeakTimeArray.get(0);}
 
 }

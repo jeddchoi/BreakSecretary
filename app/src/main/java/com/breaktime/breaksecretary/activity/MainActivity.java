@@ -2,7 +2,6 @@ package com.breaktime.breaksecretary.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -27,9 +26,6 @@ import com.breaktime.breaksecretary.fragment.ReserveAndCheckFragment;
 import com.breaktime.breaksecretary.fragment.SettingFragment;
 import com.breaktime.breaksecretary.fragment.TimeLineFragment;
 import com.breaktime.breaksecretary.model.User;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,9 +37,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     public FirebaseUtil mFirebaseUtil;
     public User mUser;
-    private User.Status_user status = null;
     private TabLayout mTabLayout;
-    ViewPager mViewPager;
+    public ViewPager mViewPager;
+
     private int[] tabIcons = {
             R.drawable.ic_flash_on_white_24dp,
             R.drawable.ic_timer_white_24dp,
@@ -53,6 +49,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     };
 
     public ArrayList<Observer> observers;
+
+    @Override
+    public void onAttachFragment(Fragment fragment) {
+        super.onAttachFragment(fragment);
+        Log.d("HHH", "called");
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,43 +69,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark, null));
 
-        initViewPager();
+
 
 
         mFirebaseUtil = new FirebaseUtil();
         mUser = new User(mFirebaseUtil);
+
+        initViewPager();
         startService(new Intent(this, SessionExpired.class));
-        mUser.get_user_ref().child("status").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                String value = dataSnapshot.getValue(String.class);
-                if (value != null){
-                    status = User.Status_user.valueOf(value);
-                    notifyTheStatus(User.Status_user.valueOf(value));
-                }
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-        /*
-        mUser.get_user_ref().child("status").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                String value = dataSnapshot.getValue(String.class);
-                if (value != null){
-                    notifyTheStatus(User.Status_user.valueOf(value));
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-        */
         InitSetting();
         ((App)getApplicationContext()).ref(this);
 
@@ -114,6 +88,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             mUser.user_login();
             show_snackbar_msg("Successfully signed in : " + mUser.getEmailForSingleEvent(), true);
         }
+
+
+
     }
 
     public void InitSetting(){
@@ -135,9 +112,34 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     public void notifyTheStatus(User.Status_user status) {
         Log.d("TEST", "call notify in subject");
         // To observers
+
+        switch (status) {
+            case ONLINE:
+            case SUBSCRIBING:
+                mViewPager.setCurrentItem(0);
+                break;
+
+            case RESERVING:
+            case RESERVING_OVER:
+            case OCCUPYING:
+            case OCCUPYING_OVER:
+            case STEPPING_OUT:
+            case STEPPING_OUT_OVER:
+            case PAYING_PENALTY:
+            case BEING_BLOCKED:
+                mViewPager.setCurrentItem(2);
+                break;
+
+            default:
+                Log.e(TAG, "Undefined User Status");
+
+        }
+
+
         for(Observer ob : observers){
             ob.update(status);
         }
+
 
         // To service
     }
@@ -168,8 +170,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     protected void onStart() {
         Log.d(TAG, "onStart()");
         super.onStart();
-        if(status == User.Status_user.OCCUPYING)
-            mViewPager.setCurrentItem(2);
+
 
     }
 
@@ -235,9 +236,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         mViewPager.setAdapter(mFragmentAdapter);
         mTabLayout.setupWithViewPager(mViewPager);
         setupTabIcons();
-
-
-
     }
 
     private void setupTabIcons() {
@@ -255,7 +253,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     public void startService(int major , int minor){
-        mUser.get_user_ref().child("status").setValue(User.Status_user.RESERVING);
+        //mUser.get_user_ref().child("status").setValue(User.Status_user.RESERVING);
+        mUser.user_reserve(1,1);
         Intent intent = new Intent(this, MyService.class);
         intent.putExtra(ReservingActivity.R_MAJOR, major);
         intent.putExtra(ReservingActivity.R_MINOR, minor);
@@ -267,4 +266,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         Intent intent = new Intent(this, MyService.class);
         this.stopService(intent);
     }
+
+
 }
