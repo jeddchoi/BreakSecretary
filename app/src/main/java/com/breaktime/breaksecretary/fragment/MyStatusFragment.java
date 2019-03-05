@@ -332,7 +332,7 @@ public class MyStatusFragment extends Fragment implements Observer {
                     });
                     break;
                 case SUBSCRIBING:
-                    view_layout = inflater.inflate(R.layout.status_online, container_status, false);
+                    view_layout = inflater.inflate(R.layout.status_subscribe, container_status, false);
                     final TextView tv1 = view_layout.findViewById(R.id.tv_ts);
                     mUser.getTs_loginForSingleEvent(new MyCallback<Long>() {
                         @Override

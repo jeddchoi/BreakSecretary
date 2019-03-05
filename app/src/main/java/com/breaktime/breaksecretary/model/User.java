@@ -422,6 +422,7 @@ public class User implements Serializable {
                         mFirebaseUtil.getSeatsRef().child(section.toString()).child("_" + seatnum.toString()).setValue("None");
                         Log.d(TAG, "user reservation over");
                         setStatusForSingleEvent(Status_user.RESERVING_OVER);
+                        // TODO :
                         setNum_sectionForSingleEvent(null);
                         setNum_seatForSingleEvent(null);
                     }
