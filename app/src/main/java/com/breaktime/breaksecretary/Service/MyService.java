@@ -13,7 +13,6 @@ import android.util.Log;
 import com.breaktime.breaksecretary.Application.App;
 import com.breaktime.breaksecretary.Observer;
 import com.breaktime.breaksecretary.R;
-import com.breaktime.breaksecretary.STATUS;
 import com.breaktime.breaksecretary.Util.FirebaseUtil;
 import com.breaktime.breaksecretary.Util.Singleton;
 import com.breaktime.breaksecretary.activity.MainActivity;
@@ -56,7 +55,7 @@ public class MyService extends Service implements BeaconConsumer, Observer {
     private int usingtime;
     private User mUser;
     private FirebaseUtil mFirebaseUtil;
-    HashMap<STATUS, Notification> Notify;
+    HashMap<User.Status_user, Notification> Notify;
 
     public MyService() {
 
@@ -89,6 +88,7 @@ public class MyService extends Service implements BeaconConsumer, Observer {
         logg("call onDestroy");
         super.onDestroy();
         beaconManager.unbind(this);
+
     }
 
 
@@ -103,16 +103,16 @@ public class MyService extends Service implements BeaconConsumer, Observer {
         stopForeground(true);
         switch (to){
             case RESERVING:
-                startForeground(1,Notify.get(STATUS.RESERVATION));
+                startForeground(1,Notify.get(User.Status_user.RESERVING));
                 break;
             case OCCUPYING:
-                startForeground(1,Notify.get(STATUS.USING));
+                startForeground(1,Notify.get(User.Status_user.OCCUPYING));
                 distance = DISTANCE.IMMEDIATE;
                 status = User.Status_user.OCCUPYING;
                 mUser.get_user_ref().child("status").setValue(User.Status_user.OCCUPYING);
                 break;
             case STEPPING_OUT:
-                startForeground(1,Notify.get(STATUS.EMPTY));
+                startForeground(1,Notify.get(User.Status_user.ONLINE));
                 distance = DISTANCE.NEAR;
                 status = User.Status_user.STEPPING_OUT;
                 mUser.get_user_ref().child("status").setValue(User.Status_user.STEPPING_OUT);
@@ -234,19 +234,19 @@ public class MyService extends Service implements BeaconConsumer, Observer {
         Intent notificationIntent = new Intent(this, MainActivity.class); // Notif 눌렀을 때 돌아갈 activity
         PendingIntent pendingIntent = PendingIntent.getActivity(this,
                 0, notificationIntent, 0);
-        Notify.put(STATUS.RESERVATION, new NotificationCompat.Builder(this, CHANNEL_ID)
+        Notify.put(User.Status_user.RESERVING, new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setContentTitle("예약중")
                 .setContentText("에약중입니다.")
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
                 .setContentIntent(pendingIntent)
                 .build());
-        Notify.put(STATUS.USING, new NotificationCompat.Builder(this, CHANNEL_ID)
+        Notify.put(User.Status_user.OCCUPYING, new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setContentTitle("사용중")
                 .setContentText("사용중입니다.")
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
                 .setContentIntent(pendingIntent)
                 .build());
-        Notify.put(STATUS.EMPTY, new NotificationCompat.Builder(this, CHANNEL_ID)
+        Notify.put(User.Status_user.ONLINE, new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setContentTitle("자리비움")
                 .setContentText("자리비움중입니다.")
                 .setSmallIcon(R.drawable.ic_launcher_foreground)

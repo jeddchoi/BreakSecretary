@@ -320,6 +320,7 @@ public class User implements Serializable {
     @Exclude
     public void setEmail_addressForSingleEvent(String email) {
         mFirebaseUtil.getCurrentUser().updateEmail(email);
+        mUserRef.child("email_address").setValue(email);
     }
 
     @Exclude
@@ -353,8 +354,9 @@ public class User implements Serializable {
     // logout means that He/She will not use this service for a while.
     @Exclude
     public void user_logout() {
-        Log.d(TAG, "user logout -> delete UserReference");
+        Log.d(TAG, "user logout -> delete UserReference1");
         mUserRef.removeValue();
+
     }
 
     @Exclude
