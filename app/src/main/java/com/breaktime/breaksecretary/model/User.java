@@ -26,6 +26,7 @@ public class User {
     private FirebaseUtil mFirebaseUtil;
     @Exclude
     private DatabaseReference mUserRef;
+    private DatabaseReference mCounterRef;
 
     // User Information
     private Status_user status;
@@ -52,6 +53,8 @@ public class User {
 
         mUserRef = mFirebaseUtil.getUsersRef().child(mFirebaseUtil.getCurrentUser().getUid());
         mUserRef.child("email_address").setValue(mFirebaseUtil.getCurrentUser().getEmail());
+
+        mCounterRef = mFirebaseUtil.getCounterRef();
     }
 
     // Default Constructor
@@ -132,13 +135,7 @@ public class User {
         this.ts_get_block = time;
     }
 
-
-
     // [END]DON'T USE THESE FUNCTIONS. THEY'RE FOR FIREBASE REALTIME DATABASE
-
-
-
-
 
     // USER FUNCTIONS
     @Exclude
@@ -149,8 +146,6 @@ public class User {
         }
         return mFirebaseUtil.getCurrentUser().getEmail();
     }
-
-
 
     @Exclude
     public void getStatusForSingleEvent(final MyCallback<Status_user> myCallback) {
@@ -195,7 +190,6 @@ public class User {
         });
     }
 
-
     @Exclude
     public void getTSForSingleEvent(String title, final MyCallback<Long> myCallback) {
         mUserRef.child(title).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -209,7 +203,6 @@ public class User {
             public void onCancelled(@NonNull DatabaseError databaseError) {}
         });
     }
-
 
     @Exclude
     public void getTs_loginForSingleEvent(final MyCallback<Long> myCallback) {
@@ -281,7 +274,6 @@ public class User {
         });
     }
 
-
     @Exclude
     public void getTs_get_penaltyForSingleEvent(final MyCallback<Long> myCallback) {
         mUserRef.child("ts_get_penalty").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -310,11 +302,20 @@ public class User {
         });
     }
 
+    public void getNum_counterForSingleEvent(final MyCallback<Integer> myCallback, Integer section) {
+        mCounterRef.child(section.toString()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Integer value = dataSnapshot.getValue(Integer.class);
+                myCallback.onCallback(value);
+            }
 
-
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {}
+        });
+    }
 
     // TODO : verify 하는 것 구현하기
-
     @Exclude
     public void setEmail_addressForSingleEvent(String email) {
         mFirebaseUtil.getCurrentUser().updateEmail(email);
@@ -336,25 +337,23 @@ public class User {
         mUserRef.child("num_seat").setValue(seatNum);
     }
 
-
-
+    @Exclude
+    public void setCounterForSingleEvent(Integer section, Integer value) {
+        mCounterRef.child(section.toString()).setValue(value);
+    }
 
     @Exclude
     public void user_login() {
         Log.d(TAG, "user login");
         setStatusForSingleEvent(Status_user.ONLINE);
         mUserRef.child("ts_login").setValue(System.currentTimeMillis());
-
-
     }
-
 
     // logout means that He/She will not use this service for a while.
     @Exclude
     public void user_logout() {
         Log.d(TAG, "user logout -> delete UserReference1");
         mUserRef.removeValue();
-
     }
 
     @Exclude
@@ -362,8 +361,6 @@ public class User {
         Log.d(TAG, "user subscribe");
         setStatusForSingleEvent(Status_user.SUBSCRIBING);
         mUserRef.child("ts_subscribe").setValue(System.currentTimeMillis());
-
-
     }
 
     @Exclude
@@ -371,12 +368,12 @@ public class User {
         Log.d(TAG, "user unsubscribe");
         setStatusForSingleEvent(Status_user.ONLINE);
         mUserRef.child("ts_subscribe").removeValue();
-
     }
 
 
     @Exclude
-    public void user_reserve(Integer num_section, Integer num_seat) {
+    public void user_reserve(final Integer num_section, Integer num_seat) {
+
         mFirebaseUtil.getSeatsRef().child(num_section.toString()).child("_" + num_seat.toString()).setValue(mFirebaseUtil.getAuth().getUid());
         Log.d(TAG, "user reserve");
         setStatusForSingleEvent(Status_user.RESERVING);
@@ -385,6 +382,12 @@ public class User {
         mUserRef.child("ts_reserve").setValue(System.currentTimeMillis());
         mUserRef.child("ts_subscribe").removeValue();
 
+        getNum_counterForSingleEvent(new MyCallback<Integer>() {
+            @Override
+            public void onCallback(Integer value) {
+                setCounterForSingleEvent(num_section, value + 1);
+            }
+        }, num_section);
     }
 
 
@@ -403,6 +406,12 @@ public class User {
                         setNum_sectionForSingleEvent(null);
                         setNum_seatForSingleEvent(null);
                         mUserRef.child("ts_reserve").removeValue();
+                        getNum_counterForSingleEvent(new MyCallback<Integer>() {
+                            @Override
+                            public void onCallback(Integer value) {
+                                if(value > 0) { setCounterForSingleEvent(section, value - 1); }
+                            }
+                        }, section);
                     }
                 });
             }
@@ -420,9 +429,15 @@ public class User {
                         mFirebaseUtil.getSeatsRef().child(section.toString()).child("_" + seatnum.toString()).setValue("None");
                         Log.d(TAG, "user reservation over");
                         setStatusForSingleEvent(Status_user.RESERVING_OVER);
-                        // TODO :
                         setNum_sectionForSingleEvent(null);
                         setNum_seatForSingleEvent(null);
+
+                        getNum_counterForSingleEvent(new MyCallback<Integer>() {
+                            @Override
+                            public void onCallback(Integer value) {
+                                if(value > 0) { setCounterForSingleEvent(num_section, value - 1);   }
+                            }
+                        }, section);
                     }
                 });
             }
@@ -444,7 +459,6 @@ public class User {
         setStatusForSingleEvent(Status_user.OCCUPYING);
         mUserRef.child("ts_occupy").setValue(System.currentTimeMillis());
         mUserRef.child("ts_reserve").removeValue();
-
     }
 
     // stop means that He/She wants to stop using that seat.
@@ -463,6 +477,12 @@ public class User {
                         mUserRef.child("ts_step_out").removeValue();
                         mUserRef.child("num_section").removeValue();
                         mUserRef.child("num_seat").removeValue();
+                        getNum_counterForSingleEvent(new MyCallback<Integer>() {
+                            @Override
+                            public void onCallback(Integer value) {
+                                if(value > 0) { setCounterForSingleEvent(section, value - 1);   }
+                            }
+                        }, section);
                     }
                 });
             }
@@ -471,7 +491,6 @@ public class User {
 
     @Exclude
     public void user_occupy_over() {
-
         getNum_sectionForSingleEvent(new MyCallback<Integer>() {
             @Override
             public void onCallback(final Integer section) {
@@ -484,6 +503,12 @@ public class User {
                         mUserRef.child("ts_step_out").removeValue();
                         mUserRef.child("num_section").removeValue();
                         mUserRef.child("num_seat").removeValue();
+                        getNum_counterForSingleEvent(new MyCallback<Integer>() {
+                            @Override
+                            public void onCallback(Integer value) {
+                                if(value > 0) { setCounterForSingleEvent(section, value - 1);   }
+                            }
+                        }, section);
                     }
                 });
             }
@@ -504,7 +529,6 @@ public class User {
         Log.d(TAG, "user step out");
         setStatusForSingleEvent(Status_user.STEPPING_OUT);
         mUserRef.child("ts_step_out").setValue(System.currentTimeMillis());
-
     }
 
     @Exclude
@@ -512,14 +536,15 @@ public class User {
         Log.d(TAG, "user return to seat");
         setStatusForSingleEvent(Status_user.OCCUPYING);
         mUserRef.child("ts_step_out").removeValue();
-
     }
 
     @Exclude
     public void user_step_out_over() {
+
         Log.d(TAG, "user step out over");
         setStatusForSingleEvent(Status_user.STEPPING_OUT_OVER);
         mUserRef.child("ts_step_out").removeValue();
+
         getNum_sectionForSingleEvent(new MyCallback<Integer>() {
             @Override
             public void onCallback(final Integer section) {
@@ -534,7 +559,6 @@ public class User {
                 });
             }
         });
-
     }
 
     @Exclude
@@ -542,7 +566,6 @@ public class User {
         Log.d(TAG, "user return to seat");
         setStatusForSingleEvent(Status_user.ONLINE);
         mUserRef.child("ts_step_out").removeValue();
-
     }
 
 
@@ -553,7 +576,6 @@ public class User {
         setStatusForSingleEvent(Status_user.PAYING_PENALTY);
         mUserRef.child("ts_reserve").removeValue();
         mUserRef.child("ts_get_penalty").setValue(System.currentTimeMillis());
-
     }
 
     @Exclude
@@ -562,7 +584,6 @@ public class User {
         setStatusForSingleEvent(Status_user.ONLINE);
         mUserRef.child("ts_reserve").removeValue();
         mUserRef.child("ts_get_penalty").removeValue();
-
     }
 
     @Exclude
@@ -577,10 +598,6 @@ public class User {
         mUserRef.child("ts_occupy").removeValue();
         mUserRef.child("ts_step_out").removeValue();
         mUserRef.child("ts_get_penalty").removeValue();
-
-
-
-
     }
 
     @Exclude
@@ -588,12 +605,10 @@ public class User {
         Log.d(TAG, "user cancel block");
         setStatusForSingleEvent(Status_user.ONLINE);
         mUserRef.child("ts_get_block").removeValue();
-
     }
 
     @Exclude
     public DatabaseReference get_user_ref() {
         return mUserRef;
     }
-
 }
