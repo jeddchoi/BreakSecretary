@@ -12,6 +12,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.List;
 import java.util.Map;
 
 public class FirebaseUtil {
@@ -27,6 +28,8 @@ public class FirebaseUtil {
 
     private FirebaseAuth mAuth;
     private Map<String, Long> mLimits;
+    private Map<String, Long> mPeak;
+    private List<Long> mSeatMax;
 
     public FirebaseUtil() {
         mDatabase = FirebaseDatabase.getInstance();
@@ -41,7 +44,8 @@ public class FirebaseUtil {
         mBlackListRef = mRootRef.child("BlockedUsers");
 
         downloadLimits();
-
+        downloadPeak();
+        downloadSeatMax();
     }
 
     public DatabaseReference getRootRef() {
@@ -100,6 +104,68 @@ public class FirebaseUtil {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Map<String, Long> limits = (Map) dataSnapshot.getValue();
                 myCallback.onCallback(limits);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {}
+        });
+    }
+
+    public Map<String, Long> getmPeak() {
+        return mPeak;
+    }
+
+    private void downloadPeak() {
+        getPeakForSingleEvent(new MyCallback<Map<String, Long>>() {
+            @Override
+            public void onCallback(Map<String, Long> value) {
+                mPeak = value;
+                for ( String time : mPeak.keySet() ) {
+                    Log.d(TAG, time + " = " + mPeak.get(time).toString());
+                }
+
+            }
+        });
+    }
+
+    private void getPeakForSingleEvent(final MyCallback<Map<String, Long>> myCallback) {
+        mSettingRef.child("Peak").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Map<String, Long> time = (Map) dataSnapshot.getValue();
+                myCallback.onCallback(time);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {}
+        });
+    }
+
+    public List<Long> getSeatMax() {
+        return mSeatMax;
+    }
+
+    private void downloadSeatMax() {
+        getSeatMaxForSingleEvent(new MyCallback<List<Long>>() {
+            @Override
+            public void onCallback(List<Long> value) {
+                mSeatMax = value;
+                for ( Long section : mSeatMax ) {
+                    if (section == null)
+                        continue;
+                    Log.d(TAG, section.toString());
+                }
+
+            }
+        });
+    }
+
+    private void getSeatMaxForSingleEvent(final MyCallback<List<Long>> myCallback) {
+        mSettingRef.child("SeatMax").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                List<Long> max = (List) dataSnapshot.getValue();
+                myCallback.onCallback(max);
             }
 
             @Override
