@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.breaktime.breaksecretary.R;
 import com.breaktime.breaksecretary.Util.FirebaseUtil;
@@ -20,6 +21,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 
+import java.util.Map;
+
 
 // In this case, the fragment displays simple text based on the page
 public class SettingFragment extends Fragment implements View.OnClickListener {
@@ -29,6 +32,7 @@ public class SettingFragment extends Fragment implements View.OnClickListener {
     private FirebaseUtil mFirebaseUtil;
     private User mUser;
 
+    TextView tv_limit_login, tv_limit_subscribe, tv_limit_reserve, tv_limit_occupy, tv_limit_step_out, tv_limit_get_penalty, tv_limit_get_block;
     @Override
     public void onAttach(Context context) {
         Log.d(TAG, "onAttach()");
@@ -47,6 +51,14 @@ public class SettingFragment extends Fragment implements View.OnClickListener {
         Log.d(TAG, "onCreateView()");
         view = inflater.inflate(R.layout.fragment_setting, container, false);
         view.findViewById(R.id.btn_logout).setOnClickListener(this);
+
+        tv_limit_login = view.findViewById(R.id.tv_limit_login);
+        tv_limit_subscribe = view.findViewById(R.id.tv_limit_subscribe);
+        tv_limit_reserve = view.findViewById(R.id.tv_limit_reserve);
+        tv_limit_occupy = view.findViewById(R.id.tv_limit_occupy);
+        tv_limit_step_out = view.findViewById(R.id.tv_limit_step_out);
+        tv_limit_get_penalty = view.findViewById(R.id.tv_limit_get_penalty);
+        tv_limit_get_block = view.findViewById(R.id.tv_limit_get_block);
         return view;
     }
 
@@ -62,6 +74,17 @@ public class SettingFragment extends Fragment implements View.OnClickListener {
         }
         mFirebaseUtil = ((MainActivity)getActivity()).mFirebaseUtil;
         mUser = ((MainActivity)getActivity()).mUser;
+
+        Map<String, Long> limits = mFirebaseUtil.getmLimits();
+
+        tv_limit_login.setText(limits.get("login").toString());
+        tv_limit_subscribe.setText(limits.get("subscribe").toString());
+        tv_limit_reserve.setText(limits.get("reserve").toString());
+        tv_limit_occupy.setText(limits.get("occupy").toString());
+        tv_limit_step_out.setText(limits.get("step_out").toString());
+        tv_limit_get_penalty.setText(limits.get("get_penalty").toString());
+        tv_limit_get_block.setText(limits.get("get_block").toString());
+
 
     }
 

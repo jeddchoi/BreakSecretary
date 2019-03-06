@@ -181,7 +181,7 @@ public class MyService extends Service implements BeaconConsumer, Observer {
                                         // 비움 초과 시
                                         if(threadhold >= Singleton.getInstance().getLimitsStepOut()){
                                             //mUser.user_step_out_over();
-                                            mUser.get_user_ref().child("status").setValue(User.Status_user.STEPPING_OUT_OVER);
+//                                            mUser.get_user_ref().child("status").setValue(User.Status_user.STEPPING_OUT_OVER);
                                             mUser.user_step_out_over();
                                             stopForeground(true);
                                             stopSelf();

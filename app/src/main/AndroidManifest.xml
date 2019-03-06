@@ -21,8 +21,6 @@
 
         <service
             android:name=".Service.SessionExpired"
-            android:enabled="true"
-            android:exported="true"
             android:stopWithTask="false"></service>
         <service
             android:name=".Service.MyService"

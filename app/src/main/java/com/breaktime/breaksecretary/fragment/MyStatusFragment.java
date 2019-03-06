@@ -351,9 +351,6 @@ public class MyStatusFragment extends Fragment implements Observer {
                 case RESERVING:
 
                     view_layout = inflater.inflate(R.layout.status_reserve, container_status, false);
-                    mProgressBar = view_layout.findViewById(R.id.pb_reserve);
-                    mProgressBar.setMax(Singleton.getInstance().getLimitsReserving());
-                    mProgressBar.setProgress(0);
                     break;
 
                 case RESERVING_OVER:

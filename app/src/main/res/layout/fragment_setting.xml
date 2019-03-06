@@ -35,5 +35,46 @@
         android:layout_height="wrap_content"
         android:text="Contact to a Admin" />
 
+    <TextView
+        android:id="@+id/tv_limit_login"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="limit_login"/>
+
+    <TextView
+        android:id="@+id/tv_limit_subscribe"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="limit_subscribe"/>
+
+    <TextView
+        android:id="@+id/tv_limit_reserve"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="limit_reserve"/>
+
+    <TextView
+        android:id="@+id/tv_limit_occupy"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="limit_occupy"/>
+
+    <TextView
+        android:id="@+id/tv_limit_step_out"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="limit_step_out"/>
+
+    <TextView
+        android:id="@+id/tv_limit_get_penalty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="limit_get_penalty"/>
+
+    <TextView
+        android:id="@+id/tv_limit_get_block"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="limit_get_block"/>
 
 </LinearLayout>

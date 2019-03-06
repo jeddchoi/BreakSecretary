@@ -11,12 +11,10 @@ import com.google.firebase.database.Exclude;
 import com.google.firebase.database.IgnoreExtraProperties;
 import com.google.firebase.database.ValueEventListener;
 
-import java.io.Serializable;
-
 
 @SuppressWarnings("serial")
 @IgnoreExtraProperties
-public class User implements Serializable {
+public class User {
     private static final String TAG = User.class.getName();
 
     /* status constant */
@@ -519,7 +517,6 @@ public class User implements Serializable {
 
     @Exclude
     public void user_step_out_over() {
-        mFirebaseUtil.getSeatsRef().child(num_section.toString()).child("_" + num_seat.toString()).setValue("None");
         Log.d(TAG, "user step out over");
         setStatusForSingleEvent(Status_user.STEPPING_OUT_OVER);
         mUserRef.child("ts_step_out").removeValue();

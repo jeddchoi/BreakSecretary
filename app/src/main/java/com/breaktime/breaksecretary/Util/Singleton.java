@@ -3,6 +3,7 @@ package com.breaktime.breaksecretary.Util;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.breaktime.breaksecretary.model.MyCallback;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
@@ -40,6 +41,8 @@ public class Singleton {
     public void Init(FirebaseUtil firebaseUtil){
         LimitsArray = new ArrayList<>();
         PeakTimeArray = new ArrayList<>();
+
+
         firebaseUtil.getSettingRef().child("Limits").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

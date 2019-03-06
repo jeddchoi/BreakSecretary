@@ -1,13 +1,22 @@
 package com.breaktime.breaksecretary.Util;
 
+import android.support.annotation.NonNull;
+import android.util.Log;
+
+import com.breaktime.breaksecretary.model.MyCallback;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
-import java.io.Serializable;
+import java.util.Map;
 
-public class FirebaseUtil implements Serializable {
+public class FirebaseUtil {
+    private static final String TAG = FirebaseUtil.class.getName();
+
     private FirebaseDatabase mDatabase;
     private DatabaseReference mRootRef;
     private DatabaseReference mUsersRef;
@@ -17,6 +26,7 @@ public class FirebaseUtil implements Serializable {
     private DatabaseReference mBlackListRef;
 
     private FirebaseAuth mAuth;
+    private Map<String, Long> mLimits;
 
     public FirebaseUtil() {
         mDatabase = FirebaseDatabase.getInstance();
@@ -29,6 +39,8 @@ public class FirebaseUtil implements Serializable {
         mSeatsRef = mRootRef.child("Seats");
         mCounterRef = mRootRef.child("Counter");
         mBlackListRef = mRootRef.child("BlockedUsers");
+
+        downloadLimits();
 
     }
 
@@ -65,5 +77,34 @@ public class FirebaseUtil implements Serializable {
     }
 
 
+    public Map<String, Long> getmLimits() {
+        return mLimits;
+    }
+
+    private void downloadLimits() {
+        getLimitsForSingleEvent(new MyCallback<Map<String, Long>>() {
+            @Override
+            public void onCallback(Map<String, Long> value) {
+                mLimits = value;
+                for ( String limit : mLimits.keySet() ) {
+                    Log.d(TAG, limit + " = " + mLimits.get(limit).toString());
+                }
+
+            }
+        });
+    }
+
+    private void getLimitsForSingleEvent(final MyCallback<Map<String, Long>> myCallback) {
+        mSettingRef.child("Limits").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Map<String, Long> limits = (Map) dataSnapshot.getValue();
+                myCallback.onCallback(limits);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {}
+        });
+    }
 
 }

@@ -25,6 +25,7 @@ public class SessionExpired extends Service {
         mUser = new User(mFirebaseUtil);
     }
 
+
     @Override
     public IBinder onBind(Intent intent) {
         return null;
@@ -37,8 +38,10 @@ public class SessionExpired extends Service {
             @Override
             public void onCallback(User.Status_user value) {
 
-                if (value == User.Status_user.ONLINE) {
+                if (value == null || value == User.Status_user.ONLINE ) {
                     mUser.user_logout();
+                    mFirebaseUtil = null;
+                    mUser= null;
                     stopSelf();
                 }
             }

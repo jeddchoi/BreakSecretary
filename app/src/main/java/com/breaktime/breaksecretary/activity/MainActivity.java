@@ -2,6 +2,8 @@ package com.breaktime.breaksecretary.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -10,6 +12,10 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import com.breaktime.breaksecretary.Application.App;
 import com.breaktime.breaksecretary.Observer;
@@ -26,6 +32,7 @@ import com.breaktime.breaksecretary.fragment.ReserveAndCheckFragment;
 import com.breaktime.breaksecretary.fragment.SettingFragment;
 import com.breaktime.breaksecretary.fragment.TimeLineFragment;
 import com.breaktime.breaksecretary.model.User;
+import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +46,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     public User mUser;
     private TabLayout mTabLayout;
     public ViewPager mViewPager;
+    private RelativeLayout relative_main;
+    private ImageView img_page_start;
 
     private int[] tabIcons = {
             R.drawable.ic_flash_on_white_24dp,
@@ -49,6 +58,45 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     };
 
     public ArrayList<Observer> observers;
+    private final int MESSAGE_SHOW_START_PAGE = 0x002;
+
+    public Handler mHandler = new Handler(new Handler.Callback() {
+        @Override
+        public boolean handleMessage(Message msg) {
+            switch (msg.what) {
+                case MESSAGE_SHOW_START_PAGE:
+                    AlphaAnimation alphaAnimation = new AlphaAnimation(1.0f, 0.0f);
+                    alphaAnimation.setDuration(200);
+                    alphaAnimation.setAnimationListener(new Animation.AnimationListener() {
+                        @Override
+                        public void onAnimationStart(Animation animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animation animation) {
+                            relative_main.setVisibility(View.GONE);
+                            initViewPager();
+                            mUser.user_login();
+                            show_snackbar_msg("Successfully signed in : " + mUser.getEmailForSingleEvent(), true);
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animation animation) {
+
+                        }
+                    });
+                    relative_main.startAnimation(alphaAnimation);
+                    break;
+
+                default:
+                    break;
+
+            }
+            return true;
+        }
+    });
+
 
     @Override
     public void onAttachFragment(Fragment fragment) {
@@ -72,24 +120,31 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
 
 
+
+
+
+
+
+        initView();
+
+        relative_main.setVisibility(View.VISIBLE);
+        Glide.with(MainActivity.this).load(R.drawable.google_logo).into(img_page_start);
         mFirebaseUtil = new FirebaseUtil();
         mUser = new User(mFirebaseUtil);
-
-        initViewPager();
-        startService(new Intent(this, SessionExpired.class));
-
-        InitSetting();
-        ((App)getApplicationContext()).ref(this);
+        mHandler.sendEmptyMessageDelayed(MESSAGE_SHOW_START_PAGE, 2000);
 
         if (mFirebaseUtil.getCurrentUser() == null || !mFirebaseUtil.getCurrentUser().isEmailVerified()) {
             startActivity(new Intent(MainActivity.this, FirstActivity.class));
             finish();
-        } else {
-            mUser.user_login();
-            show_snackbar_msg("Successfully signed in : " + mUser.getEmailForSingleEvent(), true);
         }
 
+        startService(new Intent(this, SessionExpired.class));
 
+
+
+
+        InitSetting();
+        ((App)getApplicationContext()).ref(this);
 
     }
 
@@ -148,9 +203,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     @Override
     protected void onDestroy() {
         Log.d(TAG, "onDestroy()");
+        mHandler.removeCallbacksAndMessages(null);
+
         super.onDestroy();
-
-
     }
 
     @Override
@@ -179,6 +234,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         Log.d(TAG, "onStop()");
         super.onStop();
 
+
     }
 
     @Override
@@ -199,6 +255,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         super.onBackPressed();
     }
 
+    private void initView() {
+        relative_main = findViewById(R.id.relative_main);
+        img_page_start = findViewById(R.id.img_page_start);
+    }
 
     private void initViewPager() {
         mTabLayout = findViewById(R.id.tab_layout_main);
