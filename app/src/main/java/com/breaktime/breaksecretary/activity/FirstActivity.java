@@ -26,6 +26,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.yqritc.scalablevideoview.ScalableType;
 import com.yqritc.scalablevideoview.ScalableVideoView;
@@ -112,7 +113,7 @@ public class FirstActivity extends BaseActivity implements View.OnClickListener{
         super.onStart();
 
         mFirebaseUtil = new FirebaseUtil();
-        if (mFirebaseUtil.getCurrentUser() != null) {
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
             // User is signed in (getCurrentUser() will be null if not signed in)
             startActivity(new Intent(FirstActivity.this, MainActivity.class));
             finish();
@@ -173,7 +174,7 @@ public class FirstActivity extends BaseActivity implements View.OnClickListener{
         Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
 
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
-        mFirebaseUtil.getAuth().signInWithCredential(credential)
+        FirebaseAuth.getInstance().signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {

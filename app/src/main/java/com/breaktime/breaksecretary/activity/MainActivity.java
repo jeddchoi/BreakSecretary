@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -21,7 +22,6 @@ import com.breaktime.breaksecretary.Application.App;
 import com.breaktime.breaksecretary.Observer;
 import com.breaktime.breaksecretary.R;
 import com.breaktime.breaksecretary.Service.MyService;
-import com.breaktime.breaksecretary.Service.SessionExpired;
 import com.breaktime.breaksecretary.Subject;
 import com.breaktime.breaksecretary.Util.FirebaseUtil;
 import com.breaktime.breaksecretary.Util.Singleton;
@@ -33,6 +33,7 @@ import com.breaktime.breaksecretary.fragment.SettingFragment;
 import com.breaktime.breaksecretary.fragment.TimeLineFragment;
 import com.breaktime.breaksecretary.model.User;
 import com.bumptech.glide.Glide;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,6 +66,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         public boolean handleMessage(Message msg) {
             switch (msg.what) {
                 case MESSAGE_SHOW_START_PAGE:
+                    initViewPager();
+                    Window window = getWindow();
+                    window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+                    window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                    window.setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark, null));
+
+
                     AlphaAnimation alphaAnimation = new AlphaAnimation(1.0f, 0.0f);
                     alphaAnimation.setDuration(200);
                     alphaAnimation.setAnimationListener(new Animation.AnimationListener() {
@@ -76,7 +84,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                         @Override
                         public void onAnimationEnd(Animation animation) {
                             relative_main.setVisibility(View.GONE);
-                            initViewPager();
                             mUser.user_login();
                             show_snackbar_msg("Successfully signed in : " + mUser.getEmailForSingleEvent(), true);
                         }
@@ -109,36 +116,26 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         Log.d(TAG, "onCreate()");
         super.onCreate(savedInstanceState);
 
+        mFirebaseUtil = new FirebaseUtil();
+        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+            startActivity(new Intent(MainActivity.this, FirstActivity.class));
+            finish();
+        }
+        mUser = new User(mFirebaseUtil);
+
+
         setContentView(R.layout.activity_main);
         observers = new ArrayList<>();
-
-        Window window = getWindow();
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark, null));
-
-
-
-
-
-
-
-
-
         initView();
 
         relative_main.setVisibility(View.VISIBLE);
         Glide.with(MainActivity.this).load(R.drawable.google_logo).into(img_page_start);
-        mFirebaseUtil = new FirebaseUtil();
-        mUser = new User(mFirebaseUtil);
-        mHandler.sendEmptyMessageDelayed(MESSAGE_SHOW_START_PAGE, 2000);
 
-        if (mFirebaseUtil.getCurrentUser() == null || !mFirebaseUtil.getCurrentUser().isEmailVerified()) {
-            startActivity(new Intent(MainActivity.this, FirstActivity.class));
-            finish();
-        }
+        mHandler.sendEmptyMessageDelayed(MESSAGE_SHOW_START_PAGE, 3000);
 
-        startService(new Intent(this, SessionExpired.class));
+
+
+
 
 
 

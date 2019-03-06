@@ -3,10 +3,9 @@ package com.breaktime.breaksecretary.activity;
 import android.app.ProgressDialog;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class BaseActivity extends AppCompatActivity {
 
@@ -42,4 +41,13 @@ public class BaseActivity extends AppCompatActivity {
             Snackbar.make(getWindow().getDecorView().getRootView(), msg, Snackbar.LENGTH_LONG).show();
     }
 
+    private void closeKeyboard() {
+        View view = this.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+    }
+
 }
+

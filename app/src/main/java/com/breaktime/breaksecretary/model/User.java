@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.breaktime.breaksecretary.Util.FirebaseUtil;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -25,7 +26,11 @@ public class User {
     @Exclude
     private FirebaseUtil mFirebaseUtil;
     @Exclude
+    private FirebaseAuth mAuth;
+
+    @Exclude
     private DatabaseReference mUserRef;
+    @Exclude
     private DatabaseReference mCounterRef;
 
     // User Information
@@ -43,18 +48,16 @@ public class User {
     private Long ts_get_block = null;
 
 
-    public User(FirebaseUtil mFirebaseUtil) {
-        this.mFirebaseUtil = mFirebaseUtil;
+    public User(FirebaseUtil firebaseUtil) {
+        mAuth = FirebaseAuth.getInstance();
+        this.mFirebaseUtil = firebaseUtil;
 
-
-        if (mFirebaseUtil.getCurrentUser() == null) {
-            Log.d(TAG, "getCurrentUser() is null");
+        if (mAuth.getCurrentUser() != null) {
+            FirebaseAuth.getInstance().useAppLanguage();
+            mUserRef = firebaseUtil.getUsersRef().child(mAuth.getCurrentUser().getUid());
+            mUserRef.child("email_address").setValue(mAuth.getCurrentUser().getEmail());
         }
-
-        mUserRef = mFirebaseUtil.getUsersRef().child(mFirebaseUtil.getCurrentUser().getUid());
-        mUserRef.child("email_address").setValue(mFirebaseUtil.getCurrentUser().getEmail());
-
-        mCounterRef = mFirebaseUtil.getCounterRef();
+        mCounterRef = firebaseUtil.getCounterRef();
     }
 
     // Default Constructor
@@ -140,11 +143,11 @@ public class User {
     // USER FUNCTIONS
     @Exclude
     public String getEmailForSingleEvent() {
-        if (mFirebaseUtil.getCurrentUser() == null) {
+        if (mAuth.getCurrentUser() == null) {
             Log.e(TAG, "getCurrentUser() is null");
             return "NO EMAIL";
         }
-        return mFirebaseUtil.getCurrentUser().getEmail();
+        return mAuth.getCurrentUser().getEmail();
     }
 
     @Exclude
@@ -318,7 +321,7 @@ public class User {
     // TODO : verify 하는 것 구현하기
     @Exclude
     public void setEmail_addressForSingleEvent(String email) {
-        mFirebaseUtil.getCurrentUser().updateEmail(email);
+        mAuth.getCurrentUser().updateEmail(email);
         mUserRef.child("email_address").setValue(email);
     }
 
@@ -354,6 +357,7 @@ public class User {
     public void user_logout() {
         Log.d(TAG, "user logout -> delete UserReference1");
         mUserRef.removeValue();
+        mAuth.signOut();
     }
 
     @Exclude
@@ -374,7 +378,7 @@ public class User {
     @Exclude
     public void user_reserve(final Integer num_section, Integer num_seat) {
 
-        mFirebaseUtil.getSeatsRef().child(num_section.toString()).child("_" + num_seat.toString()).setValue(mFirebaseUtil.getAuth().getUid());
+        mFirebaseUtil.getSeatsRef().child(num_section.toString()).child("_" + num_seat.toString()).setValue(mAuth.getCurrentUser().getUid());
         Log.d(TAG, "user reserve");
         setStatusForSingleEvent(Status_user.RESERVING);
         setNum_sectionForSingleEvent(num_section);

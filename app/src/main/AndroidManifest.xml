@@ -18,10 +18,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
 
-
-        <service
-            android:name=".Service.SessionExpired"
-            android:stopWithTask="false"></service>
         <service
             android:name=".Service.MyService"
             android:enabled="true"
@@ -35,13 +31,14 @@
             android:icon="@mipmap/ic_launcher"
             android:roundIcon="@mipmap/ic_launcher_round"
             android:theme="@style/AppTheme.NoActionBar_StatusBar">
+
+        </activity>
+        <activity android:name=".activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.MainActivity" />
     </application>
 
 </manifest>

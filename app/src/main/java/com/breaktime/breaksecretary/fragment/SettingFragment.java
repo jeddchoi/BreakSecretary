@@ -150,7 +150,6 @@ public class SettingFragment extends Fragment implements View.OnClickListener {
     }
 
     private void sign_out() {
-        mFirebaseUtil.getAuth().signOut();
         mUser.user_logout();
         // Google sign out
         GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(getActivity(), GoogleSignInOptions.DEFAULT_SIGN_IN);

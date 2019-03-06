@@ -4,8 +4,6 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.breaktime.breaksecretary.model.MyCallback;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -26,7 +24,6 @@ public class FirebaseUtil {
     private DatabaseReference mCounterRef;
     private DatabaseReference mBlackListRef;
 
-    private FirebaseAuth mAuth;
     private Map<String, Long> mLimits;
     private Map<String, Long> mPeak;
     private List<Long> mSeatMax;
@@ -34,8 +31,7 @@ public class FirebaseUtil {
     public FirebaseUtil() {
         mDatabase = FirebaseDatabase.getInstance();
         mRootRef = mDatabase.getReference();
-        mAuth = FirebaseAuth.getInstance();
-        mAuth.useAppLanguage();
+
 
         mUsersRef = mRootRef.child("Users");
         mSettingRef = mRootRef.child("Setting");
@@ -72,13 +68,6 @@ public class FirebaseUtil {
         return mBlackListRef;
     }
 
-    public FirebaseAuth getAuth() {
-        return mAuth;
-    }
-
-    public FirebaseUser getCurrentUser() {
-        return mAuth.getCurrentUser();
-    }
 
 
     public Map<String, Long> getmLimits() {
