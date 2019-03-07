@@ -143,18 +143,18 @@ public class SettingFragment extends Fragment implements View.OnClickListener {
         switch (v.getId()) {
             case R.id.btn_logout:
                 sign_out();
-                startActivity(new Intent(getActivity(), FirstActivity.class));
-                getActivity().finish();
                 break;
         }
     }
 
-    private void sign_out() {
+    public void sign_out() {
         mUser.user_logout();
         // Google sign out
         GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(getActivity(), GoogleSignInOptions.DEFAULT_SIGN_IN);
         mGoogleSignInClient.signOut();
 
+        startActivity(new Intent(getActivity(), FirstActivity.class));
+        getActivity().finish();
     }
 
 }

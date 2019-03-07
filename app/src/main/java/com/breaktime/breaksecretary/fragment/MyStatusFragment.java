@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -21,17 +22,12 @@ import android.widget.TextView;
 import com.breaktime.breaksecretary.Observer;
 import com.breaktime.breaksecretary.R;
 import com.breaktime.breaksecretary.Util.FirebaseUtil;
-import com.breaktime.breaksecretary.Util.Singleton;
 import com.breaktime.breaksecretary.Util.TimeCounter;
 import com.breaktime.breaksecretary.activity.MainActivity;
-import com.breaktime.breaksecretary.model.MyCallback;
 import com.breaktime.breaksecretary.model.User;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 
 // In this case, the fragment displays simple text based on the page
@@ -43,8 +39,11 @@ public class MyStatusFragment extends Fragment implements Observer {
     private User mUser;
 
     private TextView tv_login, tv_subscribe, tv_occupy, tv_reserve, tv_step_out, tv_get_penalty, tv_get_block;
+    private TextView tv_status;
     private FrameLayout container_status;
     private Button button_stop;
+    private SharedPreferences prefs;
+    private TimeCounter tc_online;
 
     @Override
     public void onAttach(Context context) {
@@ -72,6 +71,8 @@ public class MyStatusFragment extends Fragment implements Observer {
         tv_step_out = view.findViewById(R.id.tv_step_out);
         tv_get_penalty = view.findViewById(R.id.tv_get_penalty);
         tv_get_block = view.findViewById(R.id.tv_get_block);
+
+        tv_status = view.findViewById(R.id.tv_status);
 
         container_status = view.findViewById(R.id.container_status);
 
@@ -239,6 +240,9 @@ public class MyStatusFragment extends Fragment implements Observer {
 
             }
         });
+
+
+        prefs = this.getActivity().getSharedPreferences("prefs", Context.MODE_PRIVATE);
     }
 
 
@@ -271,13 +275,19 @@ public class MyStatusFragment extends Fragment implements Observer {
     @Override
     public void onStart() {
         Log.d(TAG, "onStart()");
+        if (tc_online != null)
+            tc_online.onStart(prefs);
         super.onStart();
+
     }
 
     @Override
     public void onStop() {
         Log.d(TAG, "onStop()");
+        if (tc_online != null)
+            tc_online.onStop(prefs);
         super.onStop();
+
     }
 
     @Override
@@ -305,9 +315,8 @@ public class MyStatusFragment extends Fragment implements Observer {
         Log.d(TAG, "status_change" + status.name());
 
         if (isAdded()) {
+            tv_status.setText(status.name());
             LayoutInflater inflater = getLayoutInflater();
-
-
             if (container_status.getChildCount() > 0) {
                 // FrameLayout에서 뷰 삭제.
                 container_status.removeViewAt(0);
@@ -317,8 +326,15 @@ public class MyStatusFragment extends Fragment implements Observer {
             View view_layout = null;
             switch (status) {
                 case ONLINE:
+
                     view_layout = inflater.inflate(R.layout.status_online, container_status, false);
-//                    TimeCounter tc_online = new TimeCounter(mUser, mFirebaseUtil.getmLimits().get("online"), (TextView)view_layout.findViewById(R.id.tv_ts));
+                    tc_online = new TimeCounter(mUser, (TextView)view_layout.findViewById(R.id.tv_ts), (ProgressBar)view_layout.findViewById(R.id.pb), mFirebaseUtil.getmLimits().get("login")) {
+                        @Override
+                        public void updateWatchInterface() {
+
+                        }
+                    };
+                    tc_online.startTimer();
                     break;
                 case SUBSCRIBING:
                     view_layout = inflater.inflate(R.layout.status_subscribe, container_status, false);
