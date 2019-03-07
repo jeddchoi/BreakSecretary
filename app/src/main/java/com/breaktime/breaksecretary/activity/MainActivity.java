@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -40,7 +39,7 @@ import java.util.List;
 import java.util.Objects;
 
 
-public class MainActivity extends BaseActivity implements View.OnClickListener, Subject {
+public class MainActivity extends BaseActivity implements Subject {
     private static final String TAG = MainActivity.class.getName();
 
     public FirebaseUtil mFirebaseUtil;
@@ -48,7 +47,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private TabLayout mTabLayout;
     public ViewPager mViewPager;
     private RelativeLayout relative_main;
-    private ImageView img_page_start;
 
     private int[] tabIcons = {
             R.drawable.ic_flash_on_white_24dp,
@@ -116,6 +114,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         Log.d(TAG, "onCreate()");
         super.onCreate(savedInstanceState);
 
+        // This should be executed first of all. Otherwise, in fragments, there will be some errors.
+        // Because constructing FirebaseUtil demands some time.
         mFirebaseUtil = new FirebaseUtil();
         if (FirebaseAuth.getInstance().getCurrentUser() == null) {
             startActivity(new Intent(MainActivity.this, FirstActivity.class));
@@ -126,23 +126,18 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
         setContentView(R.layout.activity_main);
         observers = new ArrayList<>();
-        initView();
-
-        relative_main.setVisibility(View.VISIBLE);
-        Glide.with(MainActivity.this).load(R.drawable.google_logo).into(img_page_start);
-
-        mHandler.sendEmptyMessageDelayed(MESSAGE_SHOW_START_PAGE, 3000);
-
-
-
-
-
-
-
 
         InitSetting();
         ((App)getApplicationContext()).ref(this);
 
+        relative_main = findViewById(R.id.relative_main);
+        ImageView img_page_start = findViewById(R.id.img_page_start);
+        relative_main.setVisibility(View.VISIBLE);
+        Glide.with(MainActivity.this).load(R.drawable.google_logo).into(img_page_start);
+
+
+        // This should be called last if you want to earn some time before creating fragments.
+        mHandler.sendEmptyMessageDelayed(MESSAGE_SHOW_START_PAGE, 2500);
     }
 
     public void InitSetting(){
@@ -252,11 +247,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         super.onBackPressed();
     }
 
-    private void initView() {
-        relative_main = findViewById(R.id.relative_main);
-        img_page_start = findViewById(R.id.img_page_start);
-    }
-
     private void initViewPager() {
         mTabLayout = findViewById(R.id.tab_layout_main);
         mViewPager = findViewById(R.id.view_pager_main);
@@ -284,7 +274,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         registerObserver(myStatusFragment);
 
         fragments.add(new TimeLineFragment());
-
         fragments.add(new SettingFragment());
 
 
@@ -303,11 +292,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         Objects.requireNonNull(mTabLayout.getTabAt(4)).setIcon(tabIcons[4]);
     }
 
-
-    @Override
-    public void onClick(View view) {
-
-    }
 
     public void startService(int major , int minor){
         //mUser.get_user_ref().child("status").setValue(User.Status_user.RESERVING);

@@ -1,13 +1,11 @@
 package com.breaktime.breaksecretary.fragment;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,15 +16,12 @@ import android.widget.TextView;
 
 import com.breaktime.breaksecretary.Observer;
 import com.breaktime.breaksecretary.R;
-import com.breaktime.breaksecretary.activity.ReservingActivity;
-import com.breaktime.breaksecretary.Service.MyService;
 import com.breaktime.breaksecretary.Util.FirebaseUtil;
 import com.breaktime.breaksecretary.activity.MainActivity;
 import com.breaktime.breaksecretary.model.User;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.DrawableImageViewTarget;
-import com.mikhaellopez.circularimageview.CircularImageView;
 
 
 // In this case, the fragment displays simple text based on the page
@@ -146,6 +141,8 @@ public class QuickReserveFragment extends Fragment implements Observer {
 
         mFirebaseUtil = ((MainActivity)getActivity()).mFirebaseUtil;
         mUser = ((MainActivity)getActivity()).mUser;
+
+
 
     }
 

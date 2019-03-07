@@ -22,6 +22,7 @@ import com.breaktime.breaksecretary.Observer;
 import com.breaktime.breaksecretary.R;
 import com.breaktime.breaksecretary.Util.FirebaseUtil;
 import com.breaktime.breaksecretary.Util.Singleton;
+import com.breaktime.breaksecretary.Util.TimeCounter;
 import com.breaktime.breaksecretary.activity.MainActivity;
 import com.breaktime.breaksecretary.model.MyCallback;
 import com.breaktime.breaksecretary.model.User;
@@ -317,35 +318,11 @@ public class MyStatusFragment extends Fragment implements Observer {
             switch (status) {
                 case ONLINE:
                     view_layout = inflater.inflate(R.layout.status_online, container_status, false);
-                    final TextView tv0 = view_layout.findViewById(R.id.tv_ts);
-                    mUser.getTs_loginForSingleEvent(new MyCallback<Long>() {
-                        @Override
-                        public void onCallback(Long value) {
-                            if (value != null) {
-                                SimpleDateFormat sdf = new SimpleDateFormat("MM월 dd일 HH시 mm분에 로그인 됨");
-                                Date resultdate = new Date(value);
-
-                                tv0.setText(sdf.format(resultdate));
-                            }
-
-                        }
-                    });
+//                    TimeCounter tc_online = new TimeCounter(mUser, mFirebaseUtil.getmLimits().get("online"), (TextView)view_layout.findViewById(R.id.tv_ts));
                     break;
                 case SUBSCRIBING:
                     view_layout = inflater.inflate(R.layout.status_subscribe, container_status, false);
-                    final TextView tv1 = view_layout.findViewById(R.id.tv_ts);
-                    mUser.getTs_loginForSingleEvent(new MyCallback<Long>() {
-                        @Override
-                        public void onCallback(Long value) {
-                            if (value != null) {
-                                SimpleDateFormat sdf = new SimpleDateFormat("MM월 dd일 HH시 mm분에 로그인 됨");
-                                Date resultdate = new Date(value);
 
-                                tv1.setText(sdf.format(resultdate));
-                            }
-
-                        }
-                    });
                     break;
 
                 case RESERVING:

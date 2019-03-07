@@ -4,8 +4,6 @@ package com.breaktime.breaksecretary.Util;
 import android.content.SharedPreferences;
 import android.os.CountDownTimer;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import com.breaktime.breaksecretary.model.User;
@@ -37,7 +35,7 @@ public class TimeCounter {
         resetTimer();
     }
 
-    private void startTimer() {
+    public void startTimer() {
         mEndTime = System.currentTimeMillis() + mTimeLeftInMillis;
 
         mCountDownTimer = new CountDownTimer(mTimeLeftInMillis, 1000) {
@@ -88,26 +86,26 @@ public class TimeCounter {
     }
 
     private void updateWatchInterface() {
-//        if (mTimerRunning) {
+        if (mTimerRunning) {
 //            mButtonSet.setVisibility(View.INVISIBLE);
 //            mButtonReset.setVisibility(View.INVISIBLE);
 //            mButtonStartPause.setText("Pause");
-//        } else {
+        } else {
 //            mButtonSet.setVisibility(View.VISIBLE);
 //            mButtonStartPause.setText("Start");
-//
-//            if (mTimeLeftInMillis < 1000) {
+
+            if (mTimeLeftInMillis < 1000) {
 //                mButtonStartPause.setVisibility(View.INVISIBLE);
-//            } else {
+            } else {
 //                mButtonStartPause.setVisibility(View.VISIBLE);
-//            }
-//
-//            if (mTimeLeftInMillis < mStartTimeInMillis) {
+            }
+
+            if (mTimeLeftInMillis < mStartTimeInMillis) {
 //                mButtonReset.setVisibility(View.VISIBLE);
-//            } else {
+            } else {
 //                mButtonReset.setVisibility(View.INVISIBLE);
-//            }
-//        }
+            }
+        }
     }
 
     public void onStop(SharedPreferences prefs) {
