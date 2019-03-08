@@ -32,16 +32,17 @@ public class FirebaseUtil {
         mDatabase = FirebaseDatabase.getInstance();
         mRootRef = mDatabase.getReference();
 
+        mSettingRef = mRootRef.child("Setting");
+        downloadLimits();
+        downloadPeak();
+        downloadSeatMax();
 
         mUsersRef = mRootRef.child("Users");
-        mSettingRef = mRootRef.child("Setting");
         mSeatsRef = mRootRef.child("Seats");
         mCounterRef = mRootRef.child("Counter");
         mBlackListRef = mRootRef.child("BlockedUsers");
 
-        downloadLimits();
-        downloadPeak();
-        downloadSeatMax();
+
     }
 
     public DatabaseReference getRootRef() {

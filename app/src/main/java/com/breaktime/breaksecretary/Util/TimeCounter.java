@@ -33,6 +33,31 @@ public abstract class TimeCounter {
         mProgressBarCountDown.setMax((int) (minsInput * 60));
     }
 
+    // You should implement this abstract method.
+    public abstract void updateWatchInterface();
+//        if (mTimerRunning) {
+////            mButtonSet.setVisibility(View.INVISIBLE);
+////            mButtonReset.setVisibility(View.INVISIBLE);
+////            mButtonStartPause.setText("Pause");
+//        } else {
+////            mButtonSet.setVisibility(View.VISIBLE);
+////            mButtonStartPause.setText("Start");
+//
+//            if (mTimeLeftInMillis < 1000) {
+////                mButtonStartPause.setVisibility(View.INVISIBLE);
+//            } else {
+////                mButtonStartPause.setVisibility(View.VISIBLE);
+//            }
+//
+//            if (mTimeLeftInMillis < mStartTimeInMillis) {
+////                mButtonReset.setVisibility(View.VISIBLE);
+//            } else {
+////                mButtonReset.setVisibility(View.INVISIBLE);
+//            }
+//        }
+
+
+
     private void setTime(Long milliseconds) {
         mStartTimeInMillis = milliseconds;
         Log.d(TAG, mStartTimeInMillis.toString());
@@ -91,28 +116,6 @@ public abstract class TimeCounter {
         mTextViewCountDown.setText(timeLeftFormatted);
         mProgressBarCountDown.setProgress((int) (mTimeLeftInMillis / 1000));
     }
-
-    public abstract void updateWatchInterface();
-//        if (mTimerRunning) {
-////            mButtonSet.setVisibility(View.INVISIBLE);
-////            mButtonReset.setVisibility(View.INVISIBLE);
-////            mButtonStartPause.setText("Pause");
-//        } else {
-////            mButtonSet.setVisibility(View.VISIBLE);
-////            mButtonStartPause.setText("Start");
-//
-//            if (mTimeLeftInMillis < 1000) {
-////                mButtonStartPause.setVisibility(View.INVISIBLE);
-//            } else {
-////                mButtonStartPause.setVisibility(View.VISIBLE);
-//            }
-//
-//            if (mTimeLeftInMillis < mStartTimeInMillis) {
-////                mButtonReset.setVisibility(View.VISIBLE);
-//            } else {
-////                mButtonReset.setVisibility(View.INVISIBLE);
-//            }
-//        }
 
 
     public void onStop(SharedPreferences prefs) {

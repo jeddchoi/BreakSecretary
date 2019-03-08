@@ -137,7 +137,7 @@ public class MainActivity extends BaseActivity implements Subject {
 
 
         // This should be called last if you want to earn some time before creating fragments.
-        mHandler.sendEmptyMessageDelayed(MESSAGE_SHOW_START_PAGE, 2500);
+        mHandler.sendEmptyMessageDelayed(MESSAGE_SHOW_START_PAGE, 2000);
     }
 
     public void InitSetting(){

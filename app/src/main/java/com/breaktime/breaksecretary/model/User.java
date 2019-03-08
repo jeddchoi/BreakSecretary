@@ -365,13 +365,15 @@ public class User {
         Log.d(TAG, "user subscribe");
         setStatusForSingleEvent(Status_user.SUBSCRIBING);
         mUserRef.child("ts_subscribe").setValue(System.currentTimeMillis());
+        mUserRef.child("ts_login").removeValue();
     }
 
     @Exclude
     public void user_unsubscribe() {
         Log.d(TAG, "user unsubscribe");
-        setStatusForSingleEvent(Status_user.ONLINE);
+        user_login();
         mUserRef.child("ts_subscribe").removeValue();
+
     }
 
 
@@ -385,6 +387,7 @@ public class User {
         setNum_seatForSingleEvent(num_seat);
         mUserRef.child("ts_reserve").setValue(System.currentTimeMillis());
         mUserRef.child("ts_subscribe").removeValue();
+        mUserRef.child("ts_login").removeValue();
 
         getNum_counterForSingleEvent(new MyCallback<Integer>() {
             @Override
@@ -406,7 +409,7 @@ public class User {
                     public void onCallback(Integer seatnum) {
                         mFirebaseUtil.getSeatsRef().child(section.toString()).child("_" + seatnum.toString()).setValue("None");
                         Log.d(TAG, "user cancel reservation");
-                        setStatusForSingleEvent(Status_user.ONLINE);
+                        user_login();
                         setNum_sectionForSingleEvent(null);
                         setNum_seatForSingleEvent(null);
                         mUserRef.child("ts_reserve").removeValue();
@@ -451,7 +454,7 @@ public class User {
     @Exclude
     public void user_reservation_over_confirm() {
         Log.d(TAG, "user reservation over confirm");
-        setStatusForSingleEvent(Status_user.ONLINE);
+        user_login();
         mUserRef.child("ts_reserve").removeValue();
     }
 
@@ -476,7 +479,7 @@ public class User {
                     public void onCallback(Integer seatnum) {
                         mFirebaseUtil.getSeatsRef().child(section.toString()).child("_" + seatnum.toString()).setValue("None");
                         Log.d(TAG, "user stop");
-                        setStatusForSingleEvent(Status_user.ONLINE);
+                        user_login();
                         mUserRef.child("ts_occupy").removeValue();
                         mUserRef.child("ts_step_out").removeValue();
                         mUserRef.child("num_section").removeValue();
@@ -522,7 +525,7 @@ public class User {
     @Exclude
     public void user_occupy_over_confirm() {
         Log.d(TAG, "user occupy over confirm");
-        setStatusForSingleEvent(Status_user.ONLINE);
+        user_login();
         mUserRef.child("ts_occupy").removeValue();
     }
 
@@ -568,7 +571,7 @@ public class User {
     @Exclude
     public void user_step_out_over_confirm() {
         Log.d(TAG, "user return to seat");
-        setStatusForSingleEvent(Status_user.ONLINE);
+        user_login();
         mUserRef.child("ts_step_out").removeValue();
     }
 
@@ -578,14 +581,16 @@ public class User {
     public void user_get_penalty() {
         Log.d(TAG, "user get penalty");
         setStatusForSingleEvent(Status_user.PAYING_PENALTY);
-        mUserRef.child("ts_reserve").removeValue();
         mUserRef.child("ts_get_penalty").setValue(System.currentTimeMillis());
+        mUserRef.child("ts_reserve").removeValue();
+        mUserRef.child("ts_login").removeValue();
+
     }
 
     @Exclude
     public void user_cancel_penalty() {
         Log.d(TAG, "user cancel penalty");
-        setStatusForSingleEvent(Status_user.ONLINE);
+        user_login();
         mUserRef.child("ts_reserve").removeValue();
         mUserRef.child("ts_get_penalty").removeValue();
     }
@@ -597,6 +602,7 @@ public class User {
         mUserRef.child("ts_get_block").setValue(System.currentTimeMillis());
         mUserRef.child("num_section").removeValue();
         mUserRef.child("num_seat").removeValue();
+        mUserRef.child("ts_login").removeValue();
         mUserRef.child("ts_subscribe").removeValue();
         mUserRef.child("ts_reserve").removeValue();
         mUserRef.child("ts_occupy").removeValue();
@@ -607,8 +613,7 @@ public class User {
     @Exclude
     public void user_cancel_block() {
         Log.d(TAG, "user cancel block");
-        setStatusForSingleEvent(Status_user.ONLINE);
-        mUserRef.child("ts_get_block").removeValue();
+        user_logout();
     }
 
     @Exclude
